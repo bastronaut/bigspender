@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class TestController {
+public class TransactionsController {
 
 
-    @GetMapping(value = "/{id}")
-    public String getId(@PathVariable int id) {
-        return "you got " + Integer.toString(id);
+    @GetMapping(value = "/{userid}/")
+    public String getTransaction(@PathVariable int userid) {
+        return "returning " + Integer.toString(userid);
     }
 }
