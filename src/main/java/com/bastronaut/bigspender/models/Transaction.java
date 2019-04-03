@@ -17,13 +17,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 
-@Entity
-@Data
-@Table(name = "transactions")
+//@Entity
+//@Data
+//@Table(name = "transactions")
 public class Transaction {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     private LocalDate date;

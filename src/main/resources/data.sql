@@ -1,2 +1,2 @@
 -- automatically imported on initialization
-CREATE DATABASE test;
+CREATE DATABASE bigspender;
