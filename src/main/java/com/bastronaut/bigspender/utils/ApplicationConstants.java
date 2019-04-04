@@ -17,4 +17,9 @@ public class ApplicationConstants {
     public static final int MUTATIONTYPE_COLUMN = 7;
     public static final int STATEMENT_COLUMN = 8;
 
+    /** Regex strings **/
+    public static final String CSV_COMMA_SPLIT_PATTERN = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";  // // See: https://stackoverflow.com/questions/18893390/splitting-on-comma-outside-quotes
+    public static final String HH_MM_SS_TIMEPATTERN = "(([0-1]?[0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9]"; // HH:MM:SS
+    public static final String HH_MM_TIMEPATTERN = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+
 }
