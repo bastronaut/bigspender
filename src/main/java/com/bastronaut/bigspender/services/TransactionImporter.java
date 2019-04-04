@@ -1,4 +1,11 @@
 package com.bastronaut.bigspender.services;
 
-public class TransactionImporter {
+import com.bastronaut.bigspender.models.Transaction;
+
+import java.io.InputStream;
+import java.util.List;
+
+public interface TransactionImporter {
+
+    List<Transaction> parseTransactions(InputStream source);
 }

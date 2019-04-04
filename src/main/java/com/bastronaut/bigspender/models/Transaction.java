@@ -1,7 +1,13 @@
 package com.bastronaut.bigspender.models;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.apache.tomcat.jni.Local;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -16,39 +22,71 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
+/**
+ * Entity class for transactions. Can not auto-generate constructor because of the @GeneratedValue id, and creating
+ * a superclass for the single class seems undesirable.
+ */
 @Entity
 @Data
 @Table(name = "transactions")
+@EqualsAndHashCode
 public class Transaction {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private LocalDate date;
+    @Getter
+    private final LocalDate date;
 
-    private LocalTime time;
+    @Getter
+    private final LocalTime time;
 
-    private String name;
+    @Getter
+    private final String name;
 
-    private String accountNumber;
+    @Getter
+    private final String accountNumber;
 
-    private String receivingAccountNumber;
+    @Getter
+    private final String receivingAccountNumber;
 
-    private String code;
+    @Getter
+    private final TransactionCode code;
 
-    private TransactionType type;
+    @Getter
+    private final TransactionType type;
 
-    private long amount;
+    // Can consider using BigDecimal
+    @Getter
+    private final long amount;
 
-    private TransactionMutationType mutationType;
+    @Getter
+    private final TransactionMutationType mutationType;
 
-    // mededeling
-    private String statement;
+    @Getter
+    private final String statement;
 
     // non-normalized, maybe useful for training data
-    private DayOfWeek day;
+    @Getter
+    private final DayOfWeek day;
 
+
+    public Transaction(@NonNull final LocalDate date, @NonNull final LocalTime time, @NonNull final String name,
+                       @NonNull final String accountNumber, final String receivingAccountNumber,
+                       @NonNull final TransactionCode code, @NonNull final TransactionType type, @NonNull final long amount,
+                       @NonNull final TransactionMutationType mutationType, @NonNull final String statement,
+                       @NonNull final DayOfWeek day) {
+        this.date = date;
+        this.time = time;
+        this.name = name;
+        this.accountNumber = accountNumber;
+        this.receivingAccountNumber = receivingAccountNumber;
+        this.code = code;
+        this.type = type;
+        this.amount = amount;
+        this.mutationType = mutationType;
+        this.statement = statement;
+        this.day = day;
+    }
 
 }
