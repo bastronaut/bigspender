@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.services;
 
 
 import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.models.TransactionCode;
 import com.bastronaut.bigspender.models.TransactionMutationType;
 import com.bastronaut.bigspender.models.TransactionType;
 import org.junit.Before;
@@ -20,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.bastronaut.bigspender.models.TransactionCode.BA;
+import static com.bastronaut.bigspender.models.TransactionCode.GT;
 import static com.bastronaut.bigspender.models.TransactionMutationType.BETAALAUTOMAAT;
 import static com.bastronaut.bigspender.models.TransactionMutationType.DIVERSEN;
 import static com.bastronaut.bigspender.models.TransactionMutationType.ONLINEBANKIEREN;
@@ -58,37 +61,37 @@ public class INGTransactionImporterImplTest {
     public void setupSampleResult() throws FileNotFoundException {
         Transaction t1 = new Transaction(LocalDate.of(2019, 04, 01),
                 LocalTime.of(22,39), "AH to go 5869 DenHaa", "NL41INGB0006212385",
-                null, "BA", AF, 180, BETAALAUTOMAAT,
+                null, GT, AF, 180, BETAALAUTOMAAT,
                 "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", DayOfWeek.MONDAY);
 
         Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
                 LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
-                null, "BA", AF, 1180, BETAALAUTOMAAT,
+                null, BA, AF, 1180, BETAALAUTOMAAT,
                 "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", DayOfWeek.TUESDAY);
 
         Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
                 LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", "BA", AF, 1980, ONLINEBANKIEREN,
+                "NL20INGB0007654321", BA, AF, 1980, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019", DayOfWeek.WEDNESDAY);
 
         Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
                 LocalTime.of(16,15), "to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", "BA", AF, 5121, ONLINEBANKIEREN,
+                "NL20INGB0007654321", GT, AF, 5121, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019", DayOfWeek.THURSDAY);
 
         Transaction t5 = new Transaction(LocalDate.of(2019, 04, 05),
                 LocalTime.of(23,01), "AH to go Den", "",
-                "NL20INGB0007654321", "BA", AF, 14120, DIVERSEN,
+                "NL20INGB0007654321", BA, AF, 14120, DIVERSEN,
                 "Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019", DayOfWeek.FRIDAY);
 
         Transaction t6 = new Transaction(LocalDate.of(2019, 04, 06),
                 null, "AH to go go", "",
-                "NL20INGB0007654321", "BA", AF, 999999, ONLINEBANKIEREN,
+                "NL20INGB0007654321", BA, AF, 999999, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019", DayOfWeek.SATURDAY);
 
         Transaction t7 = new Transaction(LocalDate.of(2019, 04, 07),
                 LocalTime.of(22,39), "test to go go yes", "NL20INGB0004567891",
-                "NL20INGB0001987654", "BA", BIJ, 1980, DIVERSEN,
+                "NL20INGB0001987654", BA, BIJ, 1980, DIVERSEN,
                 "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019", DayOfWeek.SUNDAY);
 
         expectedSampleTransactions.add(t1);
@@ -103,7 +106,7 @@ public class INGTransactionImporterImplTest {
         this.input = new FileInputStream(sampleFile);
     }
 
-//    TODO feitje remco: de transaction date komt niet overeen met de werkelijke transactie datum, maar waarschijnlijk soort van transactie resolutie / consolidatie
+
     @Test
     public void testParseTransactions() {
 

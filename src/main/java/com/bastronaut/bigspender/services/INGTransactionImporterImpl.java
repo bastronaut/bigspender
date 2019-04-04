@@ -24,12 +24,16 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ACCT_COLUMN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.AMOUNT_COLUMN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.CSV_COMMA_SPLIT_PATTERN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DATE_COLUMN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.EXPECTED_NR_COLUMNS_ING;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.HH_MM_SS_TIMEPATTERN;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.HH_MM_TIMEPATTERN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.MUTATIONCODE_COLUMN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.MUTATIONTYPE_COLUMN;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.NAME_COLUMN;
@@ -65,7 +69,7 @@ public class INGTransactionImporterImpl {
 
     private Transaction parseTransaction(String transaction) {
         // Splits CSV on commas outside of string fields, means it will work if commas are present in texts
-        String[] columns = transaction.split(CSV_COMMA_SPLIT_PATTERN);
+        final String[] columns = transaction.split(CSV_COMMA_SPLIT_PATTERN);
 
         return new Transaction(LocalDate.of(2019, 01, 01), null, null, null, null, null,
                 null, 0, TransactionMutationType.BETAALAUTOMAAT, null, DayOfWeek.MONDAY);
@@ -85,15 +89,39 @@ public class INGTransactionImporterImpl {
         try {
             return LocalDate.parse(date, dtf);
         } catch (DateTimeParseException e) {
+            logger.info(String.format("Can't determine date for: %s", date), e);
             return null;
         }
     }
 
+    /**
+     * Attempts to find a time in a free form 'statement' column of a transaction export. Can be of either form:
+     * hh:mm:ss or hh:mm
+     * @param transactionColumns the string containing the transaction Statement
+     * @return a LocalTime if found, or null if not found
+     */
     private LocalTime determineTime(final String[] transactionColumns) {
-        String statement = transactionColumns[STATEMENT_COLUMN];
+        final String statement = transactionColumns[STATEMENT_COLUMN];
 
+        String timePaid = getMatchingRegex(statement, HH_MM_SS_TIMEPATTERN);
+        if (StringUtils.isBlank(timePaid)) {
+            timePaid = getMatchingRegex(statement, HH_MM_TIMEPATTERN);
+        }
+        try {
+            return LocalTime.parse(timePaid);
+        } catch (DateTimeParseException e) {
+            logger.info(String.format("Can't determine time for: %s", statement), e);
+            return null;
+        }
+    }
 
-        return LocalTime.of(00, 00, 00);
+    private String getMatchingRegex(String charSequence, String regexPattern) {
+        final Pattern pattern = Pattern.compile(regexPattern);
+        final Matcher matcher = pattern.matcher(charSequence);
+        if (matcher.matches()) {
+            return matcher.group();
+        }
+        return StringUtils.EMPTY;
     }
 
     private String determineName(final String[] transactionColumns) {
