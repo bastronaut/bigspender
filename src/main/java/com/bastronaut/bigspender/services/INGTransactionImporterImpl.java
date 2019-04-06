@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -122,6 +123,9 @@ public class INGTransactionImporterImpl {
         }
         if (StringUtils.isBlank(timePaid)) return null;
 
+        // Regexes may contain spaces to ensure accurate match with time pattern, strip them
+        timePaid = timePaid.replaceAll(" ", "");
+
         try {
             return LocalTime.parse(timePaid);
         } catch (DateTimeParseException e) {
@@ -134,8 +138,8 @@ public class INGTransactionImporterImpl {
     private String getMatchingRegex(String charSequence, String regexPattern) {
         final Pattern pattern = Pattern.compile(regexPattern);
         final Matcher matcher = pattern.matcher(charSequence);
-        if (matcher.matches()) {
-            return matcher.group();
+        if (matcher.find()) {
+            return matcher.group(0);
         }
         return StringUtils.EMPTY;
     }
@@ -148,8 +152,10 @@ public class INGTransactionImporterImpl {
         return transaction.get(CSV_HEADER_ACCOUNT);
     }
 
+    @Nullable
     private String determineReceivingAccountNumber(final CSVRecord transaction) {
-        return transaction.get(CSV_HEADER_RECEIVINGACCOUNT);
+        final String receivingAcct = transaction.get(CSV_HEADER_RECEIVINGACCOUNT);
+        return StringUtils.isNotBlank(receivingAcct) ? receivingAcct : null;
     }
 
     private TransactionCode determineTransactionCode(final CSVRecord transaction) {
@@ -169,7 +175,7 @@ public class INGTransactionImporterImpl {
      */
     private long determineAmount(final CSVRecord transaction) {
         final String amount = transaction.get(CSV_HEADER_AMOUNT);
-        final String amountCents = amount.replace(".", "");
+        final String amountCents = amount.replace(".", "").replace(",","");
         try {
             Number parsed = NumberFormat.getInstance().parse(amountCents);
             return parsed.longValue();

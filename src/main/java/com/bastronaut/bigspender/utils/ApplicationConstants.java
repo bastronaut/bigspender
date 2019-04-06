@@ -18,14 +18,14 @@ public class ApplicationConstants {
     public static final String CSV_HEADER_TYPE = "Af Bij";
     public static final String CSV_HEADER_AMOUNT = "Bedrag (EUR)";
     public static final String CSV_HEADER_MUTATIONTYPE = "MutatieSoort";
-    public static final String CSV_HEADER_STATEMENT = "Mededeling";
+    public static final String CSV_HEADER_STATEMENT = "Mededelingen";
     public static final int EXPECTED_NR_COLUMNS_ING = 9;
 
 
     /** Regex strings **/
     public static final String CSV_COMMA_SPLIT_PATTERN = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";  // // See: https://stackoverflow.com/questions/18893390/splitting-on-comma-outside-quotes
-    public static final String HH_MM_SS_TIMEPATTERN = "(([0-1]?[0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9]"; // HH:MM:SS
-    public static final String HH_MM_TIMEPATTERN = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+    public static final String HH_MM_SS_TIMEPATTERN = " (([0-1]?[0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9] "; // HH:MM:SS
+    public static final String HH_MM_TIMEPATTERN = " ([01]?[0-9]|2[0-3]):[0-5][0-9] "; // HH:MM
 
 
 

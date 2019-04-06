@@ -66,8 +66,8 @@ public class INGTransactionImporterImplTest {
 
         final Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
                 LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
-                null, BA, AF, 1180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019");
+                null, BA, BIJ, 1180, BETAALAUTOMAAT,
+                "Pasvolgnr: 008 01-04-2019 02:39 Valutadatum: 02-04-2019");
 
         final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
                 LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
@@ -76,21 +76,21 @@ public class INGTransactionImporterImplTest {
 
         final Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
                 LocalTime.of(16,15), "to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", GT, AF, 5121, ONLINEBANKIEREN,
+                "NL20INGB0007654321", BA, AF, 5121, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019");
 
         final Transaction t5 = new Transaction(LocalDate.of(2019, 04, 05),
-                LocalTime.of(23,01), "AH to go Den", "",
-                "NL20INGB0007654321", BA, AF, 14120, DIVERSEN,
+                LocalTime.of(23,01), "AH to go Den", "NL20INGB0002345678",
+                "NL20INGB0007654321", GT, BIJ, 14120, DIVERSEN,
                 "Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019");
 
         final Transaction t6 = new Transaction(LocalDate.of(2019, 04, 06),
-                null, "AH to go go", "",
-                "NL20INGB0007654321", BA, AF, 999999, ONLINEBANKIEREN,
+                null, "AH to go go", "NL20INGB0003456789",
+                "NL20INGB0007654321", GT, AF, 999999, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019");
 
         final Transaction t7 = new Transaction(LocalDate.of(2019, 04, 07),
-                LocalTime.of(22,39), "test to go go yes", "NL20INGB0004567891",
+                LocalTime.of(07,25), "test to go go yes", "NL20INGB0004567891",
                 "NL20INGB0001987654", BA, BIJ, 1980, DIVERSEN,
                 "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019");
 
@@ -114,7 +114,7 @@ public class INGTransactionImporterImplTest {
         assertEquals("Seven transactions have been parsed", 7, parsedTransactions.getImportCount());
         List<Transaction> transactions = parsedTransactions.getTransactions();
         for (int i = 0; i < transactions.size(); i++) {
-            assertEquals(transactions.get(i), expectedSampleTransactions.get(i));
+            assertEquals(expectedSampleTransactions.get(i), transactions.get(i));
         }
     }
 
