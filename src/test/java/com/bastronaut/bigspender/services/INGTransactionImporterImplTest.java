@@ -2,9 +2,7 @@ package com.bastronaut.bigspender.services;
 
 
 import com.bastronaut.bigspender.models.Transaction;
-import com.bastronaut.bigspender.models.TransactionCode;
-import com.bastronaut.bigspender.models.TransactionMutationType;
-import com.bastronaut.bigspender.models.TransactionType;
+import com.bastronaut.bigspender.models.TransactionImport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.time.DayOfWeek;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -30,8 +28,6 @@ import static com.bastronaut.bigspender.models.TransactionMutationType.ONLINEBAN
 import static com.bastronaut.bigspender.models.TransactionType.AF;
 import static com.bastronaut.bigspender.models.TransactionType.BIJ;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
-import static com.bastronaut.bigspender.utils.TestConstants.SUBSET_SAMPLE_CSV_PATH;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -112,12 +108,13 @@ public class INGTransactionImporterImplTest {
 
 
     @Test
-    public void testParseTransactions() {
+    public void testParseTransactions() throws IOException {
 
-        final List<Transaction> parsedTransactions = importer.parseTransactions(input);
-        assertEquals("Seven transactions have been parsed", 7, parsedTransactions.size());
-        for (int i = 0; i < parsedTransactions.size(); i++) {
-            assertEquals(parsedTransactions.get(i), expectedSampleTransactions.get(i));
+        final TransactionImport parsedTransactions = importer.parseTransactions(input);
+        assertEquals("Seven transactions have been parsed", 7, parsedTransactions.getImportCount());
+        List<Transaction> transactions = parsedTransactions.getTransactions();
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(transactions.get(i), expectedSampleTransactions.get(i));
         }
     }
 

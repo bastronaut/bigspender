@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.services.INGTransactionImporterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,14 +51,14 @@ public class ImportController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
 
-        List<Transaction> result;
+        TransactionImport result;
 
         if (files != null && files.size() > 0) {
 
             try {
                 InputStream file = files.get(0).getInputStream();
                 result = importer.parseTransactions(file);
-                return ResponseEntity.status(HttpStatus.OK).body(result);
+                return ResponseEntity.status(HttpStatus.OK).body(result.getTransactions());
 
             } catch (IOException e) {
                 logger.info("Error getting inputstream from POST MultipartFile", e);

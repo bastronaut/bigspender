@@ -71,7 +71,7 @@ public class Transaction {
     private final DayOfWeek day;
 
 
-    public Transaction(@NonNull final LocalDate date, final LocalTime time, @NonNull final String name,
+    public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
                        @NonNull final TransactionCode code, @NonNull final TransactionType type, @NonNull final long amount,
                        @NonNull final TransactionMutationType mutationType, @NonNull final String statement) {
