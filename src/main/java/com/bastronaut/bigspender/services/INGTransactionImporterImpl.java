@@ -4,9 +4,11 @@ import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionCode;
 import com.bastronaut.bigspender.models.TransactionMutationType;
 import com.bastronaut.bigspender.models.TransactionType;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -24,6 +26,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +50,6 @@ public class INGTransactionImporterImpl {
 
     final Logger logger = LoggerFactory.getLogger(INGTransactionImporterImpl.class);
 
-
     /**
      * Parses the transactions represented in the format exported by the ING CSV transaction downloader. Assumes
      * the first line is the header line and skips it (as is the case for all ING exports).
@@ -57,22 +59,39 @@ public class INGTransactionImporterImpl {
      * transaction is invalid if it does not have the expected number of columns
      */
     public List<Transaction> parseTransactions(InputStream source) {
-        List<Transaction> transactions;
 
+        // TODO:
+        // when reading the lines, the strings include the quote " character. strip it?
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(source))) {
-            transactions = reader.lines().skip(1).map(this::parseTransaction).collect(toList());
+            return reader.lines().skip(1).map(this::parseTransaction).filter(Objects::nonNull).collect(toList());
     } catch (IOException e) {
             logger.debug("Error reading transactions", e);
         }
         return new ArrayList<>();
     }
 
+    @Nullable
     private Transaction parseTransaction(String transaction) {
-        // Splits CSV on commas outside of string fields, means it will work if commas are present in texts
-        final String[] columns = transaction.split(CSV_COMMA_SPLIT_PATTERN);
+        // Splits CSV on commas outside of string fields, means it will work if commas are present in strings
+        final String[] transactionElements = RegExUtils.replaceAll(transaction,"\"", "")
+                .split(CSV_COMMA_SPLIT_PATTERN);
 
-        return new Transaction(LocalDate.of(2019, 01, 01), null, null, null, null, null,
-                null, 0, TransactionMutationType.BETAALAUTOMAAT, null, DayOfWeek.MONDAY);
+        if (!isValidTransactionLine(transactionElements)) {
+            return null;
+        }
+
+        final LocalDate date = determineDate(transactionElements);
+        final LocalTime time = determineTime(transactionElements);
+        final String name = determineName(transactionElements);
+        final String accountNr = determineAccountNumber(transactionElements);
+        final String receivingAccountNr = determineReceivingAccountNumber(transactionElements);
+        final TransactionCode code = determineTransactionCode(transactionElements);
+        final TransactionType type = determineTransactionType(transactionElements);
+        final long amount = determineAmount(transactionElements);
+        final TransactionMutationType mutationType = determineTransactionMutationType(transactionElements);
+        final String statement = determineStatement(transactionElements);
+
+        return new Transaction(date, time, name, accountNr, receivingAccountNr, code, type, amount, mutationType, statement);
     }
 
 
@@ -107,6 +126,8 @@ public class INGTransactionImporterImpl {
         if (StringUtils.isBlank(timePaid)) {
             timePaid = getMatchingRegex(statement, HH_MM_TIMEPATTERN);
         }
+        if (StringUtils.isBlank(timePaid)) return null;
+
         try {
             return LocalTime.parse(timePaid);
         } catch (DateTimeParseException e) {
@@ -114,6 +135,7 @@ public class INGTransactionImporterImpl {
             return null;
         }
     }
+
 
     private String getMatchingRegex(String charSequence, String regexPattern) {
         final Pattern pattern = Pattern.compile(regexPattern);
@@ -158,7 +180,7 @@ public class INGTransactionImporterImpl {
             Number parsed = NumberFormat.getInstance().parse(amountCents);
             return parsed.longValue();
         } catch (ParseException e) {
-            logger.info("Can't parse number to long", amount);
+            logger.info(String.format("Can't parse number to long: %s", amount), amount);
         }
         return (long) 0;
     }

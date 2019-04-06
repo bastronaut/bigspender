@@ -56,7 +56,7 @@ public class Transaction {
     @Getter
     private final TransactionType type;
 
-    // Can consider using BigDecimal
+    // Should consider using BigDecimal but poc is small transactions
     @Getter
     private final long amount;
 
@@ -71,12 +71,12 @@ public class Transaction {
     private final DayOfWeek day;
 
 
-    public Transaction(@NonNull final LocalDate date, @NonNull final LocalTime time, @NonNull final String name,
+    public Transaction(@NonNull final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
                        @NonNull final TransactionCode code, @NonNull final TransactionType type, @NonNull final long amount,
-                       @NonNull final TransactionMutationType mutationType, @NonNull final String statement,
-                       @NonNull final DayOfWeek day) {
+                       @NonNull final TransactionMutationType mutationType, @NonNull final String statement) {
         this.date = date;
+        this.day = date.getDayOfWeek();
         this.time = time;
         this.name = name;
         this.accountNumber = accountNumber;
@@ -86,7 +86,6 @@ public class Transaction {
         this.amount = amount;
         this.mutationType = mutationType;
         this.statement = statement;
-        this.day = day;
     }
 
 }

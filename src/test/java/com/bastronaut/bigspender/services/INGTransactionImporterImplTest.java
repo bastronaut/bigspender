@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.bastronaut.bigspender.models.TransactionCode.BA;
@@ -59,40 +60,43 @@ public class INGTransactionImporterImplTest {
      */
     @Before
     public void setupSampleResult() throws FileNotFoundException {
-        Transaction t1 = new Transaction(LocalDate.of(2019, 04, 01),
+
+        expectedSampleTransactions = new ArrayList<>();
+
+        final Transaction t1 = new Transaction(LocalDate.of(2019, 04, 01),
                 LocalTime.of(22,39), "AH to go 5869 DenHaa", "NL41INGB0006212385",
                 null, GT, AF, 180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", DayOfWeek.MONDAY);
+                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019");
 
-        Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
+        final Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
                 LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
                 null, BA, AF, 1180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", DayOfWeek.TUESDAY);
+                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019");
 
-        Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
+        final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
                 LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
                 "NL20INGB0007654321", BA, AF, 1980, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019", DayOfWeek.WEDNESDAY);
+                "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019");
 
-        Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
+        final Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
                 LocalTime.of(16,15), "to go", "NL20INGB0001234567",
                 "NL20INGB0007654321", GT, AF, 5121, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019", DayOfWeek.THURSDAY);
+                "Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019");
 
-        Transaction t5 = new Transaction(LocalDate.of(2019, 04, 05),
+        final Transaction t5 = new Transaction(LocalDate.of(2019, 04, 05),
                 LocalTime.of(23,01), "AH to go Den", "",
                 "NL20INGB0007654321", BA, AF, 14120, DIVERSEN,
-                "Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019", DayOfWeek.FRIDAY);
+                "Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019");
 
-        Transaction t6 = new Transaction(LocalDate.of(2019, 04, 06),
+        final Transaction t6 = new Transaction(LocalDate.of(2019, 04, 06),
                 null, "AH to go go", "",
                 "NL20INGB0007654321", BA, AF, 999999, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019", DayOfWeek.SATURDAY);
+                "Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019");
 
-        Transaction t7 = new Transaction(LocalDate.of(2019, 04, 07),
+        final Transaction t7 = new Transaction(LocalDate.of(2019, 04, 07),
                 LocalTime.of(22,39), "test to go go yes", "NL20INGB0004567891",
                 "NL20INGB0001987654", BA, BIJ, 1980, DIVERSEN,
-                "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019", DayOfWeek.SUNDAY);
+                "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019");
 
         expectedSampleTransactions.add(t1);
         expectedSampleTransactions.add(t2);
@@ -102,7 +106,7 @@ public class INGTransactionImporterImplTest {
         expectedSampleTransactions.add(t6);
         expectedSampleTransactions.add(t7);
 
-        File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
+        final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         this.input = new FileInputStream(sampleFile);
     }
 
@@ -110,7 +114,7 @@ public class INGTransactionImporterImplTest {
     @Test
     public void testParseTransactions() {
 
-        List<Transaction> parsedTransactions = importer.parseTransactions(input);
+        final List<Transaction> parsedTransactions = importer.parseTransactions(input);
         assertEquals("Seven transactions have been parsed", 7, parsedTransactions.size());
         for (int i = 0; i < parsedTransactions.size(); i++) {
             assertEquals(parsedTransactions.get(i), expectedSampleTransactions.get(i));
