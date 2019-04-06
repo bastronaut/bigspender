@@ -71,7 +71,7 @@ public class INGTransactionImporterImplTest {
 
         final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
                 LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", BA, AF, 1980, ONLINEBANKIEREN,
+                "NL20INGB0007654321", null, AF, 1980, ONLINEBANKIEREN,
                 "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019");
 
         final Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),

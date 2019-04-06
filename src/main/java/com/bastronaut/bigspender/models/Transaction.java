@@ -73,7 +73,7 @@ public class Transaction {
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
-                       @NonNull final TransactionCode code, @NonNull final TransactionType type, final long amount,
+                       final TransactionCode code, @NonNull final TransactionType type, final long amount,
                        @NonNull final TransactionMutationType mutationType, @NonNull final String statement) {
         this.date = date;
         this.day = date.getDayOfWeek();

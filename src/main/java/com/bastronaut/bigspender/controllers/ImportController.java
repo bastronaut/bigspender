@@ -46,7 +46,7 @@ public class ImportController {
      */
     @PostMapping
     @ResponseBody
-    public ResponseEntity<List<Transaction>> postTransactions(
+    public ResponseEntity<TransactionImport> postTransactions(
             @RequestParam(value = "file", required = false) List<MultipartFile> files) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -58,7 +58,7 @@ public class ImportController {
             try {
                 InputStream file = files.get(0).getInputStream();
                 result = importer.parseTransactions(file);
-                return ResponseEntity.status(HttpStatus.OK).body(result.getTransactions());
+                return ResponseEntity.status(HttpStatus.OK).body(result);
 
             } catch (IOException e) {
                 logger.info("Error getting inputstream from POST MultipartFile", e);

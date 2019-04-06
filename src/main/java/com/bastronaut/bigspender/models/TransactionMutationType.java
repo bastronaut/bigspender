@@ -4,10 +4,15 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 
+/**
+ * May be specific to ING? All taken from ING export
+ */
 public enum TransactionMutationType {
     ONLINEBANKIEREN("Online bankieren"),
     BETAALAUTOMAAT("Betaalautomaat"),
-    DIVERSEN("Diversen");
+    DIVERSEN("Diversen"),
+    INCASSO("Incasso"),
+    OVERSCHRIJVING("Overschrijving");
 
     final String type;
 
