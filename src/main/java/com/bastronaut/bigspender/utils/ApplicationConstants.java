@@ -3,7 +3,9 @@ package com.bastronaut.bigspender.utils;
 public class ApplicationConstants {
 
     /** API endpoints **/
-    public static final String TRANSACTION_IMPORT_POST = "/import/{userid}/transactions";
+    public static final String TRANSACTION_IMPORT_ENDPOINT = "/import/{userid}/transactions";
+    // TODO: is it /transactions/{userid}, or /{userid}/transactions/ in pure rest?
+    public static final String TRANSACTIONS_ENDPOINT = "/transactions/{userid}/transactions";
 
     /** CSV export  Headers **/
     /** ING **/

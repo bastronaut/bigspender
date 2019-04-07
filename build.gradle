@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.8.1'
 	implementation 'org.apache.commons:commons-csv:1.6'
 	compileOnly 'org.projectlombok:lombok'
+	compile("org.springframework.boot:spring-boot-starter-security")
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -1,6 +1,5 @@
 package com.bastronaut.bigspender.controllers;
 
-import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.services.INGTransactionImporterImpl;
 import org.slf4j.Logger;
@@ -18,10 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_POST;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_ENDPOINT;
 
 /**
  * Controller for /import/<userid>/transactions/ endpoint, responsible for allowing users to upload
@@ -29,7 +27,7 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_I
  */
 
 @RestController
-@RequestMapping(path = TRANSACTION_IMPORT_POST)
+@RequestMapping(path = TRANSACTION_IMPORT_ENDPOINT)
 public class ImportController {
 
     Logger logger = LoggerFactory.getLogger(ImportController.class);

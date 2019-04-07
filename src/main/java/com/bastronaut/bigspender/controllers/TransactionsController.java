@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionsController {
 
 
-    @GetMapping(value = "/{userid}/")
+    @GetMapping(value = "/{userid}/transactions")
     public String getTransaction(@PathVariable int userid) {
         return "returning " + Integer.toString(userid);
     }
