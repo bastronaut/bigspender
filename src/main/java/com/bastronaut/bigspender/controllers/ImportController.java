@@ -1,5 +1,6 @@
 package com.bastronaut.bigspender.controllers;
 
+import com.bastronaut.bigspender.dto.TransactionImportDTO;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.services.INGTransactionImporterImpl;
 import org.slf4j.Logger;
@@ -38,31 +39,36 @@ public class ImportController {
     INGTransactionImporterImpl importer;
 
     /**
+     * POST endpoint for a CSV file of transactions
      *
-     * @param files
-     * @return
+     * @param files requires a key named: "file" and a CSV attached
+     * @return a DTO result of the transaction import, containing all of the transactions that were
+     * imported.
      */
     @PostMapping
     @ResponseBody
-    public ResponseEntity<TransactionImport> postTransactions(
+    public ResponseEntity<TransactionImportDTO> postTransactions(
             @RequestParam(value = "file", required = false) List<MultipartFile> files) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
 
-        TransactionImport result;
-
         if (files != null && files.size() > 0) {
-
             try {
                 InputStream file = files.get(0).getInputStream();
-                result = importer.parseTransactions(file);
-                return ResponseEntity.status(HttpStatus.OK).body(result);
+                TransactionImport parsedTransactions = importer.parseTransactions(file);
+                TransactionImportDTO transactionImportDTO = convertToDTO(parsedTransactions);
+                return ResponseEntity.status(HttpStatus.OK).body(transactionImportDTO);
 
             } catch (IOException e) {
-                logger.info("Error getting inputstream from POST MultipartFile", e);
+                logger.info("Error getting and parsing CSV from POST request", e);
             }
         }
         return new ResponseEntity("error todo", HttpStatus.BAD_REQUEST);
+    }
+
+
+    private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {
+        return new TransactionImportDTO(transactionImport);
     }
 
 
