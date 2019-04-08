@@ -39,23 +39,23 @@ public class ImportController {
 
     Logger logger = LoggerFactory.getLogger(ImportController.class);
 
-    @Autowired
-    INGTransactionImporterImpl importer;
-
     /**
      * POST endpoint for a CSV file of transactions
      * @param files requires a key named: "file" and a CSV attached
      * @return a DTO result of the transaction import, containing all of the transactions that were
-     * imported.
+     * imported. (consumes = "multipart/form-data")
      */
     @PostMapping
     @ResponseBody
     public ResponseEntity<TransactionImportDTO> postTransactions(
-            @RequestParam(value = "file", required = false) List<MultipartFile> files){
-        //            @RequestBody UserRegistrationDTO userRegistrationDTO) {
+//            @RequestParam(value = "file", required = false) List<MultipartFile> files,
+            @RequestBody UserRegistrationDTO userRegistrationDTO) {
+
+        // TODO
+        // https://stackoverflow.com/questions/19468572/spring-mvc-why-not-able-to-use-requestbody-and-requestparam-together
 
         HttpHeaders responseHeaders = new HttpHeaders();
-
+        List<MultipartFile> files = userRegistrationDTO.getFile();
         if (files != null && files.size() > 0) {
             try {
                 InputStream file = files.get(0).getInputStream();
@@ -71,6 +71,9 @@ public class ImportController {
         }
         return new ResponseEntity("error todo", HttpStatus.BAD_REQUEST);
     }
+
+    @Autowired
+    INGTransactionImporterImpl importer;
 
 
     private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {
