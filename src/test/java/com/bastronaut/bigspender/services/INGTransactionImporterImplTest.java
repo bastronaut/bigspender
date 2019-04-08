@@ -3,6 +3,7 @@ package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
+import com.bastronaut.bigspender.models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,7 +111,7 @@ public class INGTransactionImporterImplTest {
     @Test
     public void testParseTransactions() throws IOException {
 
-        final TransactionImport parsedTransactions = importer.parseTransactions(input);
+        final TransactionImport parsedTransactions = importer.parseTransactions(input, new User("as", "asd", "asd"));
         assertEquals("Seven transactions have been parsed", 7, parsedTransactions.getImportCount());
         List<Transaction> transactions = parsedTransactions.getTransactions();
         for (int i = 0; i < transactions.size(); i++) {

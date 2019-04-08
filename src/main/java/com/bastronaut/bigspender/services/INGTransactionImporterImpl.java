@@ -6,6 +6,7 @@ import com.bastronaut.bigspender.models.TransactionCode;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.TransactionMutationType;
 import com.bastronaut.bigspender.models.TransactionType;
+import com.bastronaut.bigspender.models.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -59,7 +60,7 @@ public class INGTransactionImporterImpl {
      * @return a List of Transactions. If the transaction is invalid, the transaction is skipped entirely. A
      * transaction is invalid if it does not have the expected number of columns
      */
-    public TransactionImport parseTransactions(final InputStream source, UserDTO user) throws IOException {
+    public TransactionImport parseTransactions(final InputStream source, User user) throws IOException {
 
         final Reader reader = new InputStreamReader(source);
         final CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());

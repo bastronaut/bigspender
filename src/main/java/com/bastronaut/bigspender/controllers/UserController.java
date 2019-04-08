@@ -13,6 +13,7 @@ public class UserController {
 
     @PostMapping(path = USERS_ENDPOINT)
     public ResponseEntity createUser() {
+        String yo = "123";
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 

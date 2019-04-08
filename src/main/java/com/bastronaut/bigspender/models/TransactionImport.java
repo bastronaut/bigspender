@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +28,7 @@ public class TransactionImport {
     private final List<Transaction> transactions;
     private final LocalDate importDate;
     private final int importCount;
+    @OneToOne(targetEntity = Transaction.class)
     private final User user;
 
     public TransactionImport(List<Transaction> transactions, User user) {

@@ -15,16 +15,24 @@ import javax.persistence.Table;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Getter
     private String firstName;
 
+    @Getter
+    private String email;
+
     private String password;
 
-    private Role role;
+
+    public User(String email, String firstName, String password) {
+        this.email = email;
+        this.firstName = firstName;
+        this.password = password;
+    }
 
 
 }
