@@ -15,13 +15,14 @@ public class TransactionImportDTO {
     private final List<Transaction> transactions;
     private final LocalDate importDate;
     private final int importCount;
-    private final User user;
+    private final UserDTO user;
 
     public TransactionImportDTO(TransactionImport transactionImport) {
         this.transactions = transactionImport.getTransactions();
         this.importDate = transactionImport.getImportDate();
         this.importCount = transactionImport.getImportCount();
-        this.user = transactionImport.getUser(); // TODO
+        final User user = transactionImport.getUser();
+        this.user = new UserDTO(user);
     }
 
 }

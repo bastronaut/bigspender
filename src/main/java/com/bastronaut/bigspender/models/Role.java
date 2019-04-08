@@ -1,7 +1,6 @@
 package com.bastronaut.bigspender.models;
 
-
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.persistence.Entity;
@@ -11,20 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "role")
+@AllArgsConstructor
+@Getter
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter
-    private long id;
+    private final int id;
 
-    @Getter
-    private String firstName;
-
-    private String password;
-
-    private Role role;
-
-
+    private final String name;
 }

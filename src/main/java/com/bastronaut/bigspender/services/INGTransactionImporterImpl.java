@@ -1,5 +1,6 @@
 package com.bastronaut.bigspender.services;
 
+import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionCode;
 import com.bastronaut.bigspender.models.TransactionImport;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,10 +55,11 @@ public class INGTransactionImporterImpl {
      * the first line is the header line and skips it (as is the case for all ING exports).
      *
      * @param source an InputStream of the transactions CSV file
+     * @param user
      * @return a List of Transactions. If the transaction is invalid, the transaction is skipped entirely. A
      * transaction is invalid if it does not have the expected number of columns
      */
-    public TransactionImport parseTransactions(final InputStream source) throws IOException {
+    public TransactionImport parseTransactions(final InputStream source, UserDTO user) throws IOException {
 
         final Reader reader = new InputStreamReader(source);
         final CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
@@ -67,7 +68,7 @@ public class INGTransactionImporterImpl {
                 .map(this::parseTransaction)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        return new TransactionImport(transactions);
+        return new TransactionImport(transactions, user);
     }
 
     @Nullable

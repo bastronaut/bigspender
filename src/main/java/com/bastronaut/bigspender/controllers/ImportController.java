@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionImportDTO;
+import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.services.INGTransactionImporterImpl;
 import org.slf4j.Logger;
@@ -25,6 +26,8 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_I
 /**
  * Controller for /import/<userid>/transactions/ endpoint, responsible for allowing users to upload
  * their data into the system
+ *
+ * TODO: hardcoded the ing importer, could add a post param for bank type and use the correct importer
  */
 
 @RestController
@@ -33,14 +36,11 @@ public class ImportController {
 
     Logger logger = LoggerFactory.getLogger(ImportController.class);
 
-    // TODO read from request which bank importer is required and inject correct importer
-    // add logic for bank type
     @Autowired
     INGTransactionImporterImpl importer;
 
     /**
      * POST endpoint for a CSV file of transactions
-     *
      * @param files requires a key named: "file" and a CSV attached
      * @return a DTO result of the transaction import, containing all of the transactions that were
      * imported.
@@ -48,7 +48,8 @@ public class ImportController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<TransactionImportDTO> postTransactions(
-            @RequestParam(value = "file", required = false) List<MultipartFile> files) {
+            @RequestParam(value = "file", required = false) List<MultipartFile> files,
+            UserDTO userDTO) {
 
         HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -69,6 +70,10 @@ public class ImportController {
 
     private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {
         return new TransactionImportDTO(transactionImport);
+    }
+
+    private UserDTO convertToUserDTO() {
+        return null;
     }
 
 

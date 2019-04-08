@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
+
+//import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -20,11 +22,12 @@ public class TransactionsControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TransactionsController transactionsController;
+    private TransactionController transactionsController;
 
     @Test
     public void contextLoads() throws Exception {
-        assertThat(transactionsController).isNotNull();
+        assertNotNull(transactionsController);
+
     }
 
     @Test

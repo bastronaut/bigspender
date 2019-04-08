@@ -27,10 +27,12 @@ public class TransactionImport {
     private final List<Transaction> transactions;
     private final LocalDate importDate;
     private final int importCount;
+    private final User user;
 
-    public TransactionImport(List<Transaction> transactions) {
+    public TransactionImport(List<Transaction> transactions, User user) {
         this.transactions = transactions;
         this.importDate = LocalDate.now();
         this.importCount = transactions.size();
+        this.user = user;
     }
 }

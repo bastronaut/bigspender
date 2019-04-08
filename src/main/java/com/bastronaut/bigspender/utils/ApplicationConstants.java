@@ -6,12 +6,12 @@ public class ApplicationConstants {
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/import/{userid}/transactions";
     // TODO: is it /transactions/{userid}, or /{userid}/transactions/ in pure rest?
     public static final String TRANSACTIONS_ENDPOINT = "/transactions/{userid}/transactions";
+    public static final String USERS_ENDPOINT = "/users";
+    public static final String USERS_LOGIN_ENDPOINT = "/users/login";
 
-    /** CSV export  Headers **/
+    /*** CSV file export header row titles ***/
+
     /** ING **/
-
-
-    /** Constants for csv import files **/
     public static final String CSV_HEADER_DATE = "Datum";
     public static final String CSV_HEADER_NAME = "Naam / Omschrijving";
     public static final String CSV_HEADER_ACCOUNT = "Rekening";
@@ -22,7 +22,6 @@ public class ApplicationConstants {
     public static final String CSV_HEADER_MUTATIONTYPE = "MutatieSoort";
     public static final String CSV_HEADER_STATEMENT = "Mededelingen";
     public static final int EXPECTED_NR_COLUMNS_ING = 9;
-
 
     /** Regex strings **/
     public static final String CSV_COMMA_SPLIT_PATTERN = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";  // // See: https://stackoverflow.com/questions/18893390/splitting-on-comma-outside-quotes
