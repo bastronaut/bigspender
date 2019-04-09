@@ -1,12 +1,9 @@
 package com.bastronaut.bigspender.dto;
 
 import com.bastronaut.bigspender.models.Transaction;
-import com.bastronaut.bigspender.models.TransactionCode;
-import com.bastronaut.bigspender.models.TransactionMutationType;
-import com.bastronaut.bigspender.models.TransactionType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.bastronaut.bigspender.enums.TransactionCode;
+import com.bastronaut.bigspender.enums.TransactionMutationType;
+import com.bastronaut.bigspender.enums.TransactionType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

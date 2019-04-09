@@ -4,6 +4,7 @@ package com.bastronaut.bigspender.models;
 
 import lombok.Getter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,20 +12,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
+@Getter
 @Table(name = "users")
 public class User {
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Getter
+    @Column(nullable = false)
     private String firstName;
 
-    @Getter
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
 
@@ -33,6 +35,8 @@ public class User {
         this.firstName = firstName;
         this.password = password;
     }
+
+
 
 
 }

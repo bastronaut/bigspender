@@ -5,6 +5,7 @@ package com.bastronaut.bigspender.models;
 import lombok.Data;
 import lombok.Getter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +27,11 @@ public class TransactionImport {
 
     @OneToMany(targetEntity = Transaction.class)
     private final List<Transaction> transactions;
+
+    @Column(nullable = false, name = "import_date")
     private final LocalDate importDate;
+
+    @Column(nullable = false, name = "import_count")
     private final int importCount;
     @OneToOne(targetEntity = Transaction.class)
     private final User user;

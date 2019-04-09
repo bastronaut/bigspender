@@ -1,22 +1,20 @@
 package com.bastronaut.bigspender.models;
 
 
-import lombok.AllArgsConstructor;
+import com.bastronaut.bigspender.enums.TransactionCode;
+import com.bastronaut.bigspender.enums.TransactionMutationType;
+import com.bastronaut.bigspender.enums.TransactionType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 
-import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -36,39 +34,49 @@ public class Transaction {
     private long id;
 
     @Getter
+    @Column(nullable = false)
     private final LocalDate date;
 
     @Getter
+    @Column(nullable = false)
     private final LocalTime time;
 
     @Getter
+    @Column(nullable = false)
     private final String name;
 
     @Getter
+    @Column(nullable = false, name="account_number")
     private final String accountNumber;
 
     @Getter
+    @Column(nullable = true, name = "receiving_account_number")
     private final String receivingAccountNumber;
 
     @Getter
+    @Column(nullable = false)
     private final TransactionCode code;
 
     @Getter
+    @Column(nullable = false)
     private final TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
     @Getter
+    @Column(nullable = false)
     private final long amount;
 
     @Getter
+    @Column(nullable = false, name = "mutation_type")
     private final TransactionMutationType mutationType;
 
     @Getter
+    @Column(nullable = false, length = 512)
     private final String statement;
 
-    // non-normalized, maybe useful for training data
     @Getter
-    private final DayOfWeek day;
+    @Column(nullable = false)
+    private final DayOfWeek day; // non-normalized, maybe useful for training data
 
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,

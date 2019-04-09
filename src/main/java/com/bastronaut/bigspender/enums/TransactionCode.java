@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender.models;
+package com.bastronaut.bigspender.enums;
 
 
 import org.apache.commons.lang3.StringUtils;

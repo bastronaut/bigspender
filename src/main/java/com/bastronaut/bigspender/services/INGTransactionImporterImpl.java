@@ -1,11 +1,10 @@
 package com.bastronaut.bigspender.services;
 
-import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.Transaction;
-import com.bastronaut.bigspender.models.TransactionCode;
+import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.models.TransactionImport;
-import com.bastronaut.bigspender.models.TransactionMutationType;
-import com.bastronaut.bigspender.models.TransactionType;
+import com.bastronaut.bigspender.enums.TransactionMutationType;
+import com.bastronaut.bigspender.enums.TransactionType;
 import com.bastronaut.bigspender.models.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
