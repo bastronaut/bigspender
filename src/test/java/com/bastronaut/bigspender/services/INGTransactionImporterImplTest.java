@@ -21,19 +21,18 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.bastronaut.bigspender.models.TransactionCode.BA;
-import static com.bastronaut.bigspender.models.TransactionCode.GT;
-import static com.bastronaut.bigspender.models.TransactionMutationType.BETAALAUTOMAAT;
-import static com.bastronaut.bigspender.models.TransactionMutationType.DIVERSEN;
-import static com.bastronaut.bigspender.models.TransactionMutationType.ONLINEBANKIEREN;
-import static com.bastronaut.bigspender.models.TransactionType.AF;
-import static com.bastronaut.bigspender.models.TransactionType.BIJ;
+import static com.bastronaut.bigspender.enums.TransactionCode.BA;
+import static com.bastronaut.bigspender.enums.TransactionCode.GT;
+import static com.bastronaut.bigspender.enums.TransactionMutationType.BETAALAUTOMAAT;
+import static com.bastronaut.bigspender.enums.TransactionMutationType.DIVERSEN;
+import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANKIEREN;
+import static com.bastronaut.bigspender.enums.TransactionType.AF;
+import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class INGTransactionImporterImplTest {
 
     @Autowired

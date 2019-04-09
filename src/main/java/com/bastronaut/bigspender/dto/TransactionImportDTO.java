@@ -22,7 +22,11 @@ public class TransactionImportDTO {
         this.importDate = transactionImport.getImportDate();
         this.importCount = transactionImport.getImportCount();
         final User user = transactionImport.getUser();
-        this.user = new UserDTO(user);
+        this.user = newUser(user);
+    }
+
+    public UserDTO newUser(User user) {
+        return new UserDTO(user.getFirstName(), user.getEmail(), user.getPassword());
     }
 
 }
