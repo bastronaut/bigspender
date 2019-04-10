@@ -12,17 +12,19 @@ public class UserDTO {
     private long id;
     private final String password;
 
-    public UserDTO(User user) {
-        this.firstName = user.getFirstName();
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-    }
+//    public UserDTO(User user) {
+//        this.firstName = user.getFirstName();
+//        this.id = user.getId();
+//        this.email = user.getEmail();
+//        this.password = user.getPassword();
+//    }
 
     public UserDTO(String firstName, String email, String password) {
         this.firstName = firstName;
         this.email = email;
         this.password = password;
     }
+
+//    public UserDTO() {}
 
 }

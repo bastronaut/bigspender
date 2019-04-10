@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,20 +49,15 @@ public class ImportController {
      */
     @PostMapping
     @ResponseBody
-    public ResponseEntity<TransactionImportDTO> postTransactions(
-//            @RequestParam(value = "file", required = false) List<MultipartFile> files,
-            @RequestBody UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<TransactionImportDTO> postTransactions(HttpRequest request,
+            @RequestParam(value = "file", required = false) List<MultipartFile> files) {
 
-        // TODO
-        // https://stackoverflow.com/questions/19468572/spring-mvc-why-not-able-to-use-requestbody-and-requestparam-together
+        User user = determineUserFromRequest(request);
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        List<MultipartFile> files = userRegistrationDTO.getFile();
         if (files != null && files.size() > 0) {
             try {
                 InputStream file = files.get(0).getInputStream();
-//                User user = convertToEntity(userRegistrationDTO);
-                User user = new User("test", "test", "test");
+
                 TransactionImport parsedTransactions = importer.parseTransactions(file, user);
                 TransactionImportDTO transactionImportDTO = convertToDTO(parsedTransactions);
                 return ResponseEntity.status(HttpStatus.OK).body(transactionImportDTO);
@@ -80,8 +77,10 @@ public class ImportController {
         return new TransactionImportDTO(transactionImport);
     }
 
-    private UserDTO convertToUserDTO() {
-        return null;
+    private User determineUserFromRequest(HttpRequest request) {
+        logger.error("TODO implement");
+        // TODO get token from header, get user from token
+        return new User("", "", "");
     }
 
     private User convertToEntity(UserRegistrationDTO userRegistrationDTO) {
