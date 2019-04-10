@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_ENDPOINT;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Controller for /import/{userid}/transactions/ endpoint, responsible for allowing users to upload
@@ -36,7 +37,7 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_I
  */
 
 @RestController
-@RequestMapping(path = TRANSACTION_IMPORT_ENDPOINT)
+@RequestMapping(path = TRANSACTION_IMPORT_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
 public class ImportController {
 
     Logger logger = LoggerFactory.getLogger(ImportController.class);
@@ -84,7 +85,7 @@ public class ImportController {
     }
 
     private User convertToEntity(UserRegistrationDTO userRegistrationDTO) {
-        return new User(userRegistrationDTO.getEmail(), userRegistrationDTO.getFirstName(), userRegistrationDTO.getPassword());
+        return new User(userRegistrationDTO.getEmail(), userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
     }
 
 

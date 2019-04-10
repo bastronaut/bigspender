@@ -14,3 +14,27 @@ Typically, each layer would use its own kind of objects:
 Persistence Layer: Repositories, Entities
 Business Layer: Services, Domain Objects
 Presentation Layer: Controllers, DTOs
+
+
+
+## Spring boot security
+Simplified flow:
+1. auth request sent fro mclietn to server using password auth grant
+2. access token is returned to client (with refresh token)
+3. access token is sent frmo client to server on each request
+4. server responds with required protected resources
+
+Concepts:
+- authorization vs authentication
+- Basic interface is ```AuthenticationManager```, responsible for providing an authentication method
+- ```UserDetailsService``` is the interface related to user's information collection
+
+### Authorization
+three areas:
+1. web request auth
+2. method levle auth
+3. domain objects instance auth
+
+Main interface: ```AccessDecisionManager```, responsible for all 3 areas by delegating to ```AccessDecisionVoter```
+
+```AccessDecisionVoter```: represents association between an ```Authentication``` (user identity, or "Principal"), a resource, and a collection of ```ConfigAttribute``` (rules describing how resource owner allows access to resource, e.g. through roles)

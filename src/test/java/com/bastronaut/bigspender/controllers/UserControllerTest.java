@@ -29,7 +29,6 @@ public class UserControllerTest {
     private static final String TEST_EMAIL = "test@email.com";
     private static final String TEST_FIRSTNAME = "tester";
 
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,5 +61,10 @@ public class UserControllerTest {
 
     @Test
     public void login() {
+    }
+
+    @Test
+    public void testSecuredLogin() {
+
     }
 }
