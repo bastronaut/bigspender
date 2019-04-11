@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.models;
 
 
 
+import com.bastronaut.bigspender.dto.UserRegistrationDTO;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,11 +36,17 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    public User() {}
 
     public User(String email, String name, String password) {
         this.email = email;
         this.name = name;
         this.password = password;
+    }
+
+    public static User fromUserRegistrationDTO(UserRegistrationDTO userRegistrationDTO) {
+        return new User(userRegistrationDTO.getEmail(),
+                userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
     }
 
 

@@ -59,12 +59,5 @@ public class UserControllerTest {
         assert(StringUtils.contains(createUserResponse, TEST_FIRSTNAME));
     }
 
-    @Test
-    public void login() {
-    }
 
-    @Test
-    public void testSecuredLogin() {
-
-    }
 }

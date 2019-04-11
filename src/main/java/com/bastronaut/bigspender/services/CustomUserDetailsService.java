@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    public User loadUserByUsername(final String username) throws UsernameNotFoundException {
 
         Optional<User> user = userRepository.findByEmail(username);
         if (user.isPresent()) {
@@ -26,8 +26,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException(String.format("User not found: %s", username));
     }
 
-//    public UserDetails registerUser(final User user) {
-//        return userRepository.save(user);
-//    }
+    public Optional<User> registerUser(final User user) {
+        return userRepository.save(user);
+    }
 
 }

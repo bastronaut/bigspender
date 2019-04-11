@@ -13,5 +13,4 @@ public class UserRegistrationDTO {
     private final String name;
     private final String email;
     private final String password;
-//    List<MultipartFile> file;
 }
