@@ -16,8 +16,8 @@ Business Layer: Services, Domain Objects
 Presentation Layer: Controllers, DTOs
 
 
-
-## Spring boot security
+## Oaht2 flow - for future
+### Spring boot security
 Simplified flow:
 1. auth request sent fro mclietn to server using password auth grant
 2. access token is returned to client (with refresh token)
@@ -38,3 +38,25 @@ three areas:
 Main interface: ```AccessDecisionManager```, responsible for all 3 areas by delegating to ```AccessDecisionVoter```
 
 ```AccessDecisionVoter```: represents association between an ```Authentication``` (user identity, or "Principal"), a resource, and a collection of ```ConfigAttribute``` (rules describing how resource owner allows access to resource, e.g. through roles)
+
+
+## Custom controller exception responses
+- New exception class (lets call it UserNotFoundException.class)
+- For custom status (by default 500 server error) Add ```@ResponseStatus(HttpStatus.<desired status>)``` annotation to exception class
+
+Customizing error response structure from default:
+- Create an error response bean (lets call it ErrorDetails.class)
+- Define a @ControllerAdvice:
+
+```
+@ControllerAdvice
+@RestController
+public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public final ResponseEntity<ErrorDetails> handleUserNotFoundException(StudentNotFoundException ex, WebRequest request) {
+    ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(),
+        request.getDescription(false));
+    return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+  }
+```  

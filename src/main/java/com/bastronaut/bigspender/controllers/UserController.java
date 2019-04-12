@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.dto.UserRegistrationDTO;
+import com.bastronaut.bigspender.exceptions.RegistrationException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,13 @@ public class UserController {
     CustomUserDetailsService userDetailsService;
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createUser(@Valid UserRegistrationDTO userDTO, BindingResult result) {
-
-        // ok this is super funky gotta rework this
-        User user = User.fromUserRegistrationDTO(userDTO);
-        Optional<User> registeredUser = userDetailsService.registerUser(user);
-        if (registeredUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(registeredUser.get());
+    public ResponseEntity<UserDTO> createUser(@Valid UserRegistrationDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new RegistrationException(bindingResult.toString());
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        User user = User.fromUserRegistrationDTO(userDTO);
+        User registeredUser = userDetailsService.registerUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
     @PostMapping(path = USERS_LOGIN_ENDPOINT,  produces = APPLICATION_JSON_VALUE)

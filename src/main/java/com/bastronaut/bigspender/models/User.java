@@ -49,7 +49,6 @@ public class User implements UserDetails {
                 userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         final List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("User"));
