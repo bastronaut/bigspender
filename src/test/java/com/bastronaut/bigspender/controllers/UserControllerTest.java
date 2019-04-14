@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UserControllerTest {
+public class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     private static final String USERS_ENDPOINT = "/users";
     private static final String USERS_LOGIN_ENDPOINT = "/users/login";
@@ -66,10 +67,11 @@ public class UserControllerTest {
     }
 
     @Test(expected = RegistrationException.class)
-    public void testUserExists() throws Exception {
-        performUserRegistration("existing@email.com", "testy", "testpw");
-        final MockHttpServletResponse response  = performUserRegistration("existing@email.com", "testy", "testpw").getResponse();
-        assertEquals(response.getStatus(), 400);
+    public void registerUserExists() throws Exception {
+        performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
+        final MockHttpServletResponse response  = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME,
+                TEST_PASSWORD).getResponse();
+        assertEquals(response.getStatus(), HttpStatus.BAD_REQUEST.value());
         assertTrue(StringUtils.contains(USER_EXISTS_MESSAGE, response.getErrorMessage()));
     }
 

@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.UserDTO;
+import com.bastronaut.bigspender.dto.UserLoginDTO;
 import com.bastronaut.bigspender.dto.UserRegistrationDTO;
 import com.bastronaut.bigspender.exceptions.RegistrationException;
 import com.bastronaut.bigspender.models.User;
@@ -30,17 +31,20 @@ public class UserController {
     CustomUserDetailsService userDetailsService;
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> createUser(@Valid UserRegistrationDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
+                                              final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new RegistrationException(bindingResult.toString());
         }
-        User user = User.fromUserRegistrationDTO(userDTO);
-        User registeredUser = userDetailsService.registerUser(user);
+        final User user = User.fromUserRegistrationDTO(userRegistrationDTO);
+        final User registeredUser = userDetailsService.registerUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
+    // TODO:
+    // https://www.devglan.com/spring-security/spring-boot-security-rest-basic-authentication
     @PostMapping(path = USERS_LOGIN_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity login(Principal principal) {
+    public ResponseEntity login(@Valid final UserLoginDTO login, final BindingResult bindingResult) {
         System.out.println(principal.getName());
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }

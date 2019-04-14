@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.PostConstruct;
+
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
 
 
@@ -29,11 +31,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
-//
+
+    private PasswordEncoder passwordEncoder;
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-            .passwordEncoder(getPasswordEncoder());
+            .passwordEncoder(SecurityUtil.getEncoder());
 
     }
 
@@ -50,16 +55,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, USERS_ENDPOINT).permitAll() // sign up
                 .antMatchers("/**").authenticated()
                 .and()
-                .formLogin().permitAll()
+                .httpBasic()
+//                .formLogin().permitAll()
                 .and()
                 .csrf().disable();
     }
 
 
-    @Bean
-    public static PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder(11);
-    }
 
 
 

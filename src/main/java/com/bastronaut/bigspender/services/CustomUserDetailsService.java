@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.config.SecurityConfiguration;
+import com.bastronaut.bigspender.config.SecurityUtil;
 import com.bastronaut.bigspender.exceptions.RegistrationException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
@@ -16,15 +17,9 @@ import java.util.Optional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private PasswordEncoder encoder;
 
     @Autowired
     private UserRepository userRepository;
-
-    @PostConstruct
-    public void init() {
-        this.encoder = SecurityConfiguration.getPasswordEncoder();
-    }
 
     @Override
     public User loadUserByUsername(final String username) throws UsernameNotFoundException {
@@ -38,7 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public User registerUser(final User user) throws RegistrationException {
         if (isValidRegistration(user)) {
-            return userRepository.save(user);
+            final String encodedPassword = SecurityUtil.encode(user.getPassword());
+            return userRepository.save(new User(user.getEmail(), user.getName(), encodedPassword));
         }
         throw new RegistrationException("User already exists: " + user.getEmail());
     }

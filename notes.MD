@@ -60,3 +60,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
 ```  
+
+## Tests
+extending from: AbstractTransactionalJUnit4SpringContextTests, allows transactional queries that roll back after test completes
