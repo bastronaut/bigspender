@@ -4,7 +4,9 @@ package com.bastronaut.bigspender.models;
 
 import com.bastronaut.bigspender.config.SecurityConfiguration;
 import com.bastronaut.bigspender.dto.UserRegistrationDTO;
+import com.bastronaut.bigspender.dto.UserUpdateDTO;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,12 +31,15 @@ public class User implements UserDetails {
     private int id;
 
     @Column(nullable = false)
+    @Setter
     private String name;
 
     @Column(nullable = false)
+    @Setter
     private String email;
 
     @Column(nullable = false)
+    @Setter
     private String password;
 
     public User() {}
@@ -46,9 +51,12 @@ public class User implements UserDetails {
     }
 
     public static User fromUserRegistrationDTO(UserRegistrationDTO userRegistrationDTO) {
-        final String password = userRegistrationDTO.getPassword();
         return new User(userRegistrationDTO.getEmail(),
                 userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
+    }
+
+    public static User fromUserUpdateDTO(UserUpdateDTO userUpdateDTO) {
+        return new User(userUpdateDTO.getEmail(), userUpdateDTO.getName(), userUpdateDTO.getPassword());
     }
 
     @Override

@@ -32,6 +32,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
     private PasswordEncoder passwordEncoder;
 
 
@@ -55,10 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, USERS_ENDPOINT).permitAll() // sign up
                 .antMatchers("/**").authenticated()
                 .and()
-                .httpBasic()
-//                .formLogin().permitAll()
-                .and()
-                .csrf().disable();
+                .csrf().disable()
+                .httpBasic().authenticationEntryPoint(authenticationEntryPoint);
     }
 
 
