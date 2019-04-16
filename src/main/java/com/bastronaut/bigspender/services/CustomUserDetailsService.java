@@ -1,18 +1,15 @@
 package com.bastronaut.bigspender.services;
 
-import com.bastronaut.bigspender.config.SecurityConfiguration;
 import com.bastronaut.bigspender.config.SecurityUtil;
-import com.bastronaut.bigspender.exceptions.RegistrationException;
+import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 @Service
@@ -32,12 +29,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException(String.format("User not found: %s", username));
     }
 
-    public User registerUser(final User user) throws RegistrationException {
+    public User registerUser(final User user) throws UserRegistrationException {
         if (isValidRegistration(user)) {
             final String encodedPassword = SecurityUtil.encode(user.getPassword());
             return userRepository.save(new User(user.getEmail(), user.getName(), encodedPassword));
         }
-        throw new RegistrationException("User already exists: " + user.getEmail());
+        throw new UserRegistrationException("User already exists: " + user.getEmail());
     }
 
     /**
@@ -53,7 +50,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             final User user = populateUserWithUpdateData(optionalUser.get(), updateUserDetails);
             return userRepository.save(user);
         }
-        throw new RegistrationException("User to update does not exist: " + updateUserDetails.getEmail());
+        throw new UserRegistrationException("User to update does not exist: " + updateUserDetails.getEmail());
     }
 
     private User populateUserWithUpdateData(final User user, final User updateUserDetails) {
