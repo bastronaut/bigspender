@@ -44,15 +44,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
-    // TODO:
-    // https://www.devglan.com/spring-security/spring-boot-security-rest-basic-authentication
-//    @PostMapping(path = USERS_LOGIN_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
-//    public ResponseEntity login(@Valid final UserLoginDTO login, final BindingResult bindingResult) {
-//
-//
-//        return new ResponseEntity(HttpStatus.BAD_REQUEST);
-//    }
-
     @GetMapping(path = USERS_LOGIN_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity testy(final Principal principal, final HttpServletRequest request) {
         System.out.println(request.getHeaderNames());

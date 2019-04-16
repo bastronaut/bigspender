@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.config.SecurityUtil;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
+import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             final User user = populateUserWithUpdateData(optionalUser.get(), updateUserDetails);
             return userRepository.save(user);
         }
-        throw new UserRegistrationException("User to update does not exist: " + updateUserDetails.getEmail());
+        throw new UserUpdateException("User to update does not exist: " + updateUserDetails.getEmail());
     }
 
     private User populateUserWithUpdateData(final User user, final User updateUserDetails) {
@@ -62,7 +63,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         final String password = updateUserDetails.getPassword();
         if (StringUtils.isNotBlank(password)) {
-            // TODO add custom exception password does not pass criteria
             user.setPassword(SecurityUtil.encode(password));
         }
 
