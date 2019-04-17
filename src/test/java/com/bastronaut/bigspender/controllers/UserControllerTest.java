@@ -1,13 +1,11 @@
 package com.bastronaut.bigspender.controllers;
 
-import com.bastronaut.bigspender.exceptions.RegistrationException;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -40,12 +40,16 @@ public class UserControllerTest extends AbstractTransactionalJUnit4SpringContext
     private static final String TEST_EMAIL = "test@email.com";
     private static final String TEST_FIRSTNAME = "tester";
     private static final String TEST_PASSWORD = "testpassword";
+    private static final String BASICAUTH_USERPW = TEST_EMAIL + ":" + TEST_PASSWORD;
+    private static final String BASE64_BASICAUTH_USERPW = "Basic " + Base64.getEncoder().encodeToString(BASICAUTH_USERPW.getBytes());
 
     private static final String TEST_EMAIL_UPDATE = "update@email.com";
     private static final String TEST_FIRSTNAME_UPDATE = "updated";
     private static final String TEST_PASSWORD_UPDATE = "updated";
 
     private static final String USER_EXISTS_MESSAGE = "User already exists: " + TEST_EMAIL;
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,7 +81,7 @@ public class UserControllerTest extends AbstractTransactionalJUnit4SpringContext
     }
 
     @Test(expected = UserRegistrationException.class)
-    public void registerUserExists() throws Exception {
+    public void registerExistingUserError() throws Exception {
         performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
         final MockHttpServletResponse response  = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME,
                 TEST_PASSWORD).getResponse();
@@ -89,6 +93,7 @@ public class UserControllerTest extends AbstractTransactionalJUnit4SpringContext
     public void testUpdateUser() throws Exception {
         performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
+                .header(AUTHORIZATION_HEADER, BASE64_BASICAUTH_USERPW)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
                 .param(NAME_PARAM, TEST_FIRSTNAME_UPDATE)
                 .param(PASSWORD_PARAM, TEST_PASSWORD_UPDATE))
@@ -103,8 +108,9 @@ public class UserControllerTest extends AbstractTransactionalJUnit4SpringContext
 
     @Test(expected = UserUpdateException.class)
     public void testUpdateUserInvalid() throws Exception {
-        performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT))
+        MvcResult registration = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
+                .header(AUTHORIZATION_HEADER, BASE64_BASICAUTH_USERPW))
                 .andExpect(status().isBadRequest())
                 .andReturn();
     }

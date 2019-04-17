@@ -50,7 +50,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         PasswordEncoder encodah = new BCryptPasswordEncoder(11);
-        System.out.println(encodah.encode("testor"));
 
         http
                 .authorizeRequests()

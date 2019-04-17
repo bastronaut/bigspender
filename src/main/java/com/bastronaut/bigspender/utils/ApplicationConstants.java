@@ -7,7 +7,7 @@ public class ApplicationConstants {
     // TODO: is it /transactions/{userid}, or /{userid}/transactions/ in pure rest?
     public static final String TRANSACTIONS_ENDPOINT = "/transactions/{userid}/transactions";
     public static final String USERS_ENDPOINT = "/users";
-    public static final String USERS_LOGIN_ENDPOINT = "/users/login";
+    public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
 
     /*** CSV file export header row titles ***/
 

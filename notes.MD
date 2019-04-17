@@ -60,6 +60,50 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
 ```  
+### Filters
+Filters have 3 actions
+- init
+- doFilter - the big deal
+- destroy
+
+Spring: DelegatingFilterProxy -> FilterChainProxy -> SecurityFilterChain
+
+FilterChainProxy:
+- on each request, it iterates on SecurityFilterChain until it finds a match on the requestpath
+
+SecurityFilterChain interface:
+boolean matches(HttpServletRequest request) - matches with the security filter 
+List<Fitler> getFilters() - retrieves filters associated with chain
+
+One of the first key filters: SecurityontextPersistenceFitler
+SecurityContext holds context of principal, such as user, roles, etc
+retrieved from a Securty context repository. typical app: the session (the session repository)
+
+SecurityContextHolder is a threadlocal, making the SecurityContext available to all subsequent filters and application running in same thread of execution.
+
+SecurityContext api: 
+Authentication getAuthentication();
+void setAuthentication(Authentication authentication);
+
+Request -> AuthenticationFilters -> creates an Authentication object, containing UsernamePasswordAuthenticationToken. -> then delegated to Authenticationmanager
+, which returns an authenticated token through to the filter
+
+AuthenticationManager delegates to an AuthenticationProvider
+
+Authenticationmanager api:
+Authentication authenticate(Authentication authentication) throws AuthenticationException;
+
+Authentication Api:
+boolean isAuthenticated()
+Object getPrincipal();
+Object getCredentails();
+Collection<? extends GrantedAuthority> getAuthorities();
+
+Authenticationprovider -> (loadUserByUsername) UserDetailsService. if found
 
 ## Tests
 extending from: AbstractTransactionalJUnit4SpringContextTests, allows transactional queries that roll back after test completes
+
+### features todo
+tijdlijn uitgaven per dag
+hoofdcategorien, inzoomen  per subcategorie

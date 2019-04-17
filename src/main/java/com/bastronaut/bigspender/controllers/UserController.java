@@ -24,7 +24,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
-import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_LOGIN_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_UPDATE_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -44,32 +44,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
-    @GetMapping(path = USERS_LOGIN_ENDPOINT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity testy(final Principal principal, final HttpServletRequest request) {
-        System.out.println(request.getHeaderNames());
-        System.out.println(principal.getName());
-        final User user = userDetailsService.loadUserByUsername(principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(user));
-    }
-
-    @PutMapping(path = "/users/yolo", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser, final UserUpdateDTO userUpdateDTO) {
+    /**
+     * Ignores the userid for now.. only allows updating the Authenticated Principal based on the session.
+     * Does not allow updating other user accounts obviously. Think about throwing 403 or just doing the update
+     * for the principal?
+     * @param activeUser the authenticated user in session
+     * @param userUpdateDTO the update information sent in POST data
+     * @param userid the user resource ID
+     * @return
+     */
+    @PutMapping(path = USERS_UPDATE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser, final UserUpdateDTO userUpdateDTO,
+                                              final @PathVariable String userid) {
         final User updateUser = User.fromUserUpdateDTO(userUpdateDTO);
         final User result = userDetailsService.updateUser(activeUser.getId(), updateUser);
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(result));
     }
-
-    @GetMapping(path = "/fail/{x}")
-    public ResponseEntity testy(@PathVariable String x) {
-        if (x.equals("a")) {
-            throw new UserUpdateException("aaaa");
-        }
-        if (x.equals("b")) {
-            throw new UserRegistrationException("bbb");
-        }
-        return null;
-    }
-
-
 
 }
