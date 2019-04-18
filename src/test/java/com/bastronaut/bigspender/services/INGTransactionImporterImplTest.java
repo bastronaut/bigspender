@@ -4,11 +4,11 @@ package com.bastronaut.bigspender.services;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.utils.SampleTransactions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,6 +28,13 @@ import static com.bastronaut.bigspender.enums.TransactionMutationType.DIVERSEN;
 import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANKIEREN;
 import static com.bastronaut.bigspender.enums.TransactionType.AF;
 import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t1;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t2;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t3;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t4;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t5;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t6;
+import static com.bastronaut.bigspender.utils.SampleTransactions.t7;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static org.junit.Assert.assertEquals;
 
@@ -56,54 +63,7 @@ public class INGTransactionImporterImplTest {
      */
     @Before
     public void setupSampleResult() throws FileNotFoundException {
-
-        expectedSampleTransactions = new ArrayList<>();
-
-        final Transaction t1 = new Transaction(LocalDate.of(2019, 04, 01),
-                LocalTime.of(22,39), "AH to go 5869 DenHaa", "NL41INGB0006212385",
-                null, GT, AF, 180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019");
-
-        final Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
-                LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
-                null, BA, BIJ, 1180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 02:39 Valutadatum: 02-04-2019");
-
-        final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
-                LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", null, AF, 1980, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019");
-
-        final Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
-                LocalTime.of(16,15), "to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", BA, AF, 5121, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019");
-
-        final Transaction t5 = new Transaction(LocalDate.of(2019, 04, 05),
-                LocalTime.of(23,01), "AH to go Den", "NL20INGB0002345678",
-                "NL20INGB0007654321", GT, BIJ, 14120, DIVERSEN,
-                "Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019");
-
-        final Transaction t6 = new Transaction(LocalDate.of(2019, 04, 06),
-                null, "AH to go go", "NL20INGB0003456789",
-                "NL20INGB0007654321", GT, AF, 999999, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019");
-
-        final Transaction t7 = new Transaction(LocalDate.of(2019, 04, 07),
-                LocalTime.of(07,25), "test to go go yes", "NL20INGB0004567891",
-                "NL20INGB0001987654", BA, BIJ, 1980, DIVERSEN,
-                "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019");
-
-        expectedSampleTransactions.add(t1);
-        expectedSampleTransactions.add(t2);
-        expectedSampleTransactions.add(t3);
-        expectedSampleTransactions.add(t4);
-        expectedSampleTransactions.add(t5);
-        expectedSampleTransactions.add(t6);
-        expectedSampleTransactions.add(t7);
-
-        final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
-        this.input = new FileInputStream(sampleFile);
+        expectedSampleTransactions = SampleTransactions.getSampleTransactions();
     }
 
 

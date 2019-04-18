@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -35,12 +36,14 @@ public class UserController {
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
-                                              final BindingResult bindingResult) {
+                                              final BindingResult bindingResult,
+                                              final HttpServletRequest request) throws ServletException {
         if (bindingResult.hasErrors()) {
             throw new UserRegistrationException(bindingResult.toString());
         }
         final User user = User.fromUserRegistrationDTO(userRegistrationDTO);
         final User registeredUser = userDetailsService.registerUser(user);
+        request.login(user.getUsername(), user.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
