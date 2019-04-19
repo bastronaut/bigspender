@@ -38,6 +38,9 @@ public class UserController {
     public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
                                               final BindingResult bindingResult,
                                               final HttpServletRequest request) throws ServletException {
+        // TODO:
+        //  Ensure no existing session exists. Alternatively, we could reject login if session exists
+
         if (bindingResult.hasErrors()) {
             throw new UserRegistrationException(bindingResult.toString());
         }

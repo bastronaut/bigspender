@@ -40,32 +40,19 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class INGTransactionImporterImplTest {
+public class INGTransactionParserImplTest {
 
     @Autowired
-    INGTransactionImporterImpl importer;
+    INGTransactionParserImpl importer;
 
     private List<Transaction> expectedSampleTransactions;
 
     private FileInputStream input;
 
-    /**
-     * Sample transactions.csv map to the following t1-t7:
-     *
-     * t1 "20190401","AH to go 5869 DenHaa","NL41INGB0006212385","","BA","Af","1,80","Betaalautomaat","Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019"
-     * t2 "20190402","AH to go 5869 DenHaa","NL41INGB0006451386","","BA","Bij","11,80","Betaalautomaat","Pasvolgnr: 008 01-04-2019 02:39 Valutadatum: 02-04-2019"
-     * t3 "20190403","AH to go","NL20INGB0001234567","NL20INGB0007654321","BA","Af","19,80","Online bankieren","Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019"
-     * invalid "20190407","Invalid row missing column","NL20INGB0004567891","NL20INGB0001987654","BA","Bij","19,80","Online bankieren"
-     * t4 "20190404","to go","NL20INGB0001234567","NL20INGB0007654321","BA","Af","51,21","Online bankieren","Pasvolgnr: 008 01-04-2019 16:15 Valutadatum: 02-04-2019"
-     * t5 "20190405","AH to go Den","NL20INGB0002345678","NL20INGB0007654321","GT","Af","141,20","Diversen","Pasvolgnr: 008 01-04-2019 23:01 Valutadatum: 02-04-2019"
-     * t6 "20190406","AH to go go","NL20INGB0003456789","NL20INGB0007654321","GT","Af","9999,99","Online bankieren","Pasvolgnr: 008 01-04-2019 Valutadatum: 02-04-2019"
-     * t7 "20190407","test to go go yes","NL20INGB0004567891","NL20INGB0001987654","BA","Bij","19,80","Diversen","Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"
-     */
     @Before
     public void setupSampleResult() throws FileNotFoundException {
         expectedSampleTransactions = SampleTransactions.getSampleTransactions();
     }
-
 
     @Test
     public void testParseTransactions() throws IOException {

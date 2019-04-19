@@ -46,9 +46,9 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.HH_MM_SS_TIME
 import static com.bastronaut.bigspender.utils.ApplicationConstants.HH_MM_TIMEPATTERN;
 
 @Service
-public class INGTransactionImporterImpl {
+public class INGTransactionParserImpl {
 
-    private final Logger logger = LoggerFactory.getLogger(INGTransactionImporterImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(INGTransactionParserImpl.class);
 
     /**
      * Parses the transactions represented in the format exported by the ING CSV transaction downloader. Assumes
@@ -65,14 +65,14 @@ public class INGTransactionImporterImpl {
         final CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
 
         List<Transaction> transactions = StreamSupport.stream(parser.spliterator(), false)
-                .map(this::parseTransaction)
+                .map(t -> parseTransaction(t, user))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return new TransactionImport(transactions, user);
     }
 
     @Nullable
-    private Transaction parseTransaction(CSVRecord transaction) {
+    private Transaction parseTransaction(final CSVRecord transaction, final User user) {
         if (!isValidTransaction(transaction)) {
             return null;
         }
@@ -87,7 +87,7 @@ public class INGTransactionImporterImpl {
         final long amount = determineAmount(transaction);
         final TransactionMutationType mutationType = determineTransactionMutationType(transaction);
         final String statement = determineStatement(transaction);
-        return new Transaction(date, time, name, accountNr, receivingAccountNr, code, type, amount, mutationType, statement);
+        return new Transaction(date, time, name, accountNr, receivingAccountNr, code, type, amount, mutationType, statement, user);
     }
 
 

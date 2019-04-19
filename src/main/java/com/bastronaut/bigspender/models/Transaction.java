@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import java.time.DayOfWeek;
@@ -30,7 +32,9 @@ import java.time.LocalTime;
 @EqualsAndHashCode
 public class Transaction {
 
+    @Getter
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "transaction_id")
     private long id;
 
     @Getter
@@ -54,7 +58,7 @@ public class Transaction {
     private final String receivingAccountNumber;
 
     @Getter
-    @Column(nullable = false)
+    @Column(nullable = true)
     private final TransactionCode code;
 
     @Getter
@@ -78,11 +82,16 @@ public class Transaction {
     @Column(nullable = false)
     private final DayOfWeek day; // non-normalized, maybe useful for training data
 
+    @Getter
+    @JoinColumn(nullable = false)
+    @ManyToOne
+    private final User user;
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
                        final TransactionCode code, @NonNull final TransactionType type, final long amount,
-                       @NonNull final TransactionMutationType mutationType, @NonNull final String statement) {
+                       @NonNull final TransactionMutationType mutationType, @NonNull final String statement,
+                       final User user) {
         this.date = date;
         this.day = date.getDayOfWeek();
         this.time = time;
@@ -94,6 +103,7 @@ public class Transaction {
         this.amount = amount;
         this.mutationType = mutationType;
         this.statement = statement;
+        this.user = user;
     }
 
 }

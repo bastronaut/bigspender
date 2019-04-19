@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.util.List;
 
-public interface TransactionImporter {
+public interface TransactionParser {
 
     List<Transaction> parseTransactions(InputStream source);
 }

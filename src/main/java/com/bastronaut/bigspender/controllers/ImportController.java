@@ -1,21 +1,17 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionImportDTO;
-import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.dto.UserRegistrationDTO;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
-import com.bastronaut.bigspender.services.INGTransactionImporterImpl;
+import com.bastronaut.bigspender.services.INGTransactionParserImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -71,7 +67,7 @@ public class ImportController {
     }
 
     @Autowired
-    INGTransactionImporterImpl importer;
+    INGTransactionParserImpl importer;
 
 
     private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {

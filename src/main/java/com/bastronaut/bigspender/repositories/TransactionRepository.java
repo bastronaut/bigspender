@@ -10,15 +10,16 @@ import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
-public interface TransactionRepository extends JpaRepository<User, Integer> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     Transaction save(Transaction transaction);
 
     TransactionImport save(TransactionImport transactionImport);
 
-    List<Transaction> save(List<Transaction> transactions);
+//    List<Transaction> saveAll(List<Transaction> transactions);
 
-    Optional<Transaction> findById(long id);
+
+//    Optional<Transaction> findById(long id);
 
     List<Transaction> findAllByUserId(int userid);
 }

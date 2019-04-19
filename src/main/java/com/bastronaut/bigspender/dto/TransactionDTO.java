@@ -4,14 +4,16 @@ import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.enums.TransactionType;
+import lombok.Getter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
+@Getter
 public class TransactionDTO {
 
+    private long id;
     private final LocalDate date;
     private final LocalTime time;
     private final String name;
