@@ -4,12 +4,14 @@ import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 
 
+@Getter
 public class TransactionImportDTO {
 
     private final List<Transaction> transactions;

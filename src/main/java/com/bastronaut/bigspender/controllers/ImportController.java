@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionImportDTO;
 import com.bastronaut.bigspender.dto.UserRegistrationDTO;
+import com.bastronaut.bigspender.exceptions.TransactionImportException;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.INGTransactionParserImpl;
@@ -36,7 +37,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(path = TRANSACTION_IMPORT_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
 public class ImportController {
 
-    Logger logger = LoggerFactory.getLogger(ImportController.class);
+    private Logger logger = LoggerFactory.getLogger(ImportController.class);
+
+    @Autowired
+    private INGTransactionParserImpl importer;
 
     /**
      * POST endpoint for a CSV file of transactions
@@ -46,10 +50,12 @@ public class ImportController {
      */
     @PostMapping
     @ResponseBody
-    public ResponseEntity<TransactionImportDTO> postTransactions(HttpRequest request,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files) {
+//    final HttpRequest request,
+    public ResponseEntity<TransactionImportDTO> postTransactions(
+            @RequestParam(value = "file", required = false) final List<MultipartFile> files) {
 
-        User user = determineUserFromRequest(request);
+//        User user = determineUserFromRequest(request);
+        User user = new User("test@email.com", "tester", "test");
 
         if (files != null && files.size() > 0) {
             try {
@@ -63,11 +69,8 @@ public class ImportController {
                 logger.info("Error getting and parsing CSV from POST request", e);
             }
         }
-        return new ResponseEntity("error todo", HttpStatus.BAD_REQUEST);
+        throw new TransactionImportException("No file was posted with parametername 'file'");
     }
-
-    @Autowired
-    INGTransactionParserImpl importer;
 
 
     private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {

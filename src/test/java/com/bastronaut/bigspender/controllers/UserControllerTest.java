@@ -82,7 +82,7 @@ public class UserControllerTest  {
     @Test
     public void createUser() throws Exception {
         MvcResult result = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
-        assertTrue(result.getResponse().getStatus() == HttpStatus.OK.value());
+        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
         MockHttpServletResponse response =  result.getResponse();
         String createUserResponse = response.getContentAsString();
         assert(StringUtils.contains(createUserResponse, TEST_EMAIL));

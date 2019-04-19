@@ -16,7 +16,7 @@ import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANK
 import static com.bastronaut.bigspender.enums.TransactionType.AF;
 import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
 
-public class SampleTransactions {
+public class SampleData {
 
     private static final User testUser = new User("test@email.com", "tester", "test");
     /**
@@ -43,7 +43,7 @@ public class SampleTransactions {
 
     public static final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
             LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
-            "NL20INGB0007654321", null, AF, 1980, ONLINEBANKIEREN,
+            "NL20INGB0007654321", BA, AF, 1980, ONLINEBANKIEREN,
             "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019", testUser);
 
     public static final Transaction t4 = new Transaction(LocalDate.of(2019, 04, 04),
@@ -81,4 +81,7 @@ public class SampleTransactions {
         return TRANSACTIONS;
     }
 
+    public static User getSampleUser() {
+        return testUser;
+    }
 }

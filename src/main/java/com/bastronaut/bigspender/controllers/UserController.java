@@ -60,7 +60,8 @@ public class UserController {
      * @return
      */
     @PutMapping(path = USERS_UPDATE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser, final UserUpdateDTO userUpdateDTO,
+    public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser,
+                                              final UserUpdateDTO userUpdateDTO,
                                               final @PathVariable String userid) {
         final User updateUser = User.fromUserUpdateDTO(userUpdateDTO);
         final User result = userDetailsService.updateUser(activeUser.getId(), updateUser);

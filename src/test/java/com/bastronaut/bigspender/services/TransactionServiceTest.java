@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.bastronaut.bigspender.utils.SampleTransactions.t1;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t2;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t3;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t4;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t5;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t6;
-import static com.bastronaut.bigspender.utils.SampleTransactions.t7;
+import static com.bastronaut.bigspender.utils.SampleData.t1;
+import static com.bastronaut.bigspender.utils.SampleData.t2;
+import static com.bastronaut.bigspender.utils.SampleData.t3;
+import static com.bastronaut.bigspender.utils.SampleData.t4;
+import static com.bastronaut.bigspender.utils.SampleData.t5;
+import static com.bastronaut.bigspender.utils.SampleData.t6;
+import static com.bastronaut.bigspender.utils.SampleData.t7;
 
 public class TransactionServiceTest {
 
@@ -36,7 +36,7 @@ public class TransactionServiceTest {
         transactions.add(t5);
         transactions.add(t6);
         transactions.add(t7);
-        transactionRepository.save(transactions);
+        transactionRepository.saveAll(transactions);
     }
 
     @Test
