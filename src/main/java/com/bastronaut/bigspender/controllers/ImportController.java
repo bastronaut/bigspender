@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,12 +51,8 @@ public class ImportController {
      */
     @PostMapping
     @ResponseBody
-//    final HttpRequest request,
-    public ResponseEntity<TransactionImportDTO> postTransactions(
+    public ResponseEntity<TransactionImportDTO> postTransactions(@AuthenticationPrincipal User user,
             @RequestParam(value = "file", required = false) final List<MultipartFile> files) {
-
-//        User user = determineUserFromRequest(request);
-        User user = new User("test@email.com", "tester", "test");
 
         if (files != null && files.size() > 0) {
             try {
@@ -77,11 +74,6 @@ public class ImportController {
         return new TransactionImportDTO(transactionImport);
     }
 
-    private User determineUserFromRequest(HttpRequest request) {
-        logger.error("TODO implement");
-        // TODO get token from header, get user from token
-        return new User("", "", "");
-    }
 
     private User convertToEntity(UserRegistrationDTO userRegistrationDTO) {
         return new User(userRegistrationDTO.getEmail(), userRegistrationDTO.getName(), userRegistrationDTO.getPassword());

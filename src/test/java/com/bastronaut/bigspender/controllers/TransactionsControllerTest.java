@@ -1,6 +1,8 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.utils.JsonResponseUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -9,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,13 +66,14 @@ public class TransactionsControllerTest {
      */
     @Test
     public void testRetrieveUserTransactions() throws Exception {
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTION_ENDPOINT))
+        final MvcResult request = mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTION_ENDPOINT))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        final MockHttpServletResponse response = result.getResponse();
+        final MockHttpServletResponse response = request.getResponse();
         final String retrieveTransactionsResponse = response.getContentAsString();
-        // TODO parse response to gson and read fields
+        final JsonNode result = JsonResponseUtil.getJsonFromResponseContent(retrieveTransactionsResponse);
+        assertEquals(response.getStatus(), HttpStatus.OK.value());
         assertTrue(StringUtils.contains(retrieveTransactionsResponse, "some tx information"));
     }
 

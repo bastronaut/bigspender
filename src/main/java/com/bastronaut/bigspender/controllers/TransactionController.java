@@ -1,9 +1,11 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionDTO;
+import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
+import com.bastronaut.bigspender.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,40 +29,44 @@ import static com.bastronaut.bigspender.enums.TransactionMutationType.BETAALAUTO
 import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANKIEREN;
 import static com.bastronaut.bigspender.enums.TransactionType.AF;
 import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 public class TransactionController {
 
     @Autowired
-    TransactionRepository transactionRepository;
+    TransactionService transactionService;
 
-    @GetMapping(value = "/{userid}/transactions",  produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TransactionDTO>> getTransaction(@PathVariable int userid, @AuthenticationPrincipal User user) {
-//        return "returning " + Integer.toString(userid);
+    @GetMapping(value = TRANSACTIONS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TransactionDTO>> getTransactions(final @PathVariable String userid,
+                                                               final @AuthenticationPrincipal User user) {
 
-
-        final Transaction t1 = new Transaction(LocalDate.of(2019, 04, 01),
-                LocalTime.of(22,39), "AH to go 5869 DenHaa", "NL41INGB0006212385",
-                null, GT, AF, 180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", user);
-
-        final Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
-                LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
-                null, BA, BIJ, 1180, BETAALAUTOMAAT,
-                "Pasvolgnr: 008 01-04-2019 02:39 Valutadatum: 02-04-2019", user);
-
-        final Transaction t3 = new Transaction(LocalDate.of(2019, 04, 03),
-                LocalTime.of(14,15), "AH to go", "NL20INGB0001234567",
-                "NL20INGB0007654321", null, AF, 1980, ONLINEBANKIEREN,
-                "Pasvolgnr: 008 01-04-2019 14:15 Valutadatum: 02-04-2019", user);
-
-        List txs = Arrays.asList(t1, t2, t3);
-
-
-        List<Transaction> txsSaved = transactionRepository.saveAll(txs);
-        List<TransactionDTO> result = txsSaved.stream().map(TransactionDTO::new).collect(Collectors.toList());
-
+        final List<Transaction> transactions = transactionService.getTransactionsForUser(user);
+        final List<TransactionDTO> result = transactions.stream().map(TransactionDTO::new).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping(value = TRANSACTION_ENDPOINT, produces =  APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionDTO> getTransaction(final @PathVariable String userid,
+                                                         final @PathVariable String transactionId,
+                                                         final @AuthenticationPrincipal User user) {
+        final long parsedTransactionId;
+        try {
+            parsedTransactionId = Long.parseLong(transactionId);
+        } catch (NumberFormatException e) {
+            throw new TransactionException(String.format("Invalid transactionId: %s", transactionId));
+        }
+
+        final Optional<Transaction> transaction = transactionService.getTransactionForUser(user, parsedTransactionId);
+
+        if (transaction.isPresent()) {
+            TransactionDTO transactionDTO = new TransactionDTO(transaction.get());
+            return ResponseEntity.status(HttpStatus.OK).body(transactionDTO);
+        } else {
+            throw new TransactionException(String.format("Transaction with id %s for user %s does not exist",
+                    transactionId, String.valueOf(user.getId())));
+        }
     }
 }

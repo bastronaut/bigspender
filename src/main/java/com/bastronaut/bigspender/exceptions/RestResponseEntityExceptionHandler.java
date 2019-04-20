@@ -17,7 +17,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     private static final String REGISTRATION_ERROR_MSG = "Registration error";
     private static final String UPDATE_ERROR_MSG = "User update error";
-    private static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction import error";
+    private static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction Import error";
+    private static final String TRANSACTION_ERROR_MSG = "Transaction error";
 
     @ExceptionHandler(value = {UserRegistrationException.class})
     public final ResponseEntity<ErrorDetails> handleUserNotFoundException(Exception ex, WebRequest request) {
@@ -37,4 +38,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
+
+    @ExceptionHandler(value = {TransactionException.class})
+    public final ResponseEntity<ErrorDetails> handleInvalidTransaction(Exception ex, WebRequest request) {
+        final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
 }

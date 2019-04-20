@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.utils;
 
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,7 +19,9 @@ import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
 
 public class SampleData {
 
-    private static final User testUser = new User("test@email.com", "tester", "test");
+    @Getter
+    private static final String username = "test@email.com";
+    private static final User testUser = new User(username, "tester", "test");
     /**
      * Sample transactions.csv map to the following t1-t7:
      *

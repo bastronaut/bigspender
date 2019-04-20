@@ -118,7 +118,8 @@ public class UserControllerTest  {
         assert(StringUtils.contains(updateUserResponse, TEST_FIRSTNAME_UPDATE ));
     }
 
-    @Test(expected = UserUpdateException.class)
+    @WithMockUser
+    @Test
     public void testUpdateUserInvalid() throws Exception {
         MvcResult registration = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
