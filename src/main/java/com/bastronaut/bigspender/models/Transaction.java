@@ -28,7 +28,7 @@ import java.time.LocalTime;
  */
 @Entity
 @Data
-@Table(name = "transactions")
+@Table(name =  "transactions")
 @EqualsAndHashCode
 public class Transaction {
 

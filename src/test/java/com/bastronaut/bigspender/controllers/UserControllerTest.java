@@ -4,17 +4,22 @@ import com.bastronaut.bigspender.BigspenderApplication;
 import com.bastronaut.bigspender.config.SecurityConfiguration;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.exceptions.UserUpdateException;
+import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.services.CustomUserDetailsService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,14 +36,16 @@ import java.util.Base64;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
 @AutoConfigureMockMvc
+@WebMvcTest(UserController.class)
 @ContextConfiguration
 public class UserControllerTest  {
     //extends AbstractTransactionalJUnit4SpringContextTests
@@ -70,6 +77,9 @@ public class UserControllerTest  {
     @Autowired
     private UserController userController;
 
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
     @Before
     public void setUp() throws Exception {
     }
@@ -98,10 +108,14 @@ public class UserControllerTest  {
         assertTrue(StringUtils.contains(USER_EXISTS_MESSAGE, response.getErrorMessage()));
     }
 
+    // TEST TODO:
+    // https://stackoverflow.com/questions/15203485/spring-test-security-how-to-mock-authentication/43920932
     @Test
 //    @WithMockUser(username = TEST_EMAIL, password = TEST_PASSWORD, roles = "USER")
+    @WithUserDetails("user@company.com")
     public void testUpdateUser() throws Exception {
-        performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
+//        performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
+        given(userDetailsService.updateUser(any(), any())).willReturn(new User(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD));
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
 //                .with(httpBasic(TEST_EMAIL, TEST_PASSWORD))
 //                .header(AUTHORIZATION_HEADER, BASE64_BASICAUTH_USERPW)

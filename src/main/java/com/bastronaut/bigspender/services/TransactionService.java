@@ -32,8 +32,8 @@ public class TransactionService {
      * @return
      */
     public Optional<Transaction> getTransactionForUser(final User user, final long transactionId) {
-        return transactionRepository.findbyUserIdAndId(user.getId(), transactionId);
-
+//        return transactionRepository.findbyUserIdAndId(user.getId(), transactionId);
+        return null;
     }
 
     /**
@@ -43,13 +43,15 @@ public class TransactionService {
      * @return
      */
     public long deleteTransactionForUser(final User user, final long transactionId) {
-        final Optional<Transaction> transaction = transactionRepository.findbyUserIdAndId(user.getId(),
-                transactionId);
-        if (!transaction.isPresent()) {
-            throw new TransactionException(String.format("Transaction with id %s not found for user %s",
-                    transactionId, user.getId()));
-        }
-        return transactionRepository.remove(transaction.get());
+//        final Optional<Transaction> transaction = transactionRepository.findbyUserIdAndId(user.getId(),
+//                transactionId);
+//        if (!transaction.isPresent()) {
+//            throw new TransactionException(String.format("Transaction with id %s not found for user %s",
+//                    transactionId, user.getId()));
+//        }
+//        return transactionRepository.remove(transaction.get());
+        return 1;
+        // TODO
     }
 
 
