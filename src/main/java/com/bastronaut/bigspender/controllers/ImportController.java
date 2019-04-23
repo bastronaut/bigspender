@@ -51,15 +51,15 @@ public class ImportController {
      */
     @PostMapping
     @ResponseBody
-    public ResponseEntity<TransactionImportDTO> postTransactions(@AuthenticationPrincipal User user,
+    public ResponseEntity<TransactionImportDTO> postTransactions(@AuthenticationPrincipal final User user,
             @RequestParam(value = "file", required = false) final List<MultipartFile> files) {
 
         if (files != null && files.size() > 0) {
             try {
-                InputStream file = files.get(0).getInputStream();
+                final InputStream file = files.get(0).getInputStream();
 
-                TransactionImport parsedTransactions = importer.parseTransactions(file, user);
-                TransactionImportDTO transactionImportDTO = convertToDTO(parsedTransactions);
+                final TransactionImport parsedTransactions = importer.parseTransactions(file, user);
+                final TransactionImportDTO transactionImportDTO = convertToDTO(parsedTransactions);
                 return ResponseEntity.status(HttpStatus.OK).body(transactionImportDTO);
 
             } catch (IOException e) {

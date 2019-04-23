@@ -2,12 +2,16 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.exceptions.ErrorDetails;
 import com.bastronaut.bigspender.exceptions.TransactionImportException;
+import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
+import com.bastronaut.bigspender.services.INGTransactionParserImpl;
 import com.bastronaut.bigspender.utils.JsonResponseUtil;
 import com.bastronaut.bigspender.utils.SampleData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.tools.rmi.Sample;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.jni.Local;
 import org.junit.Before;
@@ -16,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -29,12 +34,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import javax.validation.constraints.AssertTrue;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static com.bastronaut.bigspender.utils.TestConstants.SUBSET_SAMPLE_CSV_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,12 +78,18 @@ public class ImportControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private INGTransactionParserImpl importer;
+
     private User user;
 
+
     @Before
-    public void init() {
-        this.user = SampleData.getSampleUser();
+    public void init() throws IOException {
+        this.user = SampleData.getTESTUSER();
         userRepository.save(this.user);
+
+        given(importer.parseTransactions(any(), any())).willReturn(SampleData.getTRANSACTION_IMPORT());
     }
 
     @Test
@@ -84,7 +100,7 @@ public class ImportControllerTest {
     @WithMockUser
     @Test
     public void testPostTransactionsSuccess() throws Exception {
-        File sampleFile = new File(SUBSET_SAMPLE_CSV_PATH);
+        File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         FileInputStream input = new FileInputStream(sampleFile);
 
         MockMultipartFile sampleCSV = new MockMultipartFile("file", sampleFile.getName(),

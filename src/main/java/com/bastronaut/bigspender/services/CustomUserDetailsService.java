@@ -71,13 +71,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
 
+
     private boolean isValidRegistration(final User user) {
         final Optional<User> maybeUser = userRepository.findByEmail(user.getEmail());
         return !maybeUser.isPresent();
     }
 
     /**
-     * todo: seperate for now for mocking purposes, must probably change the way we do login
+     * todo: public for now for mocking purposes, must probably change the way we do login
      * @param request to call the login method on
      * @param username the users username
      * @param password users password

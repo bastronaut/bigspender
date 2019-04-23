@@ -35,7 +35,7 @@ public class INGTransactionParserImplTest {
 
     @Before
     public void setupSampleResult() throws FileNotFoundException {
-        expectedSampleTransactions = SampleData.getSampleTransactions();
+        expectedSampleTransactions = SampleData.getTransactions();
 
         final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         this.input = new FileInputStream(sampleFile);
