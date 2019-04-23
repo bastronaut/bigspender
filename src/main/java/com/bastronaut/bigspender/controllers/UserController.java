@@ -7,6 +7,7 @@ import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.CustomUserDetailsService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class UserController {
 
-    @Autowired
-    CustomUserDetailsService userDetailsService;
+    private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
+    private CustomUserDetailsService userDetailsService;
+
+    public UserController(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
@@ -63,9 +69,22 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser,
                                               final UserUpdateDTO userUpdateDTO,
                                               final @PathVariable String userid) {
+        if (isInvalidUserUpdateDTO(userUpdateDTO)) {
+            throw new UserUpdateException(INVALID_UPDATE_INFORMATION);
+        }
         final User updateUser = User.fromUserUpdateDTO(userUpdateDTO);
-        final User result = userDetailsService.updateUser(activeUser.getId(), updateUser);
+        final User result = userDetailsService.updateUser(activeUser, updateUser);
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(result));
+    }
+
+    /**
+     * Tests if at minimum, 1 updateable field is provided
+     * TODO can be replaced with validators on controller model
+     * @param userUpdateDTO the user update information provided in the request
+     * @return true if no updateable field is provided
+     */
+    private boolean isInvalidUserUpdateDTO(final UserUpdateDTO userUpdateDTO) {
+        return StringUtils.isAllBlank(userUpdateDTO.getEmail(), userUpdateDTO.getName(), userUpdateDTO.getPassword());
     }
 
 }

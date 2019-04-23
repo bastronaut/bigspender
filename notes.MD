@@ -104,6 +104,10 @@ Authenticationprovider -> (loadUserByUsername) UserDetailsService. if found
 ## Tests
 extending from: AbstractTransactionalJUnit4SpringContextTests, allows transactional queries that roll back after test completes
 
+## WebMvcTest
+Using this annotation will disable full auto-configuration and instead apply only configuration relevant to MVC tests (i.e. @Controller, @ControllerAdvice, @JsonComponent Filter, WebMvcConfigurer and HandlerMethodArgumentResolver beans but not @Component, @Service or @Repository beans). [...] If you are looking to load your full application configuration and use MockMVC, you should consider @SpringBootTest combined with @AutoConfigureMockMvc rather than this annotation.
+
+
 ### features todo
 tijdlijn uitgaven per dag
 hoofdcategorien, inzoomen  per subcategorie

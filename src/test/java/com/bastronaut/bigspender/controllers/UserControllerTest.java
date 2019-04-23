@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,9 +22,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -37,18 +41,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
+@SpringBootTest
 @AutoConfigureMockMvc
-@WebMvcTest(UserController.class)
 @ContextConfiguration
-public class UserControllerTest  {
-    //extends AbstractTransactionalJUnit4SpringContextTests
+public class UserControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
+
     private static final String USERS_ENDPOINT = "/users";
     private static final String USERS_UPDATE_ENDPOINT = "/users/1";
     private static final String USERS_GET_INFO_ENDPOINT = "/users/1";
@@ -68,10 +76,11 @@ public class UserControllerTest  {
     private static final String TEST_PASSWORD_UPDATE = "updated";
 
     private static final String USER_EXISTS_MESSAGE = "User already exists: " + TEST_EMAIL;
-
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @Autowired
@@ -80,8 +89,13 @@ public class UserControllerTest  {
     @MockBean
     private CustomUserDetailsService userDetailsService;
 
+
     @Before
     public void setUp() throws Exception {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
@@ -89,14 +103,11 @@ public class UserControllerTest  {
         assertNotNull(userController);
     }
 
+
     @Test
     public void createUser() throws Exception {
         MvcResult result = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
-        assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-        MockHttpServletResponse response =  result.getResponse();
-        String createUserResponse = response.getContentAsString();
-        assert(StringUtils.contains(createUserResponse, TEST_EMAIL));
-        assert(StringUtils.contains(createUserResponse, TEST_FIRSTNAME));
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
     @Test(expected = UserRegistrationException.class)
@@ -108,38 +119,33 @@ public class UserControllerTest  {
         assertTrue(StringUtils.contains(USER_EXISTS_MESSAGE, response.getErrorMessage()));
     }
 
-    // TEST TODO:
-    // https://stackoverflow.com/questions/15203485/spring-test-security-how-to-mock-authentication/43920932
+    @WithMockUser
     @Test
-//    @WithMockUser(username = TEST_EMAIL, password = TEST_PASSWORD, roles = "USER")
-    @WithUserDetails("user@company.com")
     public void testUpdateUser() throws Exception {
-//        performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
-        given(userDetailsService.updateUser(any(), any())).willReturn(new User(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD));
+
+        // arrange
+        final User updatedUser =   new User(TEST_EMAIL_UPDATE, TEST_FIRSTNAME_UPDATE, TEST_PASSWORD_UPDATE);
+        given(userDetailsService.updateUser(anyObject(), anyObject())).willReturn(updatedUser);
+
+        // act
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
-//                .with(httpBasic(TEST_EMAIL, TEST_PASSWORD))
-//                .header(AUTHORIZATION_HEADER, BASE64_BASICAUTH_USERPW)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
                 .param(NAME_PARAM, TEST_FIRSTNAME_UPDATE)
                 .param(PASSWORD_PARAM, TEST_PASSWORD_UPDATE))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath(EMAIL_PARAM).value(TEST_EMAIL_UPDATE))
+                .andExpect(jsonPath(NAME_PARAM).value(TEST_FIRSTNAME_UPDATE))
                 .andDo(print())
                 .andReturn();
-
-        final MockHttpServletResponse response = result.getResponse();
-        final String updateUserResponse = response.getContentAsString();
-        assert(StringUtils.contains(updateUserResponse, TEST_EMAIL_UPDATE ));
-        assert(StringUtils.contains(updateUserResponse, TEST_FIRSTNAME_UPDATE ));
     }
 
     @WithMockUser
     @Test
     public void testUpdateUserInvalid() throws Exception {
-        MvcResult registration = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
-                .header(AUTHORIZATION_HEADER, BASE64_BASICAUTH_USERPW))
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
+                .andExpect(jsonPath("details").value(INVALID_UPDATE_INFORMATION))
                 .andReturn();
     }
 

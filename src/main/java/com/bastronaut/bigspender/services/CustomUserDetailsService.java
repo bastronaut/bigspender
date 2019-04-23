@@ -40,18 +40,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     /**
      * Allows updating of name and password, not the username
-     * @param userId the users user ID
-     * @param updateUserDetails the new user with fields populated according to changes
+     * @param userToUpdate the user to update
+     * @param updateUserDetails a user object with fields populated according to changes
      * @return the new user if saved to database successfully
-     * @throws UsernameNotFoundException if the user does not exist
      */
-    public User updateUser(final int userId, final User updateUserDetails) throws UsernameNotFoundException {
-        final Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            final User user = populateUserWithUpdateData(optionalUser.get(), updateUserDetails);
+    public User updateUser(final User userToUpdate, final User updateUserDetails) throws UsernameNotFoundException {
+            final User user = populateUserWithUpdateData(userToUpdate, updateUserDetails);
             return userRepository.save(user);
-        }
-        throw new UserUpdateException("User to update does not exist: " + updateUserDetails.getEmail());
     }
 
     private User populateUserWithUpdateData(final User user, final User updateUserDetails) {
