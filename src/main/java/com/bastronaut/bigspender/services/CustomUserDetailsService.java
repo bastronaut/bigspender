@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Service
@@ -72,6 +74,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     private boolean isValidRegistration(final User user) {
         final Optional<User> maybeUser = userRepository.findByEmail(user.getEmail());
         return !maybeUser.isPresent();
+    }
+
+    /**
+     * todo: seperate for now for mocking purposes, must probably change the way we do login
+     * @param request to call the login method on
+     * @param username the users username
+     * @param password users password
+     * @throws ServletException
+     */
+    public void logUserIn(final HttpServletRequest request, final String username,
+                             final String password) throws ServletException {
+        request.login(username, password);
     }
 
 }

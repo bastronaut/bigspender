@@ -52,7 +52,8 @@ public class UserController {
         }
         final User user = User.fromUserRegistrationDTO(userRegistrationDTO);
         final User registeredUser = userDetailsService.registerUser(user);
-        request.login(user.getUsername(), user.getPassword());
+
+        userDetailsService.logUserIn(request, user.getUsername(), user.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(registeredUser));
     }
 
