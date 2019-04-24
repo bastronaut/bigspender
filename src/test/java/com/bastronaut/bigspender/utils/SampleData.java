@@ -3,7 +3,6 @@ package com.bastronaut.bigspender.utils;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
-import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,11 +19,10 @@ import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
 
 public class SampleData {
 
-    @Getter
     private static final String username = "test@email.com";
 
-    @Getter
     private static final User TESTUSER = new User(username, "tester", "test");
+    public static User getTestUser() { return TESTUSER; }
     /**
      * Sample transactions.csv map to the following t1-t7:
      *
@@ -74,8 +72,9 @@ public class SampleData {
 
     private static final List<Transaction> TRANSACTIONS = new ArrayList<>();
 
-    @Getter
+
     private static final TransactionImport TRANSACTION_IMPORT = new TransactionImport(TRANSACTIONS, TESTUSER);
+    public static final TransactionImport getTransactionImport() { return TRANSACTION_IMPORT; }
 
     public static List<Transaction> getTransactions() {
         if (TRANSACTIONS.isEmpty()) {

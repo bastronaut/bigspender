@@ -1,9 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
-import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.CustomUserDetailsService;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,11 +19,20 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Base64;
-
+import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD_UPDATE;
+import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.USERS_GET_INFO_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -43,21 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 public class UserControllerTest {
 
-    private static final String USERS_ENDPOINT = "/users";
-    private static final String USERS_UPDATE_ENDPOINT = "/users/1";
-    private static final String USERS_GET_INFO_ENDPOINT = "/users/1";
-
-    private static final String NAME_PARAM = "name";
-    private static final String EMAIL_PARAM = "email";
-    private static final String PASSWORD_PARAM = "password";
-
-    private static final String TEST_EMAIL = "test@email.com";
-    private static final String TEST_FIRSTNAME = "tester";
-    private static final String TEST_PASSWORD = "testpassword";
-
-    private static final String TEST_EMAIL_UPDATE = "update@email.com";
-    private static final String TEST_FIRSTNAME_UPDATE = "updated";
-    private static final String TEST_PASSWORD_UPDATE = "updated";
 
     private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
 

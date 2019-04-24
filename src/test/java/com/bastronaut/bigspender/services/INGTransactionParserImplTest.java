@@ -39,7 +39,7 @@ public class INGTransactionParserImplTest {
 
         final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         this.input = new FileInputStream(sampleFile);
-        this.sampleUser = SampleData.getSampleUser();
+        this.sampleUser = SampleData.getTestUser();
     }
 
     @Test
