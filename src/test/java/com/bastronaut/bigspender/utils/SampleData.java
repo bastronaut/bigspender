@@ -73,9 +73,6 @@ public class SampleData {
     private static final List<Transaction> TRANSACTIONS = new ArrayList<>();
 
 
-    private static final TransactionImport TRANSACTION_IMPORT = new TransactionImport(TRANSACTIONS, TESTUSER);
-    public static final TransactionImport getTransactionImport() { return TRANSACTION_IMPORT; }
-
     public static List<Transaction> getTransactions() {
         if (TRANSACTIONS.isEmpty()) {
             TRANSACTIONS.add(t1);
@@ -88,6 +85,9 @@ public class SampleData {
         }
         return TRANSACTIONS;
     }
+    private static final TransactionImport TRANSACTION_IMPORT = new TransactionImport(getTransactions(), TESTUSER);
+
+    public static final TransactionImport getTransactionImport() { return TRANSACTION_IMPORT; }
 
 
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -18,6 +19,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Base64;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
@@ -30,6 +33,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOIN
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -78,6 +82,27 @@ public class IntegrationTest {
 
     }
 
+    @Test
+    public void testRegisterUserExists() throws Exception {
+        // Arrange - setup user to update
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andDo(print())
+                .andReturn();
+
+        // Arrange - setup user to update
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value("Registration error"))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("User already exists: " + TEST_EMAIL))
+                .andDo(print())
+                .andReturn();
+    }
 
 
 }

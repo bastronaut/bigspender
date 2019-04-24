@@ -14,11 +14,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,33 +30,40 @@ import java.util.List;
 
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringSecurityWebTestConfig.class)
-@AutoConfigureMockMvc
+@SpringBootTest
+@ContextConfiguration
 public class TransactionsControllerTest {
 
     private static final String GET_TRANSACTION_ENDPOINT = "/users/{userid}/transactions/{transactionid}";
     private static final String GET_TRANSACTIONS_ENDPOINT = "/users/{userid}/transactions";
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private TransactionController transactionsController;
 
+    @Autowired
+    private WebApplicationContext context;
 
     private List<Transaction> expectedSampleTransactions;
     private FileInputStream input;
+    private MockMvc mockMvc;
 
     @Before
-    public void setupSampleData() throws FileNotFoundException {
+    public void setup() throws FileNotFoundException {
         final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         this.input = new FileInputStream(sampleFile);
+
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test

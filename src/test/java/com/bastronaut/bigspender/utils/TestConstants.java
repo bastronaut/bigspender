@@ -21,4 +21,10 @@ public class TestConstants {
     public static final String TEST_FIRSTNAME_UPDATE = "updated";
     public static final String TEST_PASSWORD_UPDATE = "updated";
 
+    /** Exception text constants **/
+    public static final String ERROR_MESSAGE_PARAM = "message";
+    public static final String ERROR_DETAILS_PARAM = "details";
+    public static final String ERROR_DATE_FIELD = "date";
+
+
 }
