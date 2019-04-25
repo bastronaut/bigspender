@@ -49,14 +49,14 @@ public class TransactionController {
     }
 
     @GetMapping(value = TRANSACTION_ENDPOINT, produces =  APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionDTO> getTransaction(final @PathVariable String userid,
-                                                         final @PathVariable String transactionId,
-                                                         final @AuthenticationPrincipal User user) {
+    public ResponseEntity<TransactionDTO> getTransaction( final @AuthenticationPrincipal User user,
+                                                            final @PathVariable String userid,
+                                                            final @PathVariable String transactionid) {
         final long parsedTransactionId;
         try {
-            parsedTransactionId = Long.parseLong(transactionId);
+            parsedTransactionId = Long.parseLong(transactionid);
         } catch (NumberFormatException e) {
-            throw new TransactionException(String.format("Invalid transactionId: %s", transactionId));
+            throw new TransactionException(String.format("Invalid transaction id: %s", transactionid));
         }
 
         final Optional<Transaction> transaction = transactionService.getTransactionForUser(user, parsedTransactionId);
@@ -66,7 +66,7 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.OK).body(transactionDTO);
         } else {
             throw new TransactionException(String.format("Transaction with id %s for user %s does not exist",
-                    transactionId, String.valueOf(user.getId())));
+                    transactionid, String.valueOf(user.getId())));
         }
     }
 }

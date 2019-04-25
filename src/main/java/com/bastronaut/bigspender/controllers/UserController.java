@@ -33,12 +33,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
+
+    @Autowired
     private CustomUserDetailsService userDetailsService;
-
-    public UserController(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
@@ -46,7 +43,6 @@ public class UserController {
                                               final HttpServletRequest request) throws ServletException {
         // TODO:
         //  Ensure no existing session exists. Alternatively, we could reject login if session exists
-
         if (bindingResult.hasErrors()) {
             throw new UserRegistrationException(bindingResult.toString());
         }
