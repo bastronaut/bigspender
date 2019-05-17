@@ -2,7 +2,9 @@ package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.repositories.TransactionImportRepository;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class TransactionService {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @Autowired
+    TransactionImportRepository transactionImportRepository;
 
     /**
      *
@@ -52,6 +57,10 @@ public class TransactionService {
 //        return transactionRepository.remove(transaction.get());
         return 1;
         // TODO
+    }
+
+    public TransactionImport saveTransactionImport(final TransactionImport transactionImport) {
+        return transactionImportRepository.save(transactionImport);
     }
 
 

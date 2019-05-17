@@ -6,10 +6,10 @@ import com.bastronaut.bigspender.exceptions.TransactionImportException;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.INGTransactionParserImpl;
+import com.bastronaut.bigspender.services.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * Controller for /import/{userid}/transactions/ endpoint, responsible for allowing users to upload
  * their data into the system
  *
- * TODO: hardcoded the ing importer, could add a post param for bank type and use the correct importer
+ * TODO: hardcoded the ing transactionParser, could add a post param for bank type and use the correct transactionParser
  */
 
 @RestController
@@ -41,7 +41,10 @@ public class ImportController {
     private Logger logger = LoggerFactory.getLogger(ImportController.class);
 
     @Autowired
-    private INGTransactionParserImpl importer;
+    private INGTransactionParserImpl transactionParser;
+
+    @Autowired
+    private TransactionService transactionService;
 
     /**
      * POST endpoint for a CSV file of transactions
@@ -58,8 +61,9 @@ public class ImportController {
             try {
                 final InputStream file = files.get(0).getInputStream();
 
-                final TransactionImport parsedTransactions = importer.parseTransactions(file, user);
-                final TransactionImportDTO transactionImportDTO = convertToDTO(parsedTransactions);
+                final TransactionImport parsedTransactions = transactionParser.parseTransactions(file, user);
+                final TransactionImport importedTransactions = transactionService.saveTransactionImport(parsedTransactions);
+                final TransactionImportDTO transactionImportDTO = convertToDTO(importedTransactions);
                 return ResponseEntity.status(HttpStatus.OK).body(transactionImportDTO);
 
             } catch (IOException e) {

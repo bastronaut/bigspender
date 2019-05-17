@@ -72,6 +72,8 @@ public class TransactionsControllerTest {
         final Transaction testTransaction = SampleData.t1;
         final Optional<Transaction> optionalTransaction = Optional.of(testTransaction);
 
+        final List<Transaction> testTransactions = SampleData.getTransactions();
+
         this.input = new FileInputStream(sampleFile);
 
         mockMvc = MockMvcBuilders
@@ -80,6 +82,7 @@ public class TransactionsControllerTest {
                 .build();
 
         given(transactionService.getTransactionForUser(any(), anyLong())).willReturn(optionalTransaction);
+        given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
     }
 
     @Test
@@ -91,8 +94,7 @@ public class TransactionsControllerTest {
     @WithMockUser
     @Test
     public void testRetrieveUserTransaction() throws Exception {
-
-        final MvcResult request = mockMvc.perform(MockMvcRequestBuilders.get("/users/15/transactions/1245"))
+        mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTION_ENDPOINT))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("type").value("AF"))
                 .andExpect(jsonPath("code").value("GT"))
@@ -108,10 +110,15 @@ public class TransactionsControllerTest {
                 .andReturn();
     }
 
-
+    @WithMockUser
     @Test
-    public void testRetrieveUserTransactions() {
-        assert(false);
+    public void testRetrieveUserTransactions() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTIONS_ENDPOINT))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$[0].accountNumber").value("NL41INGB0006212385"))
+                .andExpect(jsonPath("$[0].type").value("AF"))
+                .andExpect(jsonPath("$[6].accountNumber").value("NL20INGB0004567891"))
+                .andExpect(jsonPath("$[6].name").value("test to go go yes"));
     }
 
     @Test

@@ -8,19 +8,22 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Getter
 public class TransactionImportDTO {
 
-    private final List<Transaction> transactions;
+    private final List<TransactionDTO> transactions;
     private final LocalDate importDate;
     private final int importCount;
     private final UserDTO user;
 
     public TransactionImportDTO(TransactionImport transactionImport) {
-        this.transactions = transactionImport.getTransactions();
+        final List<Transaction> txs = transactionImport.getTransactions();
+
+        this.transactions = txs.stream().map(TransactionDTO::new).collect(Collectors.toList());
         this.importDate = transactionImport.getImportDate();
         this.importCount = transactionImport.getImportCount();
         final User user = transactionImport.getUser();

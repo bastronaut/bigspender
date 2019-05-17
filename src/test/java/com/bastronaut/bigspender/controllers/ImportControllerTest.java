@@ -3,6 +3,7 @@ package com.bastronaut.bigspender.controllers;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.services.INGTransactionParserImpl;
+import com.bastronaut.bigspender.services.TransactionService;
 import com.bastronaut.bigspender.utils.SampleData;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +61,9 @@ public class ImportControllerTest {
     @MockBean
     private INGTransactionParserImpl importer;
 
+    @MockBean
+    private TransactionService transactionService;
+
     private User user;
 
 
@@ -69,6 +73,7 @@ public class ImportControllerTest {
         userRepository.save(this.user);
 
         given(importer.parseTransactions(any(), any())).willReturn(SampleData.getTransactionImport());
+        given(transactionService.saveTransactionImport(any())).willReturn(SampleData.getTransactionImport());
     }
 
     @Test
