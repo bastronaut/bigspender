@@ -26,7 +26,7 @@ public class TransactionImport {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @OneToMany(targetEntity = Transaction.class, cascade = {CascadeType.ALL)
+    @OneToMany(targetEntity = Transaction.class, cascade = {CascadeType.ALL})
     private final List<Transaction> transactions;
 
     @Column(nullable = false, name = "import_date")

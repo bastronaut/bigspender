@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -62,11 +63,21 @@ public class TransactionController {
         final Optional<Transaction> transaction = transactionService.getTransactionForUser(user, parsedTransactionId);
 
         if (transaction.isPresent()) {
-            TransactionDTO transactionDTO = new TransactionDTO(transaction.get());
+            final TransactionDTO transactionDTO = new TransactionDTO(transaction.get());
             return ResponseEntity.status(HttpStatus.OK).body(transactionDTO);
         } else {
             throw new TransactionException(String.format("Transaction with id %s for user %s does not exist",
                     transactionid, String.valueOf(user.getId())));
         }
+    }
+
+    @PostMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionDTO> postTransaction(final @AuthenticationPrincipal User user,
+                                                          final TransactionDTO transactionDTO) {
+        final Transaction transaction = Transaction.fromTransactionDTO(transactionDTO, user);
+        // TODO validation on transactionDTO, probably on @Valid in method boddy
+        final Transaction savedTransaction = transactionService.saveTransaction(transaction);
+        final TransactionDTO result = new TransactionDTO(savedTransaction);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
