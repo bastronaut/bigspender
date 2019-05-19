@@ -83,7 +83,7 @@ public class Transaction {
     private final DayOfWeek day; // non-normalized, maybe useful for training data
 
     @Getter
-    @JoinColumn(nullable = false)
+    @JoinColumn(name="user_id", nullable = false)
     @ManyToOne
     private final User user;
 

@@ -5,6 +5,7 @@ package com.bastronaut.bigspender.models;
 import lombok.Data;
 import lombok.Getter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,7 @@ public class TransactionImport {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @OneToMany(targetEntity = Transaction.class)
+    @OneToMany(targetEntity = Transaction.class, cascade = {CascadeType.ALL)
     private final List<Transaction> transactions;
 
     @Column(nullable = false, name = "import_date")
@@ -33,7 +34,8 @@ public class TransactionImport {
 
     @Column(nullable = false, name = "import_count")
     private final int importCount;
-    @OneToOne(targetEntity = Transaction.class)
+
+    @OneToOne(targetEntity = User.class)
     private final User user;
 
     public TransactionImport(List<Transaction> transactions, User user) {
