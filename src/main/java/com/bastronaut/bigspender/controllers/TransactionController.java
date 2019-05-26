@@ -45,7 +45,7 @@ public class TransactionController {
                                                                final @AuthenticationPrincipal User user) {
 
         final List<Transaction> transactions = transactionService.getTransactionsForUser(user);
-        final List<TransactionDTO> result = transactions.stream().map(TransactionDTO::new).collect(Collectors.toList());
+        final List<TransactionDTO> result = transactions.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -63,7 +63,7 @@ public class TransactionController {
         final Optional<Transaction> transaction = transactionService.getTransactionForUser(user, parsedTransactionId);
 
         if (transaction.isPresent()) {
-            final TransactionDTO transactionDTO = new TransactionDTO(transaction.get());
+            final TransactionDTO transactionDTO = TransactionDTO.fromTransaction(transaction.get());
             return ResponseEntity.status(HttpStatus.OK).body(transactionDTO);
         } else {
             throw new TransactionException(String.format("Transaction with id %s for user %s does not exist",
@@ -77,7 +77,7 @@ public class TransactionController {
         final Transaction transaction = Transaction.fromTransactionDTO(transactionDTO, user);
         // TODO validation on transactionDTO, probably on @Valid in method boddy
         final Transaction savedTransaction = transactionService.saveTransaction(transaction);
-        final TransactionDTO result = new TransactionDTO(savedTransaction);
+        final TransactionDTO result = TransactionDTO.fromTransaction(savedTransaction);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

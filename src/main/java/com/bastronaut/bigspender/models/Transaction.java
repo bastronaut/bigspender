@@ -72,11 +72,11 @@ public class Transaction {
     private final long amount;
 
     @Getter
-    @Column(nullable = false, name = "mutation_type")
+    @Column(nullable = true, name = "mutation_type")
     private final TransactionMutationType mutationType;
 
     @Getter
-    @Column(nullable = false, length = 512)
+    @Column(nullable = true, length = 512)
     private final String statement;
 
     @Getter

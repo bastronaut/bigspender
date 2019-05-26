@@ -35,6 +35,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_IMPORT_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
@@ -58,6 +59,10 @@ public class IntegrationTest {
 
     private MockMvc mockMvc;
 
+    String userpw;
+    String headerEncoded;
+    String userid;
+
 
     @Before
     public void setUp() throws Exception {
@@ -65,20 +70,26 @@ public class IntegrationTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+
+        // Arrange - register initial user
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andExpect(jsonPath("$.id").exists())
+                .andDo(print())
+                .andReturn();
+
+        userpw =  TEST_EMAIL + ":" + TEST_PASSWORD;
+        headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
+
+        final JSONObject json = new JSONObject(result.getResponse().getContentAsString());
+        userid = json.getString("id");
+
     }
 
     @Test
     public void testUpdateUser() throws Exception {
-        // Arrange - setup user to update
-        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
-                .param(NAME_PARAM, TEST_FIRSTNAME)
-                .param(EMAIL_PARAM, TEST_EMAIL)
-                .param(PASSWORD_PARAM, TEST_PASSWORD))
-                .andDo(print())
-                .andReturn();
-
-        final String userpw =  TEST_EMAIL + ":" + TEST_PASSWORD;
-        final String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
 
         // Update user, auth headers are required to inject the User argument into the controller
         mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
@@ -93,13 +104,6 @@ public class IntegrationTest {
 
     @Test
     public void testRegisterUserExists() throws Exception {
-        // Arrange - register initial user
-        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
-                .param(NAME_PARAM, TEST_FIRSTNAME)
-                .param(EMAIL_PARAM, TEST_EMAIL)
-                .param(PASSWORD_PARAM, TEST_PASSWORD))
-                .andDo(print())
-                .andReturn();
 
         // Arrange - setup user to update
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
@@ -115,23 +119,6 @@ public class IntegrationTest {
 
     @Test
     public void testImportTransactions() throws Exception {
-
-
-        // Arrange - register initial user
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
-                .param(NAME_PARAM, TEST_FIRSTNAME)
-                .param(EMAIL_PARAM, TEST_EMAIL)
-                .param(PASSWORD_PARAM, TEST_PASSWORD))
-                .andExpect(jsonPath("$.id").exists())
-                .andDo(print())
-                .andReturn();
-
-        final JSONObject json = new JSONObject(result.getResponse().getContentAsString());
-        final String userid = json.getString("id");
-
-
-        final String userpw =  TEST_EMAIL + ":" + TEST_PASSWORD;
-        final String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
 
         final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
         final FileInputStream input = new FileInputStream(sampleFile);
@@ -157,8 +144,33 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.transactions[6:].statement").value("Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
                 .andExpect(jsonPath("$.transactions[6:].day").value("SUNDAY"))
                 .andDo(print());
+    }
 
-
+    @Test
+    public void testAddTransactionForUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded)
+                .param("date", "2019-04-07")
+                .param("time", "07:25:00")
+                .param("name" , "Test transaction")
+                .param("accountNumber" , "NL20INGB0004567891")
+                .param("receivingAccountNumber" , "NL20INGB0001987654")
+                .param("code" , "BA")
+                .param("type" , "BIJ")
+                .param("amount" , "1980")
+                .param("mutationType" , "DIVERSEN")
+                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
+                .param("day" , "SUNDAY"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.date").value("2019-04-07"))
+                .andExpect(jsonPath("$.time").value("07:25:00"))
+                .andExpect(jsonPath("$.name").value("Test transaction"))
+                .andExpect(jsonPath("$.accountNumber").value(""))
+                .andExpect(jsonPath("$.receivingAccountNumber").value(""))
+                .andExpect(jsonPath("$.type").value("BIJ"))
+                .andExpect(jsonPath("$.amount").value("1980"))
+                .andExpect(jsonPath("$.day").value("SUNDAY"))
+                .andDo(print());
 
     }
 

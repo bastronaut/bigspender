@@ -23,7 +23,7 @@ public class TransactionImportDTO {
     public TransactionImportDTO(TransactionImport transactionImport) {
         final List<Transaction> txs = transactionImport.getTransactions();
 
-        this.transactions = txs.stream().map(TransactionDTO::new).collect(Collectors.toList());
+        this.transactions = txs.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toList());
         this.importDate = transactionImport.getImportDate();
         this.importCount = transactionImport.getImportCount();
         final User user = transactionImport.getUser();
