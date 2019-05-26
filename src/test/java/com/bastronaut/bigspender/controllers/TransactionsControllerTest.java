@@ -121,20 +121,20 @@ public class TransactionsControllerTest {
                 .andExpect(jsonPath("$[6].name").value("test to go go yes"));
     }
 
-    @Test
-    public void testRetrieveUsersTransactionsNoResult() {
-        assert(false);
-    }
-
-    @Test
-    public void testDeleteTransaction() {
-        assert(false);
-    }
-
-    @Test
-    public void testDeleteTransactions() {
-        assert(false);
-    }
+//    @Test
+//    public void testRetrieveUsersTransactionsNoResult() {
+//        assert(false);
+//    }
+//
+//    @Test
+//    public void testDeleteTransaction() {
+//        assert(false);
+//    }
+//
+//    @Test
+//    public void testDeleteTransactions() {
+//        assert(false);
+//    }
 
 
 }

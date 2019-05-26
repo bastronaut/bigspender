@@ -43,7 +43,7 @@ public class Transaction {
     private final LocalDate date;
 
     @Getter
-    @Column(nullable = false)
+    @Column(nullable = true)
     private final LocalTime time;
 
     @Getter

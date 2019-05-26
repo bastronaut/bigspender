@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TransactionImportRepository extends JpaRepository<TransactionImport, Long> {
 
-    TransactionImport save(TransactionImport transactionImport);
+//    TransactionImport save(TransactionImport transactionImport);
 
     List<TransactionImport> findAllByUser(User user);
 
