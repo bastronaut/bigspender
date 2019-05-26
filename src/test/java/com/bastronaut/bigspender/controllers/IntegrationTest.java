@@ -2,12 +2,16 @@ package com.bastronaut.bigspender.controllers;
 
 
 import org.junit.Before;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,11 +20,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Base64;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
@@ -28,6 +35,8 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_IMPORT_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -84,7 +93,7 @@ public class IntegrationTest {
 
     @Test
     public void testRegisterUserExists() throws Exception {
-        // Arrange - setup user to update
+        // Arrange - register initial user
         mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
                 .param(NAME_PARAM, TEST_FIRSTNAME)
                 .param(EMAIL_PARAM, TEST_EMAIL)
@@ -93,7 +102,7 @@ public class IntegrationTest {
                 .andReturn();
 
         // Arrange - setup user to update
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
                 .param(NAME_PARAM, TEST_FIRSTNAME)
                 .param(EMAIL_PARAM, TEST_EMAIL)
                 .param(PASSWORD_PARAM, TEST_PASSWORD))
@@ -102,6 +111,55 @@ public class IntegrationTest {
                 .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("User already exists: " + TEST_EMAIL))
                 .andDo(print())
                 .andReturn();
+    }
+
+    @Test
+    public void testImportTransactions() throws Exception {
+
+
+        // Arrange - register initial user
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andExpect(jsonPath("$.id").exists())
+                .andDo(print())
+                .andReturn();
+
+        final JSONObject json = new JSONObject(result.getResponse().getContentAsString());
+        final String userid = json.getString("id");
+
+
+        final String userpw =  TEST_EMAIL + ":" + TEST_PASSWORD;
+        final String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
+
+        final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
+        final FileInputStream input = new FileInputStream(sampleFile);
+
+        final MockMultipartFile sampleCSV = new MockMultipartFile("file", sampleFile.getName(),
+                "multipart/form-data", input);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart(TRANSACTION_IMPORT_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+                .file(sampleCSV)
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded))
+                .andExpect(status().isOk())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transactions[:1].date").value("2019-04-01"))
+                .andExpect(jsonPath("$.transactions[:1].time").value("22:39:00"))
+                .andExpect(jsonPath("$.transactions[:1].accountNumber").value("NL41INGB0006212385"))
+                .andExpect(jsonPath("$.transactions[:1].code").value("GT"))
+                .andExpect(jsonPath("$.transactions[:1].type").value("AF"))
+                .andExpect(jsonPath("$.transactions[6:].receivingAccountNumber").value("NL20INGB0001987654"))
+                .andExpect(jsonPath("$.transactions[6:].amount").value(1980))
+                .andExpect(jsonPath("$.transactions[6:].mutationType").value("DIVERSEN"))
+                .andExpect(jsonPath("$.user.email").value("test@email.com"))
+                .andExpect(jsonPath("$.user.name").value("tester"))
+                .andExpect(jsonPath("$.transactions[6:].statement").value("Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
+                .andExpect(jsonPath("$.transactions[6:].day").value("SUNDAY"))
+                .andDo(print());
+
+
+
     }
 
 

@@ -11,13 +11,14 @@ public class UserDTO {
     private final String email;
     private long id;
 
-    public UserDTO(String name, String email) {
+    public UserDTO(final String name, final String email, final long id) {
         this.name = name;
         this.email = email;
+        this.id = id;
     }
 
-    public static UserDTO fromUser(User user) {
-        return new UserDTO(user.getName(), user.getEmail());
+    public static UserDTO fromUser(final User user) {
+        return new UserDTO(user.getName(), user.getEmail(), user.getId());
     }
 
 }

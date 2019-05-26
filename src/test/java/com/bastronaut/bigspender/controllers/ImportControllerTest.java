@@ -84,10 +84,10 @@ public class ImportControllerTest {
     @WithMockUser
     @Test
     public void testPostTransactionsSuccess() throws Exception {
-        File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
-        FileInputStream input = new FileInputStream(sampleFile);
+        final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
+        final FileInputStream input = new FileInputStream(sampleFile);
 
-        MockMultipartFile sampleCSV = new MockMultipartFile("file", sampleFile.getName(),
+        final MockMultipartFile sampleCSV = new MockMultipartFile("file", sampleFile.getName(),
                 "multipart/form-data", input);
 
         final MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_POST_ENDPOINT)
@@ -101,7 +101,8 @@ public class ImportControllerTest {
                 .andExpect(jsonPath("$.transactions[6:].receivingAccountNumber").value("NL20INGB0001987654"))
                 .andExpect(jsonPath("$.transactions[6:].amount").value(1980))
                 .andExpect(jsonPath("$.transactions[6:].mutationType").value("DIVERSEN"))
-//                .andExpect(jsonPath("$.transactions[6:].user.email").value("test@email.com"))
+                .andExpect(jsonPath("$.user.email").value("test@email.com"))
+                .andExpect(jsonPath("$.user.name").value("tester"))
                 .andExpect(jsonPath("$.transactions[6:].statement").value("Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
                 .andExpect(jsonPath("$.transactions[6:].day").value("SUNDAY"))
                 .andReturn().getResponse();
