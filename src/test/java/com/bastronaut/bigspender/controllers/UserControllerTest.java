@@ -28,6 +28,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD_UPDATE;
+import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_GET_INFO_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
@@ -50,6 +51,9 @@ public class UserControllerTest {
 
 
     private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
+    // Ordinarily we add the user ID as resource to the path, but can hardcode them in the test context
+    private static final String HARDCODED_USER_UPDATE_ENDPOINT = USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
+    private static final String HARDCODED_USER_GET_INFO_ENDPOINT = USERS_GET_INFO_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
 
     @Autowired
     private WebApplicationContext context;
@@ -93,7 +97,7 @@ public class UserControllerTest {
     @WithMockUser
     @Test
     public void testUpdateUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
                 .param(NAME_PARAM, TEST_FIRSTNAME_UPDATE)
                 .param(PASSWORD_PARAM, TEST_PASSWORD_UPDATE))
@@ -107,7 +111,7 @@ public class UserControllerTest {
     @WithMockUser
     @Test
     public void testUpdateUserInvalid() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT))
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("details").value(INVALID_UPDATE_INFORMATION))
@@ -117,13 +121,13 @@ public class UserControllerTest {
 
     @Test
     public void testNotAuthorizedGetUserInfo() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(USERS_GET_INFO_ENDPOINT).with(anonymous()))
+        mockMvc.perform(MockMvcRequestBuilders.get(HARDCODED_USER_GET_INFO_ENDPOINT).with(anonymous()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void testNotAuthorizedUpdateUserInfo() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(USERS_UPDATE_ENDPOINT).with(anonymous()))
+        mockMvc.perform(MockMvcRequestBuilders.get(HARDCODED_USER_UPDATE_ENDPOINT).with(anonymous()))
                 .andExpect(status().isUnauthorized());
 
     }

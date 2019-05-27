@@ -9,8 +9,8 @@ public class TestConstants {
 
     /** Constants for User related tests **/
     public static final String USERS_ENDPOINT = "/users";
-    public static final String USERS_UPDATE_ENDPOINT = "/users/1";
-    public static final String USERS_GET_INFO_ENDPOINT = "/users/1";
+    public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
+    public static final String USERS_GET_INFO_ENDPOINT = "/users/{userid}";
     public static final String USERID_PARAM_REPLACE = "{userid}";
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/transactionimport";
     public static final String TRANSACTIONS_ENDPOINT = "/users/" + USERID_PARAM_REPLACE +  "/transactions";

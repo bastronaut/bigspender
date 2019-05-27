@@ -40,44 +40,44 @@ public class Transaction {
 
     @Getter
     @Column(nullable = true)
-    private final LocalDate date;
+    private LocalDate date;
 
     @Getter
     @Column(nullable = true)
-    private final LocalTime time;
+    private LocalTime time;
 
     @Getter
     @Column(nullable = false)
-    private final String name;
+    private String name;
 
     @Getter
     @Column(nullable = false, name="account_number")
-    private final String accountNumber;
+    private String accountNumber;
 
     @Getter
     @Column(nullable = true, name = "receiving_account_number")
-    private final String receivingAccountNumber;
+    private String receivingAccountNumber;
 
     @Getter
     @Column(nullable = true)
-    private final TransactionCode code;
+    private TransactionCode code;
 
     @Getter
     @Column(nullable = false)
-    private final TransactionType type;
+    private TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
     @Getter
     @Column(nullable = false)
-    private final long amount;
+    private long amount;
 
     @Getter
     @Column(nullable = true, name = "mutation_type")
-    private final TransactionMutationType mutationType;
+    private TransactionMutationType mutationType;
 
     @Getter
     @Column(nullable = true, length = 512)
-    private final String statement;
+    private String statement;
 
     @Getter
     @Column(nullable = true)
@@ -86,7 +86,7 @@ public class Transaction {
     @Getter
     @JoinColumn(name="user_id", nullable = false)
     @ManyToOne
-    private final User user;
+    private User user;
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
@@ -110,6 +110,9 @@ public class Transaction {
         this.statement = statement;
         this.user = user;
     }
+
+    // default constructor for hibernate
+    private Transaction() {}
 
     public static Transaction fromTransactionDTO(final TransactionDTO transactionDTO, final User user) {
         return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),

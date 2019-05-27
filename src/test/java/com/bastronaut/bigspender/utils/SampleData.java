@@ -1,5 +1,6 @@
 package com.bastronaut.bigspender.utils;
 
+import com.bastronaut.bigspender.config.SecurityUtil;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
@@ -16,12 +17,15 @@ import static com.bastronaut.bigspender.enums.TransactionMutationType.DIVERSEN;
 import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANKIEREN;
 import static com.bastronaut.bigspender.enums.TransactionType.AF;
 import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
+import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 
 public class SampleData {
 
     private static final String username = "test@email.com";
+    private static final String ENCODED_TEST_PW =  SecurityUtil.encode(TEST_PASSWORD);
+    private static final User TESTUSER = new User(username, TEST_FIRSTNAME, ENCODED_TEST_PW);
 
-    private static final User TESTUSER = new User(username, "tester", "test");
     public static User getTestUser() { return TESTUSER; }
     /**
      * Sample transactions.csv map to the following t1-t7:

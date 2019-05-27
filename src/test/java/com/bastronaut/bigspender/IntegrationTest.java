@@ -1,8 +1,12 @@
-package com.bastronaut.bigspender.controllers;
+package com.bastronaut.bigspender;
 
 
+import com.bastronaut.bigspender.controllers.UserController;
+import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
+import com.bastronaut.bigspender.utils.SampleData;
 import org.junit.After;
 import org.junit.Before;
 import org.json.JSONObject;
@@ -28,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
@@ -66,10 +71,13 @@ public class IntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
     private MockMvc mockMvc;
 
-    String userpw = TEST_EMAIL + ":" + TEST_PASSWORD;
-    String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
+    final String userpw = TEST_EMAIL + ":" + TEST_PASSWORD;
+    final String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
     String userid;
 
 
@@ -80,18 +88,17 @@ public class IntegrationTest {
                 .apply(springSecurity())
                 .build();
 
-        // Arrange - register initial user
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
-                .param(NAME_PARAM, TEST_FIRSTNAME)
-                .param(EMAIL_PARAM, TEST_EMAIL)
-                .param(PASSWORD_PARAM, TEST_PASSWORD))
-                .andExpect(jsonPath("$.id").exists())
-                .andDo(print())
-                .andReturn();
+        // Setup initial user for various user related tests
+        final User testuser = SampleData.getTestUser();
+        userRepository.save(testuser);
 
+        // Setup sample transactions for validation
+        final List<Transaction> transactions = SampleData.getTransactions();
+        transactionRepository.saveAll(transactions);
 
-        final JSONObject json = new JSONObject(result.getResponse().getContentAsString());
-        userid = json.getString("id");
+        // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
+        final Optional<User> optionalUser = userRepository.findByEmail(TEST_EMAIL);
+        userid = String.valueOf(optionalUser.get().getId());
     }
 
 
@@ -100,21 +107,18 @@ public class IntegrationTest {
     public void testUpdateUser() throws Exception {
 
         // Update user, auth headers are required to inject the User argument into the controller
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT)
+        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
         .header(HttpHeaders.AUTHORIZATION, headerEncoded)
         .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
         .param(NAME_PARAM, TEST_FIRSTNAME_UPDATE))
                 .andDo(print())
                 .andExpect(jsonPath(EMAIL_PARAM).value(TEST_EMAIL_UPDATE))
                 .andExpect(jsonPath(NAME_PARAM).value(TEST_FIRSTNAME_UPDATE)).andReturn();
-
-
     }
 
     @Test
     public void testRegisterUserExists() throws Exception {
 
-        // Arrange - setup user to update
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
                 .param(NAME_PARAM, TEST_FIRSTNAME)
                 .param(EMAIL_PARAM, TEST_EMAIL)
@@ -171,6 +175,7 @@ public class IntegrationTest {
                 .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
                 .param("day" , "SUNDAY"))
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.date").value("2019-04-07"))
                 .andExpect(jsonPath("$.time").value("07:25:00"))
                 .andExpect(jsonPath("$.name").value("Test transaction"))
@@ -178,11 +183,23 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.receivingAccountNumber").value("NL20INGB0001987654"))
                 .andExpect(jsonPath("$.type").value("BIJ"))
                 .andExpect(jsonPath("$.amount").value("1980"))
-                .andExpect(jsonPath("$.day").value("SUNDAY"))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(jsonPath("$.day").value("SUNDAY"));
 
     }
 
+    @Test
+    public void testGetTransactionsForUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].accountNumber").value("NL41INGB0006212385"))
+                .andExpect(jsonPath("$.[1].accountNumber").value("NL41INGB0006451386"))
+                .andExpect(jsonPath("$.[2].accountNumber").value("NL20INGB0001234567"))
+                .andExpect(jsonPath("$.[3].accountNumber").value("NL20INGB0001234567"))
+                .andExpect(jsonPath("$.[4].accountNumber").value("NL20INGB0002345678"))
+                .andExpect(jsonPath("$.[5].accountNumber").value("NL20INGB0003456789"))
+                .andExpect(jsonPath("$.[6].accountNumber").value("NL20INGB0004567891"));
+    }
 
 }
