@@ -39,7 +39,7 @@ public class Transaction {
     private long id;
 
     @Getter
-    @Column(nullable = false)
+    @Column(nullable = true)
     private final LocalDate date;
 
     @Getter
@@ -80,8 +80,8 @@ public class Transaction {
     private final String statement;
 
     @Getter
-    @Column(nullable = false)
-    private final DayOfWeek day; // non-normalized, maybe useful for training data
+    @Column(nullable = true)
+    private DayOfWeek day; // non-normalized, maybe useful for training data
 
     @Getter
     @JoinColumn(name="user_id", nullable = false)
@@ -94,7 +94,11 @@ public class Transaction {
                        @NonNull final TransactionMutationType mutationType, @NonNull final String statement,
                        final User user) {
         this.date = date;
-        this.day = date.getDayOfWeek();
+        if (date != null) {
+            this.day = date.getDayOfWeek();
+        } else {
+            this.day = null;
+        }
         this.time = time;
         this.name = name;
         this.accountNumber = accountNumber;

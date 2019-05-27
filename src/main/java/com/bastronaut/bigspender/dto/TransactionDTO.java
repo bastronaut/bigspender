@@ -6,9 +6,6 @@ import com.bastronaut.bigspender.enums.TransactionType;
 import com.bastronaut.bigspender.models.Transaction;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -16,11 +13,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
 
 @Getter
 public class TransactionDTO {
-
-    private final Logger logger = LoggerFactory.getLogger(TransactionDTO.class);
 
     private long id;
     private final LocalDate date;
@@ -35,10 +31,9 @@ public class TransactionDTO {
     private final String statement;
     private final DayOfWeek day;
 
-    public TransactionDTO(final long id, final String date, final String time, final String name,
+    public TransactionDTO(final String date, final String time, final String name,
                           final String accountNumber, final String receivingAccountNumber, final String code,
-                          final String type, final long amount, final String mutationType, final String statement) {
-        this.id = id;
+                          final String type, final String amount, final String mutationType, final String statement) {
         this.date = determineDate(date);
         this.time = determineTime(time);
         this.name = StringUtils.isNotBlank(name) ? name : null;
@@ -52,21 +47,27 @@ public class TransactionDTO {
         this.day = this.date != null ? this.date.getDayOfWeek() : null;
     }
 
+    private void setId(final long id) {
+        this.id = id;
+    }
+
     private LocalDate determineDate(final String date) {
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
+        if (date == null) return null;
+
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             return LocalDate.parse(date, dtf);
         } catch (DateTimeParseException e) {
-            logger.info(String.format("Can't determine date for: %s", date), e);
             return null;
         }
     }
 
     private LocalTime determineTime(final String time) {
+        if (time == null) return null;
+
         try {
             return LocalTime.parse(time);
         } catch(DateTimeParseException e) {
-            logger.info(String.format("Can't determine time for: %s", time), e);
             return null;
         }
     }
@@ -76,14 +77,13 @@ public class TransactionDTO {
             Number parsed = NumberFormat.getInstance().parse(amount);
             return parsed.longValue();
         } catch (ParseException e) {
-            logger.info(String.format("Can't parse number to long: %s", amount), amount);
             return 0;
         }
     }
 
     private TransactionMutationType determineMutationType(final String mutationType) {
         if (StringUtils.isNotBlank(mutationType)) {
-            return TransactionMutationType.valueOf(mutationType);
+            return TransactionMutationType.getByValue(mutationType);
         } else {
             return null;
         }
@@ -91,10 +91,33 @@ public class TransactionDTO {
 
 
     public static TransactionDTO fromTransaction(Transaction transaction) {
-        return new TransactionDTO(transaction.getId(), transaction.getDate().toString(),
-                transaction.getTime().toString(), transaction.getName(), transaction.getAccountNumber(),
+        final TransactionDTO transactionDTO = new TransactionDTO(getDateString(transaction.getDate()),
+                getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
                 transaction.getReceivingAccountNumber(), transaction.getCode().toString(),
-                transaction.getType().toString(), transaction.getAmount(),
-                transaction.getMutationType().toString(), transaction.getStatement());
+                transaction.getType().toString(), Long.toString(transaction.getAmount()),
+                getMutationType(transaction.getMutationType()), transaction.getStatement());
+
+        transaction.setId(transaction.getId());
+        return transactionDTO;
+    }
+
+    private static String getDateString(LocalDate date) {
+        if (date == null) return null;
+
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(dtf);
+    }
+
+    private static String getTimeString(LocalTime time) {
+        if (time == null) return null;
+
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+        return time.format(dtf);
+    }
+
+    private static String getMutationType(TransactionMutationType mutationType) {
+        if (mutationType == null) return null;
+
+        return mutationType.getType();
     }
 }
