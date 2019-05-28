@@ -119,3 +119,7 @@ Getting full security context in junit test - can set breakpoint in @Configurati
 ### features todo
 tijdlijn uitgaven per dag
 hoofdcategorien, inzoomen  per subcategorie
+
+
+### Breakpoints for controllers
+For easy debugging, set breakpoint in DispatcherServlet.java line 1055 for method processDispatchResult(...) in method doDispatch(...)

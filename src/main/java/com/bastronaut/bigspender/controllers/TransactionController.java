@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionDTO;
+import com.bastronaut.bigspender.dto.TransactionDeleteDTO;
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,5 +84,20 @@ public class TransactionController {
         final Transaction savedTransaction = transactionService.saveTransaction(transaction);
         final TransactionDTO result = TransactionDTO.fromTransaction(savedTransaction);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    /**
+     * REST Delete method should return a 204 for successfull deletion but no entity in response,
+     * and a 404 when attempting to delete a nonexisting resource. https://restfulapi.net/http-methods/#delete
+     * @param user
+     * @param deleteTransactionDTO
+     * @return
+     */
+    @DeleteMapping(value = TRANSACTION_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteTransaction(final @AuthenticationPrincipal User user,
+                                            final TransactionDeleteDTO deleteTransactionDTO) {
+
+        final Transaction deleted = transactionService.deleteTransactionForUser(deleteTransactionDTO.getId(), user);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

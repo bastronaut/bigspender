@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender;
+package com.bastronaut.bigspender.integration;
 
 
 import com.bastronaut.bigspender.controllers.UserController;
@@ -45,7 +45,9 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_IMPORT_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
@@ -79,6 +81,7 @@ public class IntegrationTest {
     final String userpw = TEST_EMAIL + ":" + TEST_PASSWORD;
     final String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
     String userid;
+    List<Transaction> transactions;
 
 
     @Before
@@ -93,7 +96,7 @@ public class IntegrationTest {
         userRepository.save(testuser);
 
         // Setup sample transactions for validation
-        final List<Transaction> transactions = SampleData.getTransactions();
+        this.transactions = SampleData.getTransactions();
         transactionRepository.saveAll(transactions);
 
         // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
@@ -200,6 +203,35 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.[4].accountNumber").value("NL20INGB0002345678"))
                 .andExpect(jsonPath("$.[5].accountNumber").value("NL20INGB0003456789"))
                 .andExpect(jsonPath("$.[6].accountNumber").value("NL20INGB0004567891"));
+    }
+
+    @Test
+    public void testDeleteTransactionForUser() throws Exception {
+        final Transaction firstTransaction = transactions.get(0);
+        final String firstTransactionId = String.valueOf(firstTransaction.getId());
+        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userid).replace(TRANSACTIONID_PARAM_REPLACE, firstTransactionId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+                .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        // second run should be a 404 for nonexisting resource, so 2nd time deleting the resource
+        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+                .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteNonExistingResource() throws Exception {
+        final String nonExistingResource = "9999987654321";
+        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userid).replace(TRANSACTIONID_PARAM_REPLACE, nonExistingResource);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+                .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 
 }

@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TransactionsControllerTest {
 
     private static final String GET_TRANSACTION_ENDPOINT = "/users/1/transactions/2";
+    private static final String DELETE_TRANSACTION_ENDPOINT = "/users/1/transactions/1";
     private static final String GET_TRANSACTIONS_ENDPOINT = "/users/1/transactions";
 
     @Autowired
@@ -83,6 +85,8 @@ public class TransactionsControllerTest {
 
         given(transactionService.getTransactionForUser(any(), anyLong())).willReturn(optionalTransaction);
         given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
+        // Returns different result after the first result with varargs argument
+        given(transactionService.deleteTransactionForUser(anyLong(), any())).willReturn(testTransaction, null);
     }
 
     @Test
@@ -114,7 +118,8 @@ public class TransactionsControllerTest {
     @Test
     public void testRetrieveUserTransactions() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTIONS_ENDPOINT))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].accountNumber").value("NL41INGB0006212385"))
                 .andExpect(jsonPath("$[0].type").value("AF"))
                 .andExpect(jsonPath("$[6].accountNumber").value("NL20INGB0004567891"))
@@ -126,10 +131,20 @@ public class TransactionsControllerTest {
 //        assert(false);
 //    }
 //
-//    @Test
-//    public void testDeleteTransaction() {
-//        assert(false);
-//    }
+    @WithMockUser
+    @Test
+    public void testDeleteTransaction() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT)
+                .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        // second run should be a 404 for nonexisting resource, so 2nd time deleting the resource
+        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT)
+                .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
 //
 //    @Test
 //    public void testDeleteTransactions() {

@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.repositories;
 
 import com.bastronaut.bigspender.models.Transaction;
+import com.bastronaut.bigspender.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 //    long deleteByUserIdAndTransactionId(int userid, long transactionid);
 
 //    long remove(Transaction transaction);
+
+    Transaction deleteByIdAndUser(final long id, final User user);
 
     void deleteAll(Iterable<? extends Transaction> entities);
 

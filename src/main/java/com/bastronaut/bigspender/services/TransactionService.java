@@ -47,7 +47,9 @@ public class TransactionService {
      * @param transactionId
      * @return
      */
-    public long deleteTransactionForUser(final User user, final long transactionId) {
+    public Transaction deleteTransactionForUser(final long transactionId, final User user) {
+        String yo = "h";
+        return transactionRepository.deleteByIdAndUser(transactionId, user);
 //        final Optional<Transaction> transaction = transactionRepository.findbyUserIdAndId(user.getId(),
 //                transactionId);
 //        if (!transaction.isPresent()) {
@@ -55,7 +57,7 @@ public class TransactionService {
 //                    transactionId, user.getId()));
 //        }
 //        return transactionRepository.remove(transaction.get());
-        return 1;
+
         // TODO
     }
 
