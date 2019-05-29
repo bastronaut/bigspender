@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender.dto;
+package com.bastronaut.bigspender.dto.out;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
