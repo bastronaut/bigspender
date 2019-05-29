@@ -2,10 +2,10 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionDTO;
 import com.bastronaut.bigspender.dto.TransactionDeleteDTO;
+import com.bastronaut.bigspender.dto.TransactionDeleteDTOTwo;
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
-import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,21 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.bastronaut.bigspender.enums.TransactionCode.BA;
-import static com.bastronaut.bigspender.enums.TransactionCode.GT;
-import static com.bastronaut.bigspender.enums.TransactionMutationType.BETAALAUTOMAAT;
-import static com.bastronaut.bigspender.enums.TransactionMutationType.ONLINEBANKIEREN;
-import static com.bastronaut.bigspender.enums.TransactionType.AF;
-import static com.bastronaut.bigspender.enums.TransactionType.BIJ;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -86,18 +75,33 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    // TODO add validation to user and request path
+    @DeleteMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionDeleteDTO> deleteTransactions(final @AuthenticationPrincipal User user,
+                                                                   final TransactionDeleteDTOTwo transactionDeleteDTO) {
+        long x = transactionDeleteDTO.getDeleted();
+        final long deleted = transactionService.deleteUserTransactions(user);
+        final TransactionDeleteDTO deleteDTO = new TransactionDeleteDTO(deleted);
+        return ResponseEntity.status(HttpStatus.OK).body(deleteDTO);
+    }
+
+    // TODO add validation to user and request path
     /**
      * REST Delete method should return a 204 for successfull deletion but no entity in response,
      * and a 404 when attempting to delete a nonexisting resource. https://restfulapi.net/http-methods/#delete
-     * @param user
-     * @param deleteTransactionDTO
+     * @param user the user to delete for
+     * @param transactionid the transaction id to delete
      * @return
      */
     @DeleteMapping(value = TRANSACTION_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity deleteTransaction(final @AuthenticationPrincipal User user,
-                                            final TransactionDeleteDTO deleteTransactionDTO) {
+                                            final @PathVariable long transactionid) {
 
-        final Transaction deleted = transactionService.deleteTransactionForUser(deleteTransactionDTO.getId(), user);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        final long deleted = transactionService.deleteUserTransaction(transactionid, user);
+        if (deleted > 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

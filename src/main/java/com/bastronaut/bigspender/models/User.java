@@ -2,9 +2,8 @@ package com.bastronaut.bigspender.models;
 
 
 
-import com.bastronaut.bigspender.config.SecurityConfiguration;
-import com.bastronaut.bigspender.dto.UserRegistrationDTO;
-import com.bastronaut.bigspender.dto.UserUpdateDTO;
+import com.bastronaut.bigspender.dto.in.UserRegistrationDTO;
+import com.bastronaut.bigspender.dto.in.UserUpdateDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

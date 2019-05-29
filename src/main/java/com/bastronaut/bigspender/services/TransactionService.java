@@ -41,45 +41,23 @@ public class TransactionService {
         return null;
     }
 
-    /**
-     *
-     * @param user
-     * @param transactionId
-     * @return
-     */
-    public Transaction deleteTransactionForUser(final long transactionId, final User user) {
-        String yo = "h";
-        return transactionRepository.deleteByIdAndUser(transactionId, user);
-//        final Optional<Transaction> transaction = transactionRepository.findbyUserIdAndId(user.getId(),
-//                transactionId);
-//        if (!transaction.isPresent()) {
-//            throw new TransactionException(String.format("Transaction with id %s not found for user %s",
-//                    transactionId, user.getId()));
-//        }
-//        return transactionRepository.remove(transaction.get());
 
-        // TODO
+    public long deleteUserTransaction(final long transactionId, final User user) {
+        return transactionRepository.deleteByIdAndUser(transactionId, user);
+    }
+
+    public long deleteUserTransactions(final User user) {
+        return transactionRepository.deleteByUser(user);
     }
 
     public TransactionImport saveTransactionImport(final TransactionImport transactionImport) {
+
         return transactionImportRepository.save(transactionImport);
     }
 
 
-    /**
-     *
-     * @param user
-     * @return
-     */
-    public long deleteInBulkByUserId(final User user) {
-        final long nrOfTransactions = transactionRepository.countByUserId(user.getId());
-        if (nrOfTransactions == 0) {
-            throw new TransactionException("No transactions for user found");
-        }
-        return transactionRepository.deleteInBulkByUserId(user.getId());
-    }
-
     public Transaction saveTransaction(final Transaction transaction) {
+
         return transactionRepository.save(transaction);
     }
 }

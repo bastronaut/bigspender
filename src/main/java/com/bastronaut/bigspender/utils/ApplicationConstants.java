@@ -9,7 +9,9 @@ public class ApplicationConstants {
     public static final String USERS_ENDPOINT = "/users";
     public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
 
-    /*** CSV file export header row titles ***/
+    /** Parameters */
+    public static final String TRANSACTIONID_PARAM = "transactionIds";
+    public static final String TRANSACTIONID_SEPERATOR = "transactionIds";
 
     /** ING **/
     public static final String CSV_HEADER_DATE = "Datum";

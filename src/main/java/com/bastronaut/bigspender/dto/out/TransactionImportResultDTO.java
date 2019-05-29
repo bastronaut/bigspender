@@ -1,5 +1,7 @@
-package com.bastronaut.bigspender.dto;
+package com.bastronaut.bigspender.dto.out;
 
+import com.bastronaut.bigspender.dto.TransactionDTO;
+import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
@@ -13,14 +15,14 @@ import java.util.stream.Stream;
 
 
 @Getter
-public class TransactionImportDTO {
+public class TransactionImportResultDTO {
 
     private final List<TransactionDTO> transactions;
     private final LocalDate importDate;
     private final int importCount;
     private final UserDTO user;
 
-    public TransactionImportDTO(TransactionImport transactionImport) {
+    public TransactionImportResultDTO(TransactionImport transactionImport) {
         final List<Transaction> txs = transactionImport.getTransactions();
 
         this.transactions = txs.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toList());

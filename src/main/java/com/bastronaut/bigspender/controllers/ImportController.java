@@ -1,7 +1,8 @@
 package com.bastronaut.bigspender.controllers;
 
-import com.bastronaut.bigspender.dto.TransactionImportDTO;
-import com.bastronaut.bigspender.dto.UserRegistrationDTO;
+import com.bastronaut.bigspender.dto.in.TransactionImportDTO;
+import com.bastronaut.bigspender.dto.out.TransactionImportResultDTO;
+import com.bastronaut.bigspender.dto.in.UserRegistrationDTO;
 import com.bastronaut.bigspender.exceptions.TransactionImportException;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Controller for /import/{userid}/transactions/ endpoint, responsible for allowing users to upload
@@ -48,23 +50,34 @@ public class ImportController {
 
     /**
      * POST endpoint for a CSV file of transactions
-     * @param files requires a key named: "file" and a CSV attached
+
+     */
+    /**
+     *
+     * @param user The user to perform the import for
+     * @param transactionImportDTO the model object for specifying additional import details
+     * @param uploaded requires a key named: "file" and a CSV attached
      * @return a DTO result of the transaction import, containing all of the transactions that were
      * imported. (consumes = "multipart/form-data")
+     *
+     * TODO: move parsing to a parsing service that can pick the specific bank once multiple bank import is implemented
+     * TODO: ideal would be to package the Multipart File into the DTO, bu can't figure it out yet
+     * @return
      */
-    @PostMapping
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<TransactionImportDTO> postTransactions(@AuthenticationPrincipal final User user,
-            @RequestParam(value = "file", required = false) final List<MultipartFile> files) {
+    public ResponseEntity<TransactionImportResultDTO> postTransactions(@AuthenticationPrincipal final User user,
+                                                                       final TransactionImportDTO transactionImportDTO,
+                                                                       @RequestParam(value = "file", required = false) final MultipartFile uploaded) {
 
-        if (files != null && files.size() > 0) {
+        if (uploaded != null) {
             try {
-                final InputStream file = files.get(0).getInputStream();
+                final InputStream file = uploaded.getInputStream();
 
                 final TransactionImport parsedTransactions = transactionParser.parseTransactions(file, user);
                 final TransactionImport importedTransactions = transactionService.saveTransactionImport(parsedTransactions);
-                final TransactionImportDTO transactionImportDTO = convertToDTO(importedTransactions);
-                return ResponseEntity.status(HttpStatus.OK).body(transactionImportDTO);
+                final TransactionImportResultDTO transactionImportResultDTO = convertToDTO(importedTransactions);
+                return ResponseEntity.status(HttpStatus.OK).body(transactionImportResultDTO);
 
             } catch (IOException e) {
                 logger.info("Error getting and parsing CSV from POST request", e);
@@ -74,8 +87,8 @@ public class ImportController {
     }
 
 
-    private TransactionImportDTO convertToDTO(TransactionImport transactionImport) {
-        return new TransactionImportDTO(transactionImport);
+    private TransactionImportResultDTO convertToDTO(TransactionImport transactionImport) {
+        return new TransactionImportResultDTO(transactionImport);
     }
 
 

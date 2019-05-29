@@ -13,17 +13,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findAllByUserId(int userid);
 
-//    Optional<Transaction> findbyUserIdAndId(int userid, long transactionid);
+    long deleteByUser(final User user);
 
-//    long deleteByUserIdAndTransactionId(int userid, long transactionid);
-
-//    long remove(Transaction transaction);
-
-    Transaction deleteByIdAndUser(final long id, final User user);
+    long deleteByIdAndUser(final long id, final User user);
 
     void deleteAll(Iterable<? extends Transaction> entities);
-
-    long deleteInBulkByUserId(int userid);
 
     long countByUserId(int userid);
 }

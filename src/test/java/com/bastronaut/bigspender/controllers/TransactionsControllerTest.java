@@ -2,25 +2,17 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.services.TransactionService;
-import com.bastronaut.bigspender.utils.JsonResponseUtil;
 import com.bastronaut.bigspender.utils.SampleData;
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -86,7 +78,7 @@ public class TransactionsControllerTest {
         given(transactionService.getTransactionForUser(any(), anyLong())).willReturn(optionalTransaction);
         given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
         // Returns different result after the first result with varargs argument
-        given(transactionService.deleteTransactionForUser(anyLong(), any())).willReturn(testTransaction, null);
+        given(transactionService.deleteUserTransaction(anyLong(), any())).willReturn(1L, 0L);
     }
 
     @Test
@@ -134,14 +126,12 @@ public class TransactionsControllerTest {
     @WithMockUser
     @Test
     public void testDeleteTransaction() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT)
-                .param("id", "1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
         // second run should be a 404 for nonexisting resource, so 2nd time deleting the resource
-        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT)
-                .param("id", "1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
