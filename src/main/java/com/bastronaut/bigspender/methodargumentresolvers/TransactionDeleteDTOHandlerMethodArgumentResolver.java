@@ -1,6 +1,6 @@
 package com.bastronaut.bigspender.methodargumentresolvers;
 
-import com.bastronaut.bigspender.dto.TransactionDeleteDTO;
+import com.bastronaut.bigspender.dto.in.TransactionDeleteDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -44,7 +44,7 @@ public class TransactionDeleteDTOHandlerMethodArgumentResolver implements Handle
         deleted.add(1L);
         deleted.add(2L);
         return null;
-//        return new TransactionDeleteDTO(2, deleted);
+//        return new TransactionDeleteResultDTO(2, deleted);
     }
 
     private boolean isNotSet(final String value) {

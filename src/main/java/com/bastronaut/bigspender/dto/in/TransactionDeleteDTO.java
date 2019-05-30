@@ -3,12 +3,11 @@ package com.bastronaut.bigspender.dto.in;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-public class TransactionDelete {
+@AllArgsConstructor
+public class TransactionDeleteDTO {
 
-    ;private String[] transactionIds;
-
-    public TransactionDelete(String[] transactionIds) {
-        this.transactionIds = transactionIds;
-    }
+    private final List<Long> transactionIds;
 }

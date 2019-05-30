@@ -34,6 +34,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -126,6 +127,12 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.[6].accountNumber").value("NL20INGB0004567891"));
     }
 
+    // TODO service is wrong
+    @Test
+    public void testGetTransactionForUser() throws Exception {
+        assertTrue(false);
+    }
+
     // Annotation required for thread safety https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     @Transactional
     @Test
@@ -153,17 +160,13 @@ public class TransactionIntegrationTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
-                .param("transactionIds", transactionDeleteIds)
-                .param("deleted", "5"))
+                .param("transactionIds", transactionDeleteIds))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.deleted").value(transactions.size()))
-                .andExpect(jsonPath("$.transactions[0]").value("1"))
-                .andExpect(jsonPath("$.transactions[1]").value("2"))
-                .andExpect(jsonPath("$.transactions[2]").value("3"))
-                .andExpect(jsonPath("$.transactions[3]").value("4"))
-                .andExpect(jsonPath("$.transactions[4]").value("5"))
-                .andExpect(jsonPath("$.transactions[5]").value("6"));
+                .andExpect(jsonPath("$.deleted").value(transactionDeleteIds.length))
+                .andExpect(jsonPath("$.transactionIds[0]").value(txId1))
+                .andExpect(jsonPath("$.transactionIds[1]").value(txId2))
+                .andExpect(jsonPath("$.transactionIds[2]").value(txId3));
     }
 
     @Transactional

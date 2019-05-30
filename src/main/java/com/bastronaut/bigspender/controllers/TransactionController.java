@@ -1,8 +1,8 @@
 package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.TransactionDTO;
-import com.bastronaut.bigspender.dto.TransactionDeleteDTO;
-import com.bastronaut.bigspender.dto.TransactionDeleteDTOTwo;
+import com.bastronaut.bigspender.dto.in.TransactionDeleteDTO;
+import com.bastronaut.bigspender.dto.out.TransactionDeleteResultDTO;
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
@@ -75,13 +77,16 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+
     // TODO add validation to user and request path
     @DeleteMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionDeleteDTO> deleteTransactions(final @AuthenticationPrincipal User user,
-                                                                   final TransactionDeleteDTOTwo transactionDeleteDTO) {
-        long x = transactionDeleteDTO.getDeleted();
-        final long deleted = transactionService.deleteUserTransactions(user);
-        final TransactionDeleteDTO deleteDTO = new TransactionDeleteDTO(deleted);
+    public ResponseEntity<TransactionDeleteResultDTO> deleteTransactions(final @AuthenticationPrincipal User user,
+                                                                         final TransactionDeleteDTO transactionDeleteDTO) {
+
+        final List<Transaction> deletedTransactions = transactionService.deleteUserTransactions(transactionDeleteDTO.getTransactionIds(), user);
+
+        final TransactionDeleteResultDTO deleteDTO = new TransactionDeleteResultDTO(deletedTransactions);
+
         return ResponseEntity.status(HttpStatus.OK).body(deleteDTO);
     }
 
