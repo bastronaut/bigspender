@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.integration;
 
 
+import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
@@ -130,6 +131,27 @@ public class TransactionIntegrationTest {
     // TODO service is wrong
     @Test
     public void testGetTransactionForUser() throws Exception {
+        final Transaction tx1 = transactions.get(1);
+        final long txid = tx1.getId();
+        final String getTransactionEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userid)
+                .replace(TRANSACTIONID_PARAM_REPLACE, String.valueOf(txid));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded))
+                .andDo(print())
+                .andExpect(jsonPath("$.accountNumber").value(tx1.getAccountNumber()))
+                .andExpect(jsonPath("$.receivingAccountNumber").value(tx1.getReceivingAccountNumber()))
+                .andExpect(jsonPath("$.statement").value(tx1.getStatement()))
+                .andExpect(jsonPath("$.day").value(tx1.getDay().toString()))
+                .andExpect(jsonPath("$.amount").value(String.valueOf(tx1.getAmount())))
+                .andExpect(jsonPath("$.mutationType").value(tx1.getMutationType().getType()))
+                .andExpect(jsonPath("$.code").value(tx1.getCode().getType()))
+                .andExpect(jsonPath("$.name").value(tx1.getName()))
+                .andExpect(jsonPath("$.time").value(tx1.getTime().toString()))
+                .andExpect(jsonPath("$.id").value(String.valueOf(tx1.getId())))
+                .andExpect(status().isOk());
+
+        //todo
         assertTrue(false);
     }
 
@@ -149,7 +171,7 @@ public class TransactionIntegrationTest {
     @Test
     public void testDeleteMultipleTransactionsForUser() throws Exception {
         final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userid);
-        final String[] transactionDeleteIds = new String[3];
+        final String[] transactionDeleteIds = new String[4];
         final String txId1 = String.valueOf(transactions.get(0).getId());
         final String txId2 = String.valueOf(transactions.get(2).getId());
         final String txId3 = String.valueOf(transactions.get(4).getId());
@@ -157,13 +179,14 @@ public class TransactionIntegrationTest {
         transactionDeleteIds[0] = txId1;
         transactionDeleteIds[1] = txId2;
         transactionDeleteIds[2] = txId3;
+        transactionDeleteIds[3] = "9858213821";
 
         mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param("transactionIds", transactionDeleteIds))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.deleted").value(transactionDeleteIds.length))
+                .andExpect(jsonPath("$.deleted").value(3))
                 .andExpect(jsonPath("$.transactionIds[0]").value(txId1))
                 .andExpect(jsonPath("$.transactionIds[1]").value(txId2))
                 .andExpect(jsonPath("$.transactionIds[2]").value(txId3));

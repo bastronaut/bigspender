@@ -37,9 +37,8 @@ public class TransactionService {
      * @param transactionId
      * @return
      */
-    public Optional<Transaction> getTransactionForUser(final User user, final long transactionId) {
-//        return transactionRepository.findbyUserIdAndId(user.getId(), transactionId);
-        return null;
+    public Optional<Transaction> getTransactionForUser(final long transactionId, final User user) {
+        return transactionRepository.findByIdAndUser(transactionId, user);
     }
 
 

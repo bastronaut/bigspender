@@ -14,10 +14,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Transaction save(Transaction transaction);
 
-    // TODO refactor to findAllByUser
     List<Transaction> findAllByUserId(int userid);
 
     List<Transaction> findByIdInAndUser(List<Long> ids, User user);
+
+    Optional<Transaction> findByIdAndUser(long id, User user);
 
     long deleteByUser(final User user);
 
