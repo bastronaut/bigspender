@@ -98,9 +98,9 @@ public class TransactionIntegrationTest {
                 .param("code" , "BA")
                 .param("type" , "BIJ")
                 .param("amount" , "1980")
-                .param("mutationType" , "DIVERSEN")
+                .param("mutationType" , "Diversen")
                 .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
-                .param("day" , "SUNDAY"))
+                .param("day" , "7"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.date").value("2019-04-07"))
@@ -110,7 +110,7 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.receivingAccountNumber").value("NL20INGB0001987654"))
                 .andExpect(jsonPath("$.type").value("BIJ"))
                 .andExpect(jsonPath("$.amount").value("1980"))
-                .andExpect(jsonPath("$.day").value("SUNDAY"));
+                .andExpect(jsonPath("$.day").value("7"));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.accountNumber").value(tx1.getAccountNumber()))
                 .andExpect(jsonPath("$.receivingAccountNumber").value(tx1.getReceivingAccountNumber()))
                 .andExpect(jsonPath("$.statement").value(tx1.getStatement()))
-                .andExpect(jsonPath("$.day").value(tx1.getDay().toString()))
+                .andExpect(jsonPath("$.day").value(tx1.getDay().getValue()))
                 .andExpect(jsonPath("$.amount").value(String.valueOf(tx1.getAmount())))
                 .andExpect(jsonPath("$.mutationType").value(tx1.getMutationType().getType()))
                 .andExpect(jsonPath("$.code").value(tx1.getCode().getType()))
@@ -151,8 +151,6 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.id").value(String.valueOf(tx1.getId())))
                 .andExpect(status().isOk());
 
-        //todo
-        assertTrue(false);
     }
 
     // Annotation required for thread safety https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread

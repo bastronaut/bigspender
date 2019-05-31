@@ -75,7 +75,7 @@ public class TransactionsControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        given(transactionService.getTransactionForUser(any(), anyLong())).willReturn(optionalTransaction);
+        given(transactionService.getTransactionForUser(anyLong(), any())).willReturn(optionalTransaction);
         given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
         // Returns different result after the first result with varargs argument
         given(transactionService.deleteUserTransaction(anyLong(), any())).willReturn(1L, 0L);
@@ -97,9 +97,9 @@ public class TransactionsControllerTest {
                 .andExpect(jsonPath("accountNumber").value("NL41INGB0006212385"))
                 .andExpect(jsonPath("name").value("AH to go 5869 DenHaa"))
                 .andExpect(jsonPath("amount").value(180))
-                .andExpect(jsonPath("mutationType").value("BETAALAUTOMAAT"))
+                .andExpect(jsonPath("mutationType").value("Betaalautomaat"))
                 .andExpect(jsonPath("statement").value("Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019"))
-                .andExpect(jsonPath("day").value("MONDAY"))
+                .andExpect(jsonPath("day").value("Monday"))
                 .andExpect(jsonPath("time").value("22:39:00"))
                 .andExpect(jsonPath("date").value("2019-04-01"))
                 .andExpect(jsonPath("id").value("0"))

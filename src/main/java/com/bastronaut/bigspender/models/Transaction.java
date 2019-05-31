@@ -1,7 +1,8 @@
 package com.bastronaut.bigspender.models;
 
 
-import com.bastronaut.bigspender.dto.TransactionDTO;
+import com.bastronaut.bigspender.dto.in.TransactionAddDTO;
+import com.bastronaut.bigspender.dto.out.TransactionDTO;
 import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.enums.TransactionType;
@@ -119,6 +120,13 @@ public class Transaction {
                 transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), transactionDTO.getCode(),
                 transactionDTO.getType(), transactionDTO.getAmount(), transactionDTO.getMutationType(),
                 transactionDTO.getStatement(), user);
+    }
+
+    public static Transaction fromTransactionAddDTO(final TransactionAddDTO transactionAddDTO, final User user) {
+        return new Transaction(transactionAddDTO.getDate(), transactionAddDTO.getTime(), transactionAddDTO.getName(),
+                transactionAddDTO.getAccountNumber(), transactionAddDTO.getReceivingAccountNumber(), transactionAddDTO.getCode(),
+                transactionAddDTO.getType(), transactionAddDTO.getAmount(), transactionAddDTO.getMutationType(),
+                transactionAddDTO.getStatement(), user);
     }
 
 }

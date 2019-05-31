@@ -1,17 +1,14 @@
 package com.bastronaut.bigspender.dto.out;
 
-import com.bastronaut.bigspender.dto.TransactionDTO;
 import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Getter

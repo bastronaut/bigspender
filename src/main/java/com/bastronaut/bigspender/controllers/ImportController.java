@@ -92,8 +92,4 @@ public class ImportController {
     }
 
 
-    private User convertToEntity(UserRegistrationDTO userRegistrationDTO) {
-        return new User(userRegistrationDTO.getEmail(), userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
-    }
-
 }

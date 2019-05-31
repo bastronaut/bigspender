@@ -98,10 +98,10 @@ public class TransactionImportIntegrationTest {
                 .andExpect(jsonPath("$.transactions[:1].type").value("AF"))
                 .andExpect(jsonPath("$.transactions[6:].receivingAccountNumber").value("NL20INGB0001987654"))
                 .andExpect(jsonPath("$.transactions[6:].amount").value(1980))
-                .andExpect(jsonPath("$.transactions[6:].mutationType").value("DIVERSEN"))
+                .andExpect(jsonPath("$.transactions[6:].mutationType").value("Diversen"))
                 .andExpect(jsonPath("$.user.email").value("test@email.com"))
                 .andExpect(jsonPath("$.user.name").value("tester"))
                 .andExpect(jsonPath("$.transactions[6:].statement").value("Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
-                .andExpect(jsonPath("$.transactions[6:].day").value("SUNDAY"));
+                .andExpect(jsonPath("$.transactions[6:].day").value("Sunday"));
     }
 }

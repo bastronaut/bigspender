@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender.dto;
+package com.bastronaut.bigspender.dto.out;
 
 import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.enums.TransactionMutationType;
@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.Temporal;
 
 @Getter
 public class TransactionDTO {
@@ -24,31 +23,27 @@ public class TransactionDTO {
     private final String name;
     private final String accountNumber;
     private final String receivingAccountNumber;
-    private final TransactionCode code;
-    private final TransactionType type;
+    private final String code;
+    private final String type;
     private final long amount;
-    private final TransactionMutationType mutationType;
+    private final String mutationType;
     private final String statement;
-    private final DayOfWeek day;
+    private final int day;
 
     public TransactionDTO(final String date, final String time, final String name,
-                          final String accountNumber, final String receivingAccountNumber, final String code,
-                          final String type, final String amount, final String mutationType, final String statement) {
+                          final String accountNumber, final String receivingAccountNumber, final TransactionCode code,
+                          final String type, final String amount, final TransactionMutationType mutationType, final String statement) {
         this.date = determineDate(date);
         this.time = determineTime(time);
         this.name = StringUtils.isNotBlank(name) ? name : null;
         this.accountNumber = StringUtils.isNotBlank(accountNumber) ? accountNumber : null;
         this.receivingAccountNumber = StringUtils.isNotBlank(receivingAccountNumber) ? receivingAccountNumber : null;;
-        this.code = TransactionCode.getByCode(code);
-        this.type = TransactionType.getByType(type);
+        this.code = getMutationCode(code);
+        this.type = TransactionType.getByType(type).getType();
         this.amount = determineAmount(amount);
-        this.mutationType = determineMutationType(mutationType);
+        this.mutationType = getMutationType(mutationType);
         this.statement = StringUtils.isNotBlank(statement) ? statement : null;
-        this.day = this.date != null ? this.date.getDayOfWeek() : null;
-    }
-
-    private void setId(final long id) {
-        this.id = id;
+        this.day = this.date != null ? this.date.getDayOfWeek().getValue() : null;
     }
 
     private LocalDate determineDate(final String date) {
@@ -81,21 +76,12 @@ public class TransactionDTO {
         }
     }
 
-    private TransactionMutationType determineMutationType(final String mutationType) {
-        if (StringUtils.isNotBlank(mutationType)) {
-            return TransactionMutationType.getByValue(mutationType);
-        } else {
-            return null;
-        }
-    }
-
-
     public static TransactionDTO fromTransaction(Transaction transaction) {
         final TransactionDTO transactionDTO = new TransactionDTO(getDateString(transaction.getDate()),
                 getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
-                transaction.getReceivingAccountNumber(), transaction.getCode().toString(),
+                transaction.getReceivingAccountNumber(), transaction.getCode(),
                 transaction.getType().toString(), Long.toString(transaction.getAmount()),
-                getMutationType(transaction.getMutationType()), transaction.getStatement());
+                transaction.getMutationType(), transaction.getStatement());
 
         transaction.setId(transaction.getId());
         return transactionDTO;
@@ -116,8 +102,14 @@ public class TransactionDTO {
     }
 
     private static String getMutationType(TransactionMutationType mutationType) {
-        if (mutationType == null) return null;
+        if (mutationType == null) return StringUtils.EMPTY;
 
         return mutationType.getType();
+    }
+
+    private static String getMutationCode(TransactionCode mutationCode) {
+        if (mutationCode == null) return StringUtils.EMPTY;
+
+        return mutationCode.getType();
     }
 }

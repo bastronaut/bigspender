@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.controllers;
 
-import com.bastronaut.bigspender.dto.TransactionDTO;
+import com.bastronaut.bigspender.dto.in.TransactionAddDTO;
+import com.bastronaut.bigspender.dto.out.TransactionDTO;
 import com.bastronaut.bigspender.dto.in.TransactionDeleteDTO;
 import com.bastronaut.bigspender.dto.out.TransactionDeleteResultDTO;
 import com.bastronaut.bigspender.exceptions.TransactionException;
@@ -17,11 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
@@ -56,7 +55,7 @@ public class TransactionController {
             throw new TransactionException(String.format("Invalid transaction id: %s", transactionid));
         }
 
-        final Optional<Transaction> transaction = transactionService.getTransactionForUser(user, parsedTransactionId);
+        final Optional<Transaction> transaction = transactionService.getTransactionForUser(parsedTransactionId, user);
 
         if (transaction.isPresent()) {
             final TransactionDTO transactionDTO = TransactionDTO.fromTransaction(transaction.get());
@@ -69,7 +68,7 @@ public class TransactionController {
 
     @PostMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionDTO> postTransaction(final @AuthenticationPrincipal User user,
-                                                          final TransactionDTO transactionDTO) {
+                                                          final TransactionAddDTO transactionDTO) {
         final Transaction transaction = Transaction.fromTransactionDTO(transactionDTO, user);
         // TODO validation on transactionDTO, probably on @Valid in method boddy
         final Transaction savedTransaction = transactionService.saveTransaction(transaction);
