@@ -40,7 +40,7 @@ public class TransactionAddDTO {
         this.receivingAccountNumber = StringUtils.isNotBlank(receivingAccountNumber) ? receivingAccountNumber : null;;
 
 
-        final TransactionCode code = TransactionCode.getByCode(transactionCode);
+        final TransactionCode code = TransactionCode.getByValue(transactionCode);
         this.code = null;
 
 

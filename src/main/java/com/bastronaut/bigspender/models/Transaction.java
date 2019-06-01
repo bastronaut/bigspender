@@ -116,16 +116,25 @@ public class Transaction {
     private Transaction() {}
 
     public static Transaction fromTransactionDTO(final TransactionDTO transactionDTO, final User user) {
-        return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
-                transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), transactionDTO.getCode(),
-                transactionDTO.getType(), transactionDTO.getAmount(), transactionDTO.getMutationType(),
-                transactionDTO.getStatement(), user);
-    }
+    //        final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());
+    //        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionDTO.getType());
+    //        final TransactionType txType = TransactionType.getByType(transactionDTO.getType());
+    //
+    //        return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
+    //                transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), txCode,
+    //                txType, transactionDTO.getAmount(), txMutationType,
+    //                transactionDTO.getStatement(), user);
+    //    }
 
     public static Transaction fromTransactionAddDTO(final TransactionAddDTO transactionAddDTO, final User user) {
+
+        final TransactionCode txCode = TransactionCode.getByValue(transactionAddDTO.getCode());
+        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionAddDTO.getType());
+        final TransactionType txType = TransactionType.getByType(transactionAddDTO.getType());
+
         return new Transaction(transactionAddDTO.getDate(), transactionAddDTO.getTime(), transactionAddDTO.getName(),
-                transactionAddDTO.getAccountNumber(), transactionAddDTO.getReceivingAccountNumber(), transactionAddDTO.getCode(),
-                transactionAddDTO.getType(), transactionAddDTO.getAmount(), transactionAddDTO.getMutationType(),
+                transactionAddDTO.getAccountNumber(), transactionAddDTO.getReceivingAccountNumber(), txCode,
+                txType, transactionAddDTO.getAmount(), txMutationType,
                 transactionAddDTO.getStatement(), user);
     }
 

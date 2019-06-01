@@ -17,7 +17,7 @@ public enum TransactionCode {
         return type;
     }
 
-    public static TransactionCode getByCode(String code) {
+    public static TransactionCode getByValue(String code) {
         for (TransactionCode transactionCode: TransactionCode.values()) {
             if (StringUtils.equalsIgnoreCase(transactionCode.getType(), code)) {
                 return transactionCode;

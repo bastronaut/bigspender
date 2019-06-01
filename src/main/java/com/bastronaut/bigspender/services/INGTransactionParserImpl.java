@@ -160,7 +160,7 @@ public class INGTransactionParserImpl {
     }
 
     private TransactionCode determineTransactionCode(final CSVRecord transaction) {
-        return TransactionCode.getByCode(transaction.get(CSV_HEADER_CODE));
+        return TransactionCode.getByValue(transaction.get(CSV_HEADER_CODE));
 
     }
 

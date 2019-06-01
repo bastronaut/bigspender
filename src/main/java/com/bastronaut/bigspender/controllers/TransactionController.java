@@ -68,8 +68,8 @@ public class TransactionController {
 
     @PostMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionDTO> postTransaction(final @AuthenticationPrincipal User user,
-                                                          final TransactionAddDTO transactionDTO) {
-        final Transaction transaction = Transaction.fromTransactionDTO(transactionDTO, user);
+                                                          final TransactionAddDTO transactionAddDTO) {
+        final Transaction transaction = Transaction.fromTransactionAddDTO(transactionAddDTO, user);
         // TODO validation on transactionDTO, probably on @Valid in method boddy
         final Transaction savedTransaction = transactionService.saveTransaction(transaction);
         final TransactionDTO result = TransactionDTO.fromTransaction(savedTransaction);
