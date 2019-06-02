@@ -1,12 +1,14 @@
 package com.bastronaut.bigspender.enums;
 
 
+import com.bastronaut.bigspender.models.Transaction;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
 public enum TransactionCode {
     GT("GT"),
-    BA("BA");
+    BA("BA"),
+    UNKNOWN("UNKNOWN");
 
     final String type;
 
@@ -34,4 +36,5 @@ public enum TransactionCode {
         }
         return StringUtils.EMPTY;
     }
+
 }

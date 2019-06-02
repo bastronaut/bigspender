@@ -14,88 +14,43 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Unlike Transaction entity, does not have the fields (as its unlikely to be added by the user):
+ * - TransactionCode
+ * - TransactionMutationType
+ */
 @Getter
 public class TransactionAddDTO {
 
     private long id;
-    private final LocalDate date;
-    private final LocalTime time;
+    private final String date;
+    private final String time;
     private final String name;
     private final String accountNumber;
     private final String receivingAccountNumber;
-    private final String code;
     private final String type;
     private final long amount;
-    private final TransactionMutationType mutationType;
     private final String statement;
-    private final int day;
 
     public TransactionAddDTO(final String date, final String time, final String name,
-                             final String accountNumber, final String receivingAccountNumber, final String transactionCode,
-                             final String type, final String amount, final String mutationType, final String statement) {
-        this.date = determineDate(date);
-        this.time = determineTime(time);
+                             final String accountNumber, final String receivingAccountNumber, final String type,
+                             final long amount, final String statement) {
+        this.date = date;
+        this.time = time;
         this.name = StringUtils.isNotBlank(name) ? name : null;
         this.accountNumber = StringUtils.isNotBlank(accountNumber) ? accountNumber : null;
         this.receivingAccountNumber = StringUtils.isNotBlank(receivingAccountNumber) ? receivingAccountNumber : null;;
-
-
-        final TransactionCode code = TransactionCode.getByValue(transactionCode);
-        this.code = null;
-
-
         this.type = TransactionType.getByType(type).getType();
-        this.amount = determineAmount(amount);
-        this.mutationType = determineMutationType(mutationType);
+        this.amount = amount;
         this.statement = StringUtils.isNotBlank(statement) ? statement : null;
-        this.day = this.date != null ? this.date.getDayOfWeek().getValue() : null;
-    }
-
-    private LocalDate determineDate(final String date) {
-        if (date == null) return null;
-
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try {
-            return LocalDate.parse(date, dtf);
-        } catch (DateTimeParseException e) {
-            return null;
-        }
-    }
-
-    private LocalTime determineTime(final String time) {
-        if (time == null) return null;
-
-        try {
-            return LocalTime.parse(time);
-        } catch(DateTimeParseException e) {
-            return null;
-        }
-    }
-
-    private long determineAmount(final String amount) {
-        try {
-            Number parsed = NumberFormat.getInstance().parse(amount);
-            return parsed.longValue();
-        } catch (ParseException e) {
-            return 0;
-        }
-    }
-
-    private TransactionMutationType determineMutationType(final String mutationType) {
-        if (StringUtils.isNotBlank(mutationType)) {
-            return TransactionMutationType.getByValue(mutationType);
-        } else {
-            return null;
-        }
     }
 
 
     public static TransactionAddDTO fromTransaction(Transaction transaction) {
         final TransactionAddDTO transactionDTO = new TransactionAddDTO(getDateString(transaction.getDate()),
                 getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
-                transaction.getReceivingAccountNumber(), transaction.getCode().toString(),
-                transaction.getType().toString(), Long.toString(transaction.getAmount()),
-                getMutationType(transaction.getMutationType()), transaction.getStatement());
+                transaction.getReceivingAccountNumber(), transaction.getType().toString(),
+                transaction.getAmount(), transaction.getStatement());
 
         transaction.setId(transaction.getId());
         return transactionDTO;
@@ -107,6 +62,7 @@ public class TransactionAddDTO {
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return date.format(dtf);
     }
+
 
     private static String getTimeString(LocalTime time) {
         if (time == null) return null;
@@ -120,4 +76,5 @@ public class TransactionAddDTO {
 
         return mutationType.getType();
     }
+
 }

@@ -82,6 +82,10 @@ public class TransactionController {
     public ResponseEntity<TransactionDeleteResultDTO> deleteTransactions(final @AuthenticationPrincipal User user,
                                                                          final TransactionDeleteDTO transactionDeleteDTO) {
 
+        if (transactionDeleteDTO.getTransactionIds() == null || transactionDeleteDTO.getTransactionIds().size() == 0) {
+            // We could add a delete all here, but no functionality for it right now
+            throw new TransactionException("No transaction IDs to delete specified");
+        }
         final List<Transaction> deletedTransactions = transactionService.deleteUserTransactions(transactionDeleteDTO.getTransactionIds(), user);
 
         final TransactionDeleteResultDTO deleteDTO = new TransactionDeleteResultDTO(deletedTransactions);

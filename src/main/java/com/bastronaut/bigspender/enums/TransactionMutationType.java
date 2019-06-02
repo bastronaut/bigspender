@@ -13,7 +13,8 @@ public enum TransactionMutationType {
     BETAALAUTOMAAT("Betaalautomaat"),
     DIVERSEN("Diversen"),
     INCASSO("Incasso"),
-    OVERSCHRIJVING("Overschrijving");
+    OVERSCHRIJVING("Overschrijving"),
+    UNKNOWN("UNKNOWN");
 
     final String type;
 

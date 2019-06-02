@@ -7,6 +7,7 @@ import com.bastronaut.bigspender.models.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class SampleData {
     private static final String ENCODED_TEST_PW =  SecurityUtil.encode(TEST_PASSWORD);
     private static final User TESTUSER = new User(username, TEST_FIRSTNAME, ENCODED_TEST_PW);
 
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+
     public static User getTestUser() { return TESTUSER; }
     /**
      * Sample transactions.csv map to the following t1-t7:
@@ -43,7 +46,6 @@ public class SampleData {
             LocalTime.of(22,39), "AH to go 5869 DenHaa", "NL41INGB0006212385",
             null, GT, AF, 180, BETAALAUTOMAAT,
             "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", TESTUSER);
-
     public static final Transaction t2 = new Transaction(LocalDate.of(2019, 04, 02),
             LocalTime.of(02,39), "AH to go 5869 DenHaa", "NL41INGB0006451386",
             null, BA, BIJ, 1180, BETAALAUTOMAAT,
@@ -89,9 +91,13 @@ public class SampleData {
         }
         return TRANSACTIONS;
     }
-    private static final TransactionImport TRANSACTION_IMPORT = new TransactionImport(getTransactions(), TESTUSER);
 
+    private static final TransactionImport TRANSACTION_IMPORT = new TransactionImport(getTransactions(), TESTUSER);
     public static final TransactionImport getTransactionImport() { return TRANSACTION_IMPORT; }
+
+    public static DateTimeFormatter getDtf() {
+        return dtf;
+    }
 
 
 }

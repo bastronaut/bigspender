@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -108,9 +109,9 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Test transaction"))
                 .andExpect(jsonPath("$.accountNumber").value("NL20INGB0004567891"))
                 .andExpect(jsonPath("$.receivingAccountNumber").value("NL20INGB0001987654"))
-                .andExpect(jsonPath("$.type").value("BIJ"))
+                .andExpect(jsonPath("$.type").value("Bij"))
                 .andExpect(jsonPath("$.amount").value("1980"))
-                .andExpect(jsonPath("$.day").value("7"));
+                .andExpect(jsonPath("$.day").value(7));
     }
 
     @Test
@@ -133,6 +134,7 @@ public class TransactionIntegrationTest {
     public void testGetTransactionForUser() throws Exception {
         final Transaction tx1 = transactions.get(1);
         final long txid = tx1.getId();
+        final DateTimeFormatter dtf = SampleData.getDtf();
         final String getTransactionEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userid)
                 .replace(TRANSACTIONID_PARAM_REPLACE, String.valueOf(txid));
 
@@ -147,7 +149,7 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.mutationType").value(tx1.getMutationType().getType()))
                 .andExpect(jsonPath("$.code").value(tx1.getCode().getType()))
                 .andExpect(jsonPath("$.name").value(tx1.getName()))
-                .andExpect(jsonPath("$.time").value(tx1.getTime().toString()))
+                .andExpect(jsonPath("$.time").value(tx1.getTime().format(dtf).toString()))
                 .andExpect(jsonPath("$.id").value(String.valueOf(tx1.getId())))
                 .andExpect(status().isOk());
 
@@ -156,13 +158,14 @@ public class TransactionIntegrationTest {
     // Annotation required for thread safety https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
     @Transactional
     @Test
-    public void testDeleteAllTransactionsForUser() throws Exception {
+    public void testDeleteTransactionsForUserNoTransactionIds() throws Exception {
         final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userid);
         mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.deleted").value(transactions.size()));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Transaction error"))
+                .andExpect(jsonPath("$.details").value("No transaction IDs to delete specified"));
     }
 
     @Transactional

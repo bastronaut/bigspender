@@ -59,7 +59,6 @@ public class TransactionService {
      * @return the list of deleted Transactions
      */
     public List<Transaction> deleteUserTransactions(final List<Long> transactionIds, final User user) {
-
         final List<Transaction> transactions = transactionRepository.findByIdInAndUser(transactionIds, user);
         transactionRepository.deleteInBatch(transactions);
         return transactions;

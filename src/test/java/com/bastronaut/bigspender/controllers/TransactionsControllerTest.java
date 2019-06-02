@@ -92,14 +92,14 @@ public class TransactionsControllerTest {
     public void testRetrieveUserTransaction() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTION_ENDPOINT))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("type").value("AF"))
+                .andExpect(jsonPath("type").value("Af"))
                 .andExpect(jsonPath("code").value("GT"))
                 .andExpect(jsonPath("accountNumber").value("NL41INGB0006212385"))
                 .andExpect(jsonPath("name").value("AH to go 5869 DenHaa"))
                 .andExpect(jsonPath("amount").value(180))
                 .andExpect(jsonPath("mutationType").value("Betaalautomaat"))
                 .andExpect(jsonPath("statement").value("Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019"))
-                .andExpect(jsonPath("day").value("Monday"))
+                .andExpect(jsonPath("day").value(1))
                 .andExpect(jsonPath("time").value("22:39:00"))
                 .andExpect(jsonPath("date").value("2019-04-01"))
                 .andExpect(jsonPath("id").value("0"))
@@ -113,7 +113,7 @@ public class TransactionsControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].accountNumber").value("NL41INGB0006212385"))
-                .andExpect(jsonPath("$[0].type").value("AF"))
+                .andExpect(jsonPath("$[0].type").value("Af"))
                 .andExpect(jsonPath("$[6].accountNumber").value("NL20INGB0004567891"))
                 .andExpect(jsonPath("$[6].name").value("test to go go yes"));
     }

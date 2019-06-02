@@ -20,9 +20,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Entity class for transactions. Can not auto-generate constructor because of the @GeneratedValue id, and creating
@@ -128,16 +132,42 @@ public class Transaction {
 
     public static Transaction fromTransactionAddDTO(final TransactionAddDTO transactionAddDTO, final User user) {
 
-        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionAddDTO.getMutationType());
+        final TransactionMutationType transactionMutationType = TransactionMutationType.UNKNOWN;
+        final TransactionCode transactionCode = TransactionCode.UNKNOWN;
+        final TransactionType transactionType = TransactionType.getByType(transactionAddDTO.getType());
+        final LocalDate transactionDate = determineDate(transactionAddDTO.getDate());
+        final LocalTime transactionTime = determineTime(transactionAddDTO.getTime());
 
-        final TransactionCode txCode = TransactionCode.getByTransactionCode(transactionAddDTO.getCode());
-        final TransactionType txType = TransactionType.getByType(transactionAddDTO.getType());
-
-        return new Transaction(transactionAddDTO.getDate(), transactionAddDTO.getTime(), transactionAddDTO.getName(),
-                transactionAddDTO.getAccountNumber(), transactionAddDTO.getReceivingAccountNumber(), txCode,
-                txType, transactionAddDTO.getAmount(), txMutationType,
+        return new Transaction(transactionDate, transactionTime, transactionAddDTO.getName(),
+                transactionAddDTO.getAccountNumber(), transactionAddDTO.getReceivingAccountNumber(), transactionCode,
+                transactionType, transactionAddDTO.getAmount(), transactionMutationType,
                 transactionAddDTO.getStatement(), user);
     }
+
+
+    private static LocalDate determineDate(final String date) {
+        if (date == null) return null;
+
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            return LocalDate.parse(date, dtf);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    private static LocalTime determineTime(final String time) {
+        if (time == null) return null;
+
+        try {
+            return LocalTime.parse(time);
+        } catch(DateTimeParseException e) {
+            return null;
+        }
+    }
+
+
+
 
 
 
