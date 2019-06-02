@@ -116,20 +116,21 @@ public class Transaction {
     private Transaction() {}
 
     public static Transaction fromTransactionDTO(final TransactionDTO transactionDTO, final User user) {
-    //        final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());
-    //        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionDTO.getType());
-    //        final TransactionType txType = TransactionType.getByType(transactionDTO.getType());
-    //
-    //        return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
-    //                transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), txCode,
-    //                txType, transactionDTO.getAmount(), txMutationType,
-    //                transactionDTO.getStatement(), user);
-    //    }
+            final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());
+            final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionDTO.getType());
+            final TransactionType txType = TransactionType.getByType(transactionDTO.getType());
+
+            return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
+                    transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), txCode,
+                    txType, transactionDTO.getAmount(), txMutationType,
+                    transactionDTO.getStatement(), user);
+        }
 
     public static Transaction fromTransactionAddDTO(final TransactionAddDTO transactionAddDTO, final User user) {
 
-        final TransactionCode txCode = TransactionCode.getByValue(transactionAddDTO.getCode());
-        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionAddDTO.getType());
+        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionAddDTO.getMutationType());
+
+        final TransactionCode txCode = TransactionCode.getByTransactionCode(transactionAddDTO.getCode());
         final TransactionType txType = TransactionType.getByType(transactionAddDTO.getType());
 
         return new Transaction(transactionAddDTO.getDate(), transactionAddDTO.getTime(), transactionAddDTO.getName(),
@@ -137,5 +138,7 @@ public class Transaction {
                 txType, transactionAddDTO.getAmount(), txMutationType,
                 transactionAddDTO.getStatement(), user);
     }
+
+
 
 }

@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.enums;
 
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 
 
 /**
@@ -37,4 +38,14 @@ public enum TransactionMutationType {
         }
         return null;
     }
+
+
+    // TODO not ideal, think about how to deal with null safety
+    public static String getByTransactionMutationType(@Nullable final TransactionMutationType transactionMutationType) {
+        if (transactionMutationType != null) {
+            return transactionMutationType.getType();
+        }
+        return StringUtils.EMPTY;
+    }
+
 }

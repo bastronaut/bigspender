@@ -101,13 +101,13 @@ public class TransactionDTO {
         return time.format(dtf);
     }
 
-    private static String getMutationType(TransactionMutationType mutationType) {
+    private static String getMutationType(final TransactionMutationType mutationType) {
         if (mutationType == null) return StringUtils.EMPTY;
 
         return mutationType.getType();
     }
 
-    private static String getMutationCode(TransactionCode mutationCode) {
+    private static String getMutationCode(final TransactionCode mutationCode) {
         if (mutationCode == null) return StringUtils.EMPTY;
 
         return mutationCode.getType();
