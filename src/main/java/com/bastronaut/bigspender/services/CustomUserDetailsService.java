@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_EXISTS;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_NOTFOUND;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.REGISTRATION_ERROR_MSG;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -40,7 +42,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             final String encodedPassword = SecurityUtil.encode(user.getPassword());
             return userRepository.save(new User(user.getEmail(), encodedPassword));
         }
-        throw new UserRegistrationException(String.format(ERRORMSG_USER_EXISTS, user.getEmail()));
+        throw new UserRegistrationException(REGISTRATION_ERROR_MSG,
+                Arrays.asList(String.format(ERRORMSG_USER_EXISTS, user.getEmail())));
     }
 
     /**

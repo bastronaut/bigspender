@@ -9,6 +9,7 @@ import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.CustomUserDetailsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,7 @@ import javax.validation.Valid;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_UPDATE_ENDPOINT;
@@ -46,8 +48,9 @@ public class UserController {
         //  Ensure no existing session exists. Alternatively, we could reject login if session exists
 
         if (bindingResult.hasErrors()) {
-            FieldError error = bindingResult.getFieldErrors().get(0); // For now handle errors individually
-            throw new UserRegistrationException(error.getDefaultMessage());
+            List<String> errors = bindingResult.getFieldErrors().stream()
+                    .map(error -> error.getDefaultMessage()).collect(Collectors.toList());
+            throw new UserRegistrationException("User registration error", errors);
         }
         final User user = User.fromUserRegistrationDTO(userRegistrationDTO);
         final User registeredUser = userDetailsService.registerUser(user);

@@ -11,37 +11,39 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.time.LocalDate;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.REGISTRATION_ERROR_MSG;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ERROR_MSG;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_ERROR_MSG;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.UPDATE_ERROR_MSG;
+
 @ControllerAdvice
 @RestController
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String REGISTRATION_ERROR_MSG = "Registration error";
-    private static final String UPDATE_ERROR_MSG = "User update error";
-    private static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction Import error";
-    private static final String TRANSACTION_ERROR_MSG = "Transaction error";
+
 
     @ExceptionHandler(value = {UserRegistrationException.class})
-    public final ResponseEntity<ErrorDetails> handleUserNotFoundException(Exception ex, WebRequest request) {
-    final ErrorDetails errorDetails = new ErrorDetails(REGISTRATION_ERROR_MSG, ex.getMessage(), LocalDate.now());
+    public final ResponseEntity<ErrorDetails> handleUserRegistrationException(UserRegistrationException ex, WebRequest request) {
+    final ErrorDetails errorDetails = new ErrorDetails(REGISTRATION_ERROR_MSG, ex.getMessage(), ex.getErrors(), LocalDate.now());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler(value = {UserUpdateException.class})
     public final ResponseEntity<ErrorDetails> handleUserUpdateException(Exception ex, WebRequest request) {
-        final ErrorDetails errorDetails = new ErrorDetails(UPDATE_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        final ErrorDetails errorDetails = new ErrorDetails(UPDATE_ERROR_MSG, ex.getMessage(), null, LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler(value = {TransactionImportException.class})
     public final ResponseEntity<ErrorDetails> handleInvalidTransactionImport(Exception ex, WebRequest request) {
-        final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_IMPORT_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_IMPORT_ERROR_MSG, ex.getMessage(), null, LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
 
     @ExceptionHandler(value = {TransactionException.class})
     public final ResponseEntity<ErrorDetails> handleInvalidTransaction(Exception ex, WebRequest request) {
-        final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_ERROR_MSG, ex.getMessage(), null, LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 }

@@ -35,6 +35,9 @@ public class ApplicationConstants {
 
     /* Webservice error messages */
     /* User error messages */
+    public static final String REGISTRATION_ERROR_MSG = "Registration error";
+    public static final String UPDATE_ERROR_MSG = "User update error";
+
     public static final String ERRORMSG_PASSWORD_TOO_SHORT = "Invalid password, password length is too short";
     public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s, not well-formed";
     public static final String ERRORMSG_USER_EXISTS = "User already exists: %s";
@@ -44,6 +47,8 @@ public class ApplicationConstants {
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
 
     /* Transaction error messages */
+    public static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction Import error";
+    public static final String TRANSACTION_ERROR_MSG = "Transaction error";
     public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";
     public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";
     public static final String ERRORMSG_MISSING_TRANSACTION_IDS = "No transaction IDs to delete specified";
