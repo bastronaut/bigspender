@@ -8,12 +8,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserDTO {
 
-    private final String name;
     private final String email;
     private long id;
 
     public static UserDTO fromUser(final User user) {
-        return new UserDTO(user.getName(), user.getEmail(), user.getId());
+        return new UserDTO(user.getEmail(), user.getId());
     }
 
 }

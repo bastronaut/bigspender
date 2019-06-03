@@ -15,6 +15,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_EXISTS;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_NOTFOUND;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -29,15 +32,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user.isPresent()) {
             return user.get();
         }
-        throw new UsernameNotFoundException(String.format("User not found: %s", username));
+        throw new UsernameNotFoundException(String.format(ERRORMSG_USER_NOTFOUND, username));
     }
 
     public User registerUser(final User user) throws UserRegistrationException {
         if (isValidRegistration(user)) {
             final String encodedPassword = SecurityUtil.encode(user.getPassword());
-            return userRepository.save(new User(user.getEmail(), user.getName(), encodedPassword));
+            return userRepository.save(new User(user.getEmail(), encodedPassword));
         }
-        throw new UserRegistrationException("User already exists: " + user.getEmail());
+        throw new UserRegistrationException(String.format(ERRORMSG_USER_EXISTS, user.getEmail()));
     }
 
     /**
@@ -52,11 +55,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private User populateUserWithUpdateData(final User user, final User updateUserDetails) {
-
-        final String name = updateUserDetails.getName();
-        if (StringUtils.isNotBlank(name)){
-            user.setName(name);
-        }
 
         final String password = updateUserDetails.getPassword();
         if (StringUtils.isNotBlank(password)) {

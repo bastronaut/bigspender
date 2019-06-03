@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_NOFILE_IMPORT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_IMPORT_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -80,7 +81,7 @@ public class ImportController {
                 logger.info("Error getting and parsing CSV from POST request", e);
             }
         }
-        throw new TransactionImportException("No file was posted with parametername 'file'");
+        throw new TransactionImportException(ERRORMSG_NOFILE_IMPORT);
     }
 
 }

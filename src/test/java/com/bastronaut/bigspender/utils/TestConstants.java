@@ -20,10 +20,8 @@ public class TestConstants {
     public static final String EMAIL_PARAM = "email";
     public static final String PASSWORD_PARAM = "password";
     public static final String TEST_EMAIL = "test@email.com";
-    public static final String TEST_FIRSTNAME = "tester";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_EMAIL_UPDATE = "update@email.com";
-    public static final String TEST_FIRSTNAME_UPDATE = "updated";
     public static final String TEST_PASSWORD_UPDATE = "updated";
 
     /** Exception text constants **/

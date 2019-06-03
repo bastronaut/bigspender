@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_INVALID_TXID;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_MISSING_TRANSACTION_IDS;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_NONEXISTINGTX_FOR_USER;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -52,7 +55,7 @@ public class TransactionController {
         try {
             parsedTransactionId = Long.parseLong(transactionid);
         } catch (NumberFormatException e) {
-            throw new TransactionException(String.format("Invalid transaction id: %s", transactionid));
+            throw new TransactionException(String.format(ERRORMSG_INVALID_TXID, transactionid));
         }
 
         final Optional<Transaction> transaction = transactionService.getTransactionForUser(parsedTransactionId, user);

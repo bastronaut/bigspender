@@ -33,10 +33,6 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     @Setter
-    private String name;
-
-    @Column(nullable = false)
-    @Setter
     private String email;
 
     @Column(nullable = false)
@@ -45,19 +41,17 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(String email, String name, String password) {
+    public User(String email, String password) {
         this.email = email;
-        this.name = name;
         this.password = password;
     }
 
     public static User fromUserRegistrationDTO(UserRegistrationDTO userRegistrationDTO) {
-        return new User(userRegistrationDTO.getEmail(),
-                userRegistrationDTO.getName(), userRegistrationDTO.getPassword());
+        return new User(userRegistrationDTO.getEmail(), userRegistrationDTO.getPassword());
     }
 
     public static User fromUserUpdateDTO(UserUpdateDTO userUpdateDTO) {
-        return new User(userUpdateDTO.getEmail(), userUpdateDTO.getName(), userUpdateDTO.getPassword());
+        return new User(userUpdateDTO.getEmail(), userUpdateDTO.getPassword());
     }
 
     @Override

@@ -1,26 +1,27 @@
 package com.bastronaut.bigspender.dto.in;
 
-import com.bastronaut.bigspender.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_NULL;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_PW_NULL;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_PW_SIZE;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.PASSWORDMINSIZE;
 
 @Getter
 @AllArgsConstructor
 public class UserRegistrationDTO {
 
-    @NotNull
-    private final String name;
-    @NotNull
-    @Email
+    @NotNull(message = ERRORMSG_USER_NULL)
+    @Email(message = ERRORMSG_INVALID_EMAIL)
     private final String email;
-    @NotNull
-    @Size(min=8)
+
+    @NotNull(message = ERRORMSG_USER_PW_NULL)
+    @Size(min=PASSWORDMINSIZE, message = ERRORMSG_USER_PW_SIZE)
     private final String password;
 }

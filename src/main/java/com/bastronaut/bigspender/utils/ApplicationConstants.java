@@ -2,18 +2,21 @@ package com.bastronaut.bigspender.utils;
 
 public class ApplicationConstants {
 
-    /** API endpoints **/
+    /* API endpoints */
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/{userid}/transactionimport";
     public static final String TRANSACTIONS_ENDPOINT = "/users/{userid}/transactions";
     public static final String TRANSACTION_ENDPOINT = "/users/{userid}/transactions/{transactionid}";
     public static final String USERS_ENDPOINT = "/users";
     public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
 
-    /** Parameters */
+    /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";
     public static final String TRANSACTIONID_SEPERATOR = "transactionIds";
 
-    /** ING **/
+    /* User constants */
+    public static final int PASSWORDMINSIZE = 8;
+
+    /* ING */
     public static final String CSV_HEADER_DATE = "Datum";
     public static final String CSV_HEADER_NAME = "Naam / Omschrijving";
     public static final String CSV_HEADER_ACCOUNT = "Rekening";
@@ -25,16 +28,28 @@ public class ApplicationConstants {
     public static final String CSV_HEADER_STATEMENT = "Mededelingen";
     public static final int EXPECTED_NR_COLUMNS_ING = 9;
 
-    /** Regex strings **/
+    /* Regex strings */
     public static final String CSV_COMMA_SPLIT_PATTERN = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";  // // See: https://stackoverflow.com/questions/18893390/splitting-on-comma-outside-quotes
     public static final String HH_MM_SS_TIMEPATTERN = " (([0-1]?[0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9] "; // HH:MM:SS
     public static final String HH_MM_TIMEPATTERN = " ([01]?[0-9]|2[0-3]):[0-5][0-9] "; // HH:MM
 
-
     /* Webservice error messages */
-    public static final String ERRORMSG_MISSING_TRANSACTION_IDS = "No transaction IDs to delete specified";
-    public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";
+    /* User error messages */
     public static final String ERRORMSG_PASSWORD_TOO_SHORT = "Invalid password, password length is too short";
-    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s";
+    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s, not well-formed";
+    public static final String ERRORMSG_USER_EXISTS = "User already exists: %s";
+    public static final String ERRORMSG_USER_NOTFOUND = "User not found: %s";
+    public static final String ERRORMSG_USER_NULL = "Field: email is required";
+    public static final String ERRORMSG_USER_PW_NULL = "Field: password is required";
+    public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
+
+    /* Transaction error messages */
+    public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";
+    public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";
+    public static final String ERRORMSG_MISSING_TRANSACTION_IDS = "No transaction IDs to delete specified";
+
+    /* Transaction import error messages */
+    public static final String ERRORMSG_NOFILE_IMPORT = "No file was posted with parametername 'file'";
+
 
 }

@@ -28,8 +28,6 @@ import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
-import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME;
-import static com.bastronaut.bigspender.utils.TestConstants.TEST_FIRSTNAME_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
@@ -81,18 +79,15 @@ public class UserIntegrationTest {
         // Update user, auth headers are required to inject the User argument into the controller
         mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
-                .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
-                .param(NAME_PARAM, TEST_FIRSTNAME_UPDATE))
+                .param(EMAIL_PARAM, TEST_EMAIL_UPDATE))
                 .andDo(print())
-                .andExpect(jsonPath(EMAIL_PARAM).value(TEST_EMAIL_UPDATE))
-                .andExpect(jsonPath(NAME_PARAM).value(TEST_FIRSTNAME_UPDATE)).andReturn();
+                .andExpect(jsonPath(EMAIL_PARAM).value(TEST_EMAIL_UPDATE)).andReturn();
     }
 
     @Test
     public void testRegisterUserExists() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
-                .param(NAME_PARAM, TEST_FIRSTNAME)
                 .param(EMAIL_PARAM, TEST_EMAIL)
                 .param(PASSWORD_PARAM, TEST_PASSWORD))
                 .andDo(print())

@@ -13,7 +13,7 @@ public class SpringSecurityWebTestConfig {
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        User basicUser = new User("user@company.com", "Basic User", "password");
+        User basicUser = new User("user@company.com", "password");
         return new InMemoryUserDetailsManager(Arrays.asList(basicUser));
     }
 }
