@@ -102,7 +102,7 @@ public class TransactionsControllerTest {
                 .andExpect(jsonPath("day").value(1))
                 .andExpect(jsonPath("time").value("22:39:00"))
                 .andExpect(jsonPath("date").value("2019-04-01"))
-                .andExpect(jsonPath("id").value("0"))
+                .andExpect(jsonPath("id").isNotEmpty()) // ordinarily ID is set by hibernate, because of mocking this never happens so remains at 0
                 .andReturn();
     }
 
@@ -118,11 +118,6 @@ public class TransactionsControllerTest {
                 .andExpect(jsonPath("$[6].name").value("test to go go yes"));
     }
 
-//    @Test
-//    public void testRetrieveUsersTransactionsNoResult() {
-//        assert(false);
-//    }
-//
     @WithMockUser
     @Test
     public void testDeleteTransaction() throws Exception {
@@ -135,11 +130,6 @@ public class TransactionsControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
-//
-//    @Test
-//    public void testDeleteTransactions() {
-//        assert(false);
-//    }
 
 
 }

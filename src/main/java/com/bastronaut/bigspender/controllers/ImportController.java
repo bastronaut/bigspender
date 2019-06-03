@@ -64,7 +64,7 @@ public class ImportController {
      * TODO: ideal would be to package the Multipart File into the DTO, bu can't figure it out yet
      * @return
      */
-    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     @ResponseBody
     public ResponseEntity<TransactionImportResultDTO> postTransactions(@AuthenticationPrincipal final User user,
                                                                        final TransactionImportDTO transactionImportDTO,
@@ -76,7 +76,7 @@ public class ImportController {
 
                 final TransactionImport parsedTransactions = transactionParser.parseTransactions(file, user);
                 final TransactionImport importedTransactions = transactionService.saveTransactionImport(parsedTransactions);
-                final TransactionImportResultDTO transactionImportResultDTO = convertToDTO(importedTransactions);
+                final TransactionImportResultDTO transactionImportResultDTO = TransactionImportResultDTO.fromTransactionImport(importedTransactions);
                 return ResponseEntity.status(HttpStatus.OK).body(transactionImportResultDTO);
 
             } catch (IOException e) {
@@ -85,11 +85,5 @@ public class ImportController {
         }
         throw new TransactionImportException("No file was posted with parametername 'file'");
     }
-
-
-    private TransactionImportResultDTO convertToDTO(TransactionImport transactionImport) {
-        return new TransactionImportResultDTO(transactionImport);
-    }
-
 
 }

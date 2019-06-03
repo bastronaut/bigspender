@@ -30,9 +30,10 @@ public class TransactionDTO {
     private final String statement;
     private final int day;
 
-    public TransactionDTO(final String date, final String time, final String name,
+    public TransactionDTO(final long id, final String date, final String time, final String name,
                           final String accountNumber, final String receivingAccountNumber, final TransactionCode code,
                           final String type, final String amount, final TransactionMutationType mutationType, final String statement) {
+        this.id = id;
         this.date = determineDate(date);
         this.time = determineTime(time);
         this.name = StringUtils.isNotBlank(name) ? name : null;
@@ -77,7 +78,7 @@ public class TransactionDTO {
     }
 
     public static TransactionDTO fromTransaction(Transaction transaction) {
-        final TransactionDTO transactionDTO = new TransactionDTO(getDateString(transaction.getDate()),
+        final TransactionDTO transactionDTO = new TransactionDTO(transaction.getId(), getDateString(transaction.getDate()),
                 getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
                 transaction.getReceivingAccountNumber(), transaction.getCode(),
                 transaction.getType().toString(), Long.toString(transaction.getAmount()),
