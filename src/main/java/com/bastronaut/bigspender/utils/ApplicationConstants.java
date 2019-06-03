@@ -36,7 +36,7 @@ public class ApplicationConstants {
     /* Webservice error messages */
     /* User error messages */
     public static final String ERRORMSG_PASSWORD_TOO_SHORT = "Invalid password, password length is too short";
-    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s, not well-formed";
+    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
     public static final String ERRORMSG_USER_EXISTS = "User already exists: %s";
     public static final String ERRORMSG_USER_NOTFOUND = "User not found: %s";
     public static final String ERRORMSG_USER_NULL = "Field: email is required";

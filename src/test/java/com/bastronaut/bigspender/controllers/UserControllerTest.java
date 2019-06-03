@@ -57,7 +57,7 @@ public class UserControllerTest {
     public static final String ERRORMSG_USER_NULL = "Field: email is required";
     public static final String ERRORMSG_USER_PW_NULL = "Field: password is required";
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
-    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s, not well-formed";
+    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
 
     @Autowired
     private WebApplicationContext context;

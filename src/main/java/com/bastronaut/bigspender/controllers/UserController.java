@@ -67,8 +67,15 @@ public class UserController {
      */
     @PutMapping(path = USERS_UPDATE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser,
-                                              final UserUpdateDTO userUpdateDTO,
+                                              @Valid final UserUpdateDTO userUpdateDTO,
+                                              final BindingResult bindingResult,
                                               final @PathVariable String userid) {
+        if (bindingResult.hasErrors()) {
+            FieldError error = bindingResult.getFieldErrors().get(0); // For now handle errors individually
+            throw new UserRegistrationException(error.getDefaultMessage());
+        }
+
+        // TODO remove this logic once custom validator for @Valid userUpdateDTO is written
         if (isInvalidUserUpdateDTO(userUpdateDTO)) {
             throw new UserUpdateException(INVALID_UPDATE_INFORMATION);
         }

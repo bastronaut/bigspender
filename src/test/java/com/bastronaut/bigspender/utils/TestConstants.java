@@ -22,7 +22,7 @@ public class TestConstants {
     public static final String TEST_EMAIL = "test@email.com";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_EMAIL_UPDATE = "update@email.com";
-    public static final String TEST_PASSWORD_UPDATE = "updated";
+    public static final String TEST_PASSWORD_UPDATE = "12345678";
 
     /** Exception text constants **/
     public static final String ERROR_MESSAGE_PARAM = "message";
