@@ -12,11 +12,11 @@ import java.util.Optional;
  */
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    Transaction save(Transaction transaction);
+    Transaction save(final Transaction transaction);
 
-    List<Transaction> findAllByUserId(int userid);
+    List<Transaction> findAllByUser(final User userid);
 
-    List<Transaction> findByIdInAndUser(List<Long> ids, User user);
+    List<Transaction> findByIdInAndUser(final List<Long> ids, User user);
 
     Optional<Transaction> findByIdAndUser(long id, User user);
 

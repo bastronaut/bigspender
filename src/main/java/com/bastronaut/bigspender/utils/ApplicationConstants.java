@@ -31,6 +31,10 @@ public class ApplicationConstants {
     public static final String HH_MM_TIMEPATTERN = " ([01]?[0-9]|2[0-3]):[0-5][0-9] "; // HH:MM
 
 
-    /* */
+    /* Webservice error messages */
+    public static final String ERRORMSG_MISSING_TRANSACTION_IDS = "No transaction IDs to delete specified";
+    public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";
+    public static final String ERRORMSG_PASSWORD_TOO_SHORT = "Invalid password, password length is too short";
+    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address: %s";
 
 }

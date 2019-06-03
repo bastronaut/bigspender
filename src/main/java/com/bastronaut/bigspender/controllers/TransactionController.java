@@ -61,7 +61,7 @@ public class TransactionController {
             final TransactionDTO transactionDTO = TransactionDTO.fromTransaction(transaction.get());
             return ResponseEntity.status(HttpStatus.OK).body(transactionDTO);
         } else {
-            throw new TransactionException(String.format("Transaction with id %s for user %s does not exist",
+            throw new TransactionException(String.format(ERRORMSG_NONEXISTINGTX_FOR_USER,
                     transactionid, String.valueOf(user.getId())));
         }
     }
@@ -84,7 +84,7 @@ public class TransactionController {
 
         if (transactionDeleteDTO.getTransactionIds() == null || transactionDeleteDTO.getTransactionIds().size() == 0) {
             // We could add a delete all here, but no functionality for it right now
-            throw new TransactionException("No transaction IDs to delete specified");
+            throw new TransactionException(ERRORMSG_MISSING_TRANSACTION_IDS);
         }
         final List<Transaction> deletedTransactions = transactionService.deleteUserTransactions(transactionDeleteDTO.getTransactionIds(), user);
 

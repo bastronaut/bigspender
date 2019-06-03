@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
@@ -54,6 +56,7 @@ public class UserControllerTest {
     // Ordinarily we add the user ID as resource to the path, but can hardcode them in the test context
     private static final String HARDCODED_USER_UPDATE_ENDPOINT = USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
     private static final String HARDCODED_USER_GET_INFO_ENDPOINT = USERS_GET_INFO_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
+    private static final String REGISTRATION_ERROR_PARAM = "Registration error";
 
     @Autowired
     private WebApplicationContext context;
@@ -93,6 +96,60 @@ public class UserControllerTest {
         MvcResult result = performUserRegistration(TEST_EMAIL, TEST_FIRSTNAME, TEST_PASSWORD);
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
+
+
+    @Test
+    public void testCreateUserInvalidEmail() throws Exception {
+        // Missing email
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("Email address missing: " + TEST_EMAIL))
+                .andReturn();
+
+        // Invalid email address
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, "invalid")
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(String.format("Invalid email address: %s", TEST_EMAIL)))
+                .andReturn();
+    }
+
+    @Test
+    public void testCreateUserInvalidPassword() throws Exception {
+        // Invalid password
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(NAME_PARAM, TEST_FIRSTNAME)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, "12345"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("Invalid password, password length is too short"))
+                .andReturn();
+    }
+
+    @Test
+    public void testCreateUserInvalidName() throws Exception {
+        // Missing username
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+                .param(EMAIL_PARAM, TEST_EMAIL)
+                .param(PASSWORD_PARAM, TEST_PASSWORD))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("No name given"))
+                .andReturn();
+    }
+
+
 
     @WithMockUser
     @Test

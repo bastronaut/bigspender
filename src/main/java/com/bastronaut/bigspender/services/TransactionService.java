@@ -20,15 +20,10 @@ public class TransactionService {
     @Autowired
     TransactionImportRepository transactionImportRepository;
 
-    /**
-     *
-     * @param user The user to get transactions for
-     *             // TODO refactor to findAllByUser
-     * @return
-     */
+
     public List<Transaction> getTransactionsForUser(final User user) {
 
-        return transactionRepository.findAllByUserId(user.getId());
+        return transactionRepository.findAllByUser(user);
     }
 
     /**
