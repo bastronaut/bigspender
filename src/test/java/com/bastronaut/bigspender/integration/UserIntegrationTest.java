@@ -21,14 +21,19 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Base64;
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.INVALID_UPDATE_INFORMATION;
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_EMAIL_NULL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_PW_SIZE;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
-import static com.bastronaut.bigspender.utils.TestConstants.NAME_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.REGISTRATION_ERROR_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
+import static com.bastronaut.bigspender.utils.TestConstants.UPDATE_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
@@ -85,6 +90,30 @@ public class UserIntegrationTest {
     }
 
     @Test
+    public void testUpdateUserInvalid() throws Exception {
+
+        // Invalid email address
+        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded)
+                .param(EMAIL_PARAM, "invalid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_INVALID_EMAIL))
+                .andDo(print())
+                .andReturn();
+
+        // Invalid password
+        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+                .header(HttpHeaders.AUTHORIZATION, headerEncoded)
+                .param(PASSWORD_PARAM, "12345"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_PW_SIZE))
+                .andDo(print())
+                .andReturn();
+    }
+
+    @Test
     public void testRegisterUserExists() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
@@ -92,9 +121,10 @@ public class UserIntegrationTest {
                 .param(PASSWORD_PARAM, TEST_PASSWORD))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value("Registration error"))
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
                 .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("User already exists: " + TEST_EMAIL))
                 .andDo(print())
                 .andReturn();
     }
+
 }

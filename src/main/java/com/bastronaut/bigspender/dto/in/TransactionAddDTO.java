@@ -7,12 +7,17 @@ import com.bastronaut.bigspender.models.Transaction;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_NO_AMOUNT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_NO_TRANSACTION_TYPE;
 
 /**
  * Unlike Transaction entity, does not have the fields (as its unlikely to be added by the user):
@@ -28,7 +33,10 @@ public class TransactionAddDTO {
     private final String name;
     private final String accountNumber;
     private final String receivingAccountNumber;
+    @NotEmpty(message = ERRORMSG_NO_TRANSACTION_TYPE)
     private final String type;
+
+    @NotEmpty(message = ERRORMSG_NO_AMOUNT)
     private final long amount;
     private final String statement;
 
@@ -43,38 +51,6 @@ public class TransactionAddDTO {
         this.type = TransactionType.getByType(type).getType();
         this.amount = amount;
         this.statement = StringUtils.isNotBlank(statement) ? statement : null;
-    }
-
-
-    public static TransactionAddDTO fromTransaction(Transaction transaction) {
-        final TransactionAddDTO transactionDTO = new TransactionAddDTO(getDateString(transaction.getDate()),
-                getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
-                transaction.getReceivingAccountNumber(), transaction.getType().toString(),
-                transaction.getAmount(), transaction.getStatement());
-
-        transaction.setId(transaction.getId());
-        return transactionDTO;
-    }
-
-    private static String getDateString(LocalDate date) {
-        if (date == null) return null;
-
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(dtf);
-    }
-
-
-    private static String getTimeString(LocalTime time) {
-        if (time == null) return null;
-
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        return time.format(dtf);
-    }
-
-    private static String getMutationType(TransactionMutationType mutationType) {
-        if (mutationType == null) return null;
-
-        return mutationType.getType();
     }
 
 }

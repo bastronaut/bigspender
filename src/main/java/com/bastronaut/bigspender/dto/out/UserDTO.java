@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender.dto;
+package com.bastronaut.bigspender.dto.out;
 
 import com.bastronaut.bigspender.models.User;
 import lombok.AllArgsConstructor;

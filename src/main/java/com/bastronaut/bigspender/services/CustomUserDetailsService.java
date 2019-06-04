@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.config.SecurityUtil;
+import com.bastronaut.bigspender.dto.in.UserUpdateDTO;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import com.bastronaut.bigspender.models.User;
@@ -44,29 +45,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Allows updating of name and password, not the username
-     * @param userToUpdate the user to update
-     * @param updateUserDetails a user object with fields populated according to changes
-     * @return the new user if saved to database successfully
+     * Perhaps not ideal, the service is now also aware of a DTO class. The logic for updating the userToUpdate
+     * is put in this service however as the amount of logic may grow as we add fields to the User class. Additionally,
+     * this makes unit testing the controller a bunch easier as we can mock the response from the updateUser method
+     * @param userToUpdate the user to update information for
+     * @param userUpdateDTO a DTO containing updatable information
+     * @return the updated User
+     * @throws UsernameNotFoundException
      */
-    public User updateUser(final User userToUpdate, final User updateUserDetails) throws UsernameNotFoundException {
-            final User user = populateUserWithUpdateData(userToUpdate, updateUserDetails);
-            return userRepository.save(user);
-    }
+    public User updateUser(final User userToUpdate, final UserUpdateDTO userUpdateDTO) throws UsernameNotFoundException {
 
-    private User populateUserWithUpdateData(final User user, final User updateUserDetails) {
-
-        final String password = updateUserDetails.getPassword();
-        if (StringUtils.isNotBlank(password)) {
-            user.setPassword(SecurityUtil.encode(password));
+        if (StringUtils.isNotEmpty(userUpdateDTO.getEmail())) {
+            userToUpdate.setEmail(userUpdateDTO.getEmail());
         }
-
-        final String email = updateUserDetails.getEmail();
-        if (StringUtils.isNotBlank(email)) {
-            user.setEmail(email);
+        if (StringUtils.isNotEmpty(userUpdateDTO.getPassword())) {
+            userToUpdate.setPassword(userUpdateDTO.getPassword());
         }
-
-        return user;
+        return userRepository.save(userToUpdate);
     }
 
 

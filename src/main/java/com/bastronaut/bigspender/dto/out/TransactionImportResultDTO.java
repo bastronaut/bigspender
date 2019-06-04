@@ -1,9 +1,7 @@
 package com.bastronaut.bigspender.dto.out;
 
-import com.bastronaut.bigspender.dto.UserDTO;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
-import com.bastronaut.bigspender.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -11,7 +11,6 @@ public class ApplicationConstants {
 
     /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";
-    public static final String TRANSACTIONID_SEPERATOR = "transactionIds";
 
     /* User constants */
     public static final int PASSWORDMINSIZE = 8;
@@ -39,14 +38,17 @@ public class ApplicationConstants {
     public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
     public static final String ERRORMSG_USER_EXISTS = "User already exists: %s";
     public static final String ERRORMSG_USER_NOTFOUND = "User not found: %s";
-    public static final String ERRORMSG_USER_NULL = "Field: email is required";
+    public static final String ERRORMSG_USER_EMAIL_NULL = "Field: email is required";
     public static final String ERRORMSG_USER_PW_NULL = "Field: password is required";
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
-
+    public static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
     /* Transaction error messages */
     public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";
     public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";
     public static final String ERRORMSG_MISSING_TRANSACTION_IDS = "No transaction IDs to delete specified";
+
+    public static final String ERRORMSG_NO_AMOUNT = "Field: amount is required";
+    public static final String ERRORMSG_NO_TRANSACTION_TYPE = "Field: type is required";
 
     /* Transaction import error messages */
     public static final String ERRORMSG_NOFILE_IMPORT = "No file was posted with parametername 'file'";

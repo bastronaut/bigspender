@@ -19,13 +19,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_EMAIL_NULL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_PW_NULL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_PW_SIZE;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.PASSWORD_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.REGISTRATION_ERROR_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL_UPDATE;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD_UPDATE;
+import static com.bastronaut.bigspender.utils.TestConstants.UPDATE_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_GET_INFO_ENDPOINT;
@@ -48,16 +54,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
 
 
-    private static final String INVALID_UPDATE_INFORMATION = "No correct updateable information provided";
+    private static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
     // Ordinarily we add the user ID as resource to the path, but can hardcode them in the test context
     private static final String HARDCODED_USER_UPDATE_ENDPOINT = USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
     private static final String HARDCODED_USER_GET_INFO_ENDPOINT = USERS_GET_INFO_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
-    private static final String REGISTRATION_ERROR_PARAM = "Registration error";
 
-    public static final String ERRORMSG_USER_NULL = "Field: email is required";
-    public static final String ERRORMSG_USER_PW_NULL = "Field: password is required";
-    public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
-    public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
 
     @Autowired
     private WebApplicationContext context;
@@ -107,7 +108,7 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
-                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_NULL))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_EMAIL_NULL))
                 .andReturn();
 
         // Invalid email address
@@ -117,7 +118,7 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
-                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(String.format(ERRORMSG_INVALID_EMAIL, TEST_EMAIL)))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_INVALID_EMAIL))
                 .andReturn();
     }
 
@@ -148,6 +149,7 @@ public class UserControllerTest {
     @WithMockUser
     @Test
     public void testUpdateUser() throws Exception {
+        // Updates both email and password
         mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE)
                 .param(PASSWORD_PARAM, TEST_PASSWORD_UPDATE))
@@ -155,18 +157,67 @@ public class UserControllerTest {
                 .andExpect(jsonPath(EMAIL_PARAM).value(TEST_EMAIL_UPDATE))
                 .andDo(print())
                 .andReturn();
+
+        // Updates only password
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
+                .param(PASSWORD_PARAM, TEST_PASSWORD_UPDATE))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
     }
 
     @WithMockUser
     @Test
-    public void testUpdateUserInvalid() throws Exception {
+    public void testUpdateUserInvalidEmail() throws Exception {
+        // no params
         mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("details").value(INVALID_UPDATE_INFORMATION))
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(INVALID_UPDATE_INFORMATION))
+                .andReturn();
+
+        // Invalid email
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
+                .param(EMAIL_PARAM, "invalid"))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_INVALID_EMAIL))
+                .andReturn();
+
+
+        // Invalid password
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
+                .param(PASSWORD_PARAM, "12345"))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_PW_SIZE))
                 .andReturn();
     }
 
+    @WithMockUser
+    @Test
+    public void testUpdateUserInvalidPassword() throws Exception {
+        // Invalid password
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
+                .param(PASSWORD_PARAM, "12345"))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_PW_SIZE))
+                .andReturn();
+
+        // Empty password
+        mockMvc.perform(MockMvcRequestBuilders.put(HARDCODED_USER_UPDATE_ENDPOINT)
+                .param(PASSWORD_PARAM, ""))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(UPDATE_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_USER_PW_SIZE))
+                .andReturn();
+    }
 
     @Test
     public void testNotAuthorizedGetUserInfo() throws Exception {

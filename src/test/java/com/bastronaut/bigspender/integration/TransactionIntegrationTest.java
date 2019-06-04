@@ -1,13 +1,11 @@
 package com.bastronaut.bigspender.integration;
 
 
-import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.SampleData;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +33,6 @@ import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
