@@ -69,11 +69,11 @@ public class ImportControllerTest {
 
     @Before
     public void init() throws IOException {
-        this.user = SampleData.getTestUser();
+        this.user = SampleData.TESTUSERONE;
         userRepository.save(this.user);
 
-        given(importer.parseTransactions(any(), any())).willReturn(SampleData.getTransactionImport());
-        given(transactionService.saveTransactionImport(any())).willReturn(SampleData.getTransactionImport());
+        given(importer.parseTransactions(any(), any())).willReturn(SampleData.TRANSACTION_IMPORT);
+        given(transactionService.saveTransactionImport(any())).willReturn(SampleData.TRANSACTION_IMPORT);
     }
 
     @Test
