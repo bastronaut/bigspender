@@ -6,7 +6,6 @@ import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.SampleData;
-import javassist.tools.rmi.Sample;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,15 +23,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
-import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
-import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -59,13 +57,22 @@ public class TransactionIntegrationTest {
     final private String headerEncodedUserOne = SampleData.HEADER_ENCODED_USERONE;
     final private String headerEncodedUserTwo = SampleData.HEADER_ENCODED_USERTWO;
 
-    private String userId;
+    private String userIdTestUserOne;
     private String userIdTestuserTwo;
     private List<Transaction> transactions;
     private Transaction testUserTwoTransaction;
 
     final private User testUserOne = SampleData.TESTUSERONE;
-    final private ≠User testUserTwo = SampleData.TESTUSERTWO;
+    final private User testUserTwo = SampleData.TESTUSERTWO;
+
+    private String firstTransactionIdUserOne;
+    private String firstTransactionIdUserTwo;
+
+    // Resource endpoints of the first transaction of the respective user to perform operations on
+    private String userOneTransactionURI;
+    private String userTwoTransactionURI;
+
+
 
     @Before
     public void setUp() throws Exception {
@@ -78,7 +85,7 @@ public class TransactionIntegrationTest {
         userRepository.save(testUserOne);
         userRepository.save(testUserTwo);
 
-        userId = String.valueOf(testUserOne.getId());
+        userIdTestUserOne = String.valueOf(testUserOne.getId());
         userIdTestuserTwo = String.valueOf(testUserTwo.getId());
 
         // Setup sample transactions for validation
@@ -88,12 +95,19 @@ public class TransactionIntegrationTest {
 
         transactionRepository.saveAll(this.transactions);
         transactionRepository.save(this.testUserTwoTransaction);
+
+        final Transaction firstTransaction = transactions.get(0);
+        this.firstTransactionIdUserOne = String.valueOf(firstTransaction.getId());
+        this.userOneTransactionURI = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne).replace(TRANSACTIONID_PARAM_REPLACE, firstTransactionIdUserOne);
+
+        this.firstTransactionIdUserTwo = String.valueOf(this.testUserTwoTransaction.getId());
+        this.userTwoTransactionURI = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestuserTwo).replace(TRANSACTIONID_PARAM_REPLACE, firstTransactionIdUserTwo);
     }
 
 
     @Test
     public void testAddTransactionForUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userId))
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne))
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
                 .param("date", "2019-04-07")
                 .param("time", "07:25:00")
@@ -120,7 +134,7 @@ public class TransactionIntegrationTest {
 
     @Test
     public void testGetTransactionsForUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userId))
+        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne))
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -139,7 +153,7 @@ public class TransactionIntegrationTest {
         final Transaction tx1 = transactions.get(1);
         final long txid = tx1.getId();
         final DateTimeFormatter dtf = SampleData.dtf;
-        final String getTransactionEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userId)
+        final String getTransactionEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne)
                 .replace(TRANSACTIONID_PARAM_REPLACE, String.valueOf(txid));
 
         mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
@@ -163,7 +177,7 @@ public class TransactionIntegrationTest {
     @Transactional
     @Test
     public void testDeleteTransactionsForUserNoTransactionIds() throws Exception {
-        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userId);
+        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne);
         mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
                 .andDo(print())
@@ -175,7 +189,7 @@ public class TransactionIntegrationTest {
     @Transactional
     @Test
     public void testDeleteMultipleTransactionsForUser() throws Exception {
-        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userId);
+        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne);
         final String[] transactionDeleteIds = new String[4];
         final String txId1 = String.valueOf(transactions.get(0).getId());
         final String txId2 = String.valueOf(transactions.get(2).getId());
@@ -200,17 +214,14 @@ public class TransactionIntegrationTest {
     @Transactional
     @Test
     public void testDeleteTransactionForUser() throws Exception {
-        final Transaction firstTransaction = transactions.get(0);
-        final String firstTransactionId = String.valueOf(firstTransaction.getId());
-        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userId).replace(TRANSACTIONID_PARAM_REPLACE, firstTransactionId);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+        mockMvc.perform(MockMvcRequestBuilders.delete(userOneTransactionURI)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
         // Second run should be a 404 for nonexisting resource as the resource has been deleted
-        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+        mockMvc.perform(MockMvcRequestBuilders.delete(userOneTransactionURI)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
                 .andDo(print())
                 .andExpect(status().isNotFound());
@@ -219,7 +230,7 @@ public class TransactionIntegrationTest {
     @Test
     public void testDeleteNonExistingTransaction() throws Exception {
         final String nonExistingResource = "9999987654321";
-        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userId).replace(TRANSACTIONID_PARAM_REPLACE, nonExistingResource);
+        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne).replace(TRANSACTIONID_PARAM_REPLACE, nonExistingResource);
 
         mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
@@ -234,47 +245,46 @@ public class TransactionIntegrationTest {
 
     @Test
     public void testDeleteTransactionNotAuthorized() throws Exception {
-        final Transaction firstTransaction = transactions.get(0);
-        final String firstTransactionId = String.valueOf(firstTransaction.getId());
-        final String deleteEndpoint = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userId).replace(TRANSACTIONID_PARAM_REPLACE, firstTransactionId);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint))
+        mockMvc.perform(MockMvcRequestBuilders.delete(userOneTransactionURI))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
     /**
-     * Attempt to delete a transaction from another user by userid and transaction id
+     * Attempt to delete a transaction from another user by userid and transaction id. Design decision for now
+     * is not to throw unauthorization but simply dont delete the resource and return 0 deleted
      * @throws Exception
      */
     @Test
     public void testDeleteTransactionOtherUser() throws Exception {
 
-        final String userOneTransactionId = String.valueOf(this.transactions.get(0).getId());
-
-        final String userTwoTransactionId = String.valueOf(this.testUserTwoTransaction.getId());
-        final String deleteEndpointTwo = TRANSACTION_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestuserTwo)
-                .replace(TRANSACTIONID_PARAM_REPLACE, userTwoTransactionId);
+        // Verify the transaction exists for user two
+        Optional<Transaction> retrievedTwo = transactionRepository.findByIdAndUser(Long.valueOf(firstTransactionIdUserTwo), testUserTwo);
+        assertTrue(retrievedTwo.isPresent());
 
         // Using authorization header for User 1, attempt to delete resource from User 2
-        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpointTwo)
+        mockMvc.perform(MockMvcRequestBuilders.delete(userTwoTransactionURI)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
 
-        // TODO set auth headers
-        assertTrue(false);
+
+        // Verify the transaction exists for user One
+        Optional<Transaction> retrievedOne = transactionRepository.findByIdAndUser(Long.valueOf(firstTransactionIdUserOne), testUserOne);
+        assertTrue(retrievedOne.isPresent());
+
         // Using authorization header for User 2, attempt to delete resource from User 1
-        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpointTwo)
+        mockMvc.perform(MockMvcRequestBuilders.delete(userOneTransactionURI)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserTwo))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
     }
 
 
     @Test
     public void testDeleteTransactionsNotAuthorized() throws Exception {
-        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userId);
+        final String deleteEndpoint = TRANSACTIONS_ENDPOINT.replace(USERID_PARAM_REPLACE, userIdTestUserOne);
         final String[] transactionDeleteIds = new String[4];
         final String txId1 = String.valueOf(transactions.get(0).getId());
         final String txId2 = String.valueOf(transactions.get(2).getId());

@@ -32,11 +32,13 @@ public class SampleData {
     public static final User TESTUSERONE = new User(USERNAMEONE, ENCODED_TEST_PW);
     public static final User TESTUSERTWO = new User(USERNAMETWO,  ENCODED_TEST_PW);
 
-    public static final String USERNAMEPW_USERONE = TEST_EMAIL + ":" + TEST_PASSWORD;
+    public static final String USERNAMEPW_USERONE = USERNAMEONE + ":" + TEST_PASSWORD;
     public static final String USERNAMEPW_USERTWO = USERNAMETWO + ":" + TEST_PASSWORD;
+    public static final String USERNAMEPW_USERONE_FAKE = USERNAMEONE + ":" + "fakepw";
 
     final public static String HEADER_ENCODED_USERONE = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERONE.getBytes()));
     final public static String HEADER_ENCODED_USERTWO = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERTWO.getBytes()));
+    final public static String HEADER_ENCODED_USERONEWRONGPW = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERONE_FAKE.getBytes()));
 
     public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 

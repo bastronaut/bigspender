@@ -37,6 +37,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.UPDATE_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,7 +71,7 @@ public class UserIntegrationTest {
                 .build();
 
         // Setup initial user for various user related tests
-        final User testuser = SampleData.getTestUser();
+        final User testuser = SampleData.TESTUSERONE;
         userRepository.save(testuser);
 
         // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
@@ -124,6 +125,19 @@ public class UserIntegrationTest {
                 .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
                 .andExpect(jsonPath(ERROR_DETAILS_PARAM).value("User already exists: " + TEST_EMAIL))
                 .andDo(print())
+                .andReturn();
+    }
+
+    /**
+     * Test performing a get operation on a user with incorrect credentaisl in the uathorization headerd
+     * @throws Exception
+     */
+    @Test
+    public void testGetUserWrongPassword() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/1")
+                .header(HttpHeaders.AUTHORIZATION, SampleData.HEADER_ENCODED_USERONEWRONGPW))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
                 .andReturn();
     }
 

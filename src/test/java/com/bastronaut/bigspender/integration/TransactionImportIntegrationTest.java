@@ -67,7 +67,7 @@ public class TransactionImportIntegrationTest {
                 .build();
 
         // Setup initial user for various user related tests
-        final User testuser = SampleData.getTestUser();
+        final User testuser = SampleData.TESTUSERONE;
         userRepository.save(testuser);
 
         // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths

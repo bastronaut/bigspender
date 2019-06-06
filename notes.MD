@@ -123,3 +123,8 @@ hoofdcategorien, inzoomen  per subcategorie
 
 ### Breakpoints for controllers
 For easy debugging, set breakpoint in DispatcherServlet.java line 1055 for method processDispatchResult(...) in method doDispatch(...)
+
+
+### Authentication and authorization
+DaoAuthenticationProvider.java, line 90, additionalAuthenticationChecks(..) verifies that the given password in the authorization header matches with the users 
+actual password

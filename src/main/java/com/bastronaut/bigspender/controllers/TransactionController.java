@@ -30,7 +30,9 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_E
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * TODO has become messy
+ * Controller for performing operations onTransaction resources.
+ *
+ * This controller is not used for adding transactions through an import functionality by CSV file. This is done in the import controller
  */
 @RestController
 public class TransactionController {
@@ -105,8 +107,7 @@ public class TransactionController {
      * @return
      */
     @DeleteMapping(value = TRANSACTION_ENDPOINT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteTransaction(final @AuthenticationPrincipal User user,
-                                            final @PathVariable long transactionid) {
+    public ResponseEntity deleteTransaction(final @AuthenticationPrincipal User user, final @PathVariable long transactionid) {
 
         final long deleted = transactionService.deleteUserTransaction(transactionid, user);
         if (deleted > 0) {

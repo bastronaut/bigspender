@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import static com.bastronaut.bigspender.utils.SampleData.getTestUser;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -35,7 +34,7 @@ public class INGTransactionParserImplTest {
     private final List<Transaction> expectedSampleTransactions  = SampleData.getTransactions();
 
     private FileInputStream input;
-    private final User testUser = getTestUser();
+    private final User testUser = SampleData.TESTUSERONE;
 
     @Before
     public void setupSampleResult() throws FileNotFoundException {

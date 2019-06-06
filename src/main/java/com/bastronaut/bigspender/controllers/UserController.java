@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,9 +24,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.util.Optional;
+
 import static com.bastronaut.bigspender.utils.ApplicationConstants.INVALID_UPDATE_INFORMATION;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
-import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_UPDATE_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.USER_RESOURCE_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -61,7 +64,7 @@ public class UserController {
      * @param userid the user resource ID
      * @return
      */
-    @PutMapping(path = USERS_UPDATE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = USER_RESOURCE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> updateUser(final @AuthenticationPrincipal User activeUser,
                                               @Valid final UserUpdateDTO userUpdateDTO,
                                               final BindingResult bindingResult,
@@ -77,6 +80,12 @@ public class UserController {
 
         final User result = userDetailsService.updateUser(activeUser, userUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(result));
+    }
+
+    @GetMapping(path = USER_RESOURCE_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> getUser(final @AuthenticationPrincipal User activeUser) {
+        User user = userDetailsService.loadUserByUsername(activeUser.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(user));
     }
 
 

@@ -7,7 +7,7 @@ public class ApplicationConstants {
     public static final String TRANSACTIONS_ENDPOINT = "/users/{userid}/transactions";
     public static final String TRANSACTION_ENDPOINT = "/users/{userid}/transactions/{transactionid}";
     public static final String USERS_ENDPOINT = "/users";
-    public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
+    public static final String USER_RESOURCE_ENDPOINT = "/users/{userid}";
 
     /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";
