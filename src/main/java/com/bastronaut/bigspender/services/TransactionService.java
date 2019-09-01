@@ -1,5 +1,6 @@
 package com.bastronaut.bigspender.services;
 
+import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
@@ -67,5 +68,13 @@ public class TransactionService {
     public Transaction saveTransaction(final Transaction transaction) {
 
         return transactionRepository.save(transaction);
+    }
+
+    public Transaction addLabelsToTransaction(final List<Label> labels, final Transaction transaction) {
+        return null;
+    }
+
+    public List<Transaction> addLabelsToTransactions(final List<Label> labels, final List<Transaction> transactions) {
+        return null;
     }
 }

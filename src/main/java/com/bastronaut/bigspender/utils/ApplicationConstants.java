@@ -53,5 +53,7 @@ public class ApplicationConstants {
     /* Transaction import error messages */
     public static final String ERRORMSG_NOFILE_IMPORT = "No file was posted with parametername 'file'";
 
+    public static final String DEFAULT_LABELCOLOR = "#000";
+
 
 }

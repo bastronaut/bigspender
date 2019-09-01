@@ -59,7 +59,7 @@ public class ImportController {
      * imported. (consumes = "multipart/form-data")
      *
      * TODO: move parsing to a parsing service that can pick the specific bank once multiple bank import is implemented
-     * TODO: ideal would be to package the Multipart File into the DTO, bu can't figure it out yet
+     * TODO: ideal would be to package the Multipart File into the DTO, but can't figure it out yet
      * @return
      */
     @PostMapping

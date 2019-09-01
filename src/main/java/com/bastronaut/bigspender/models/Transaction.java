@@ -17,7 +17,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import java.text.NumberFormat;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 /**
  * Entity class for transactions. Can not auto-generate constructor because of the @GeneratedValue id, and creating
@@ -92,6 +95,11 @@ public class Transaction {
     @JoinColumn(name="user_id", nullable = false)
     @ManyToOne
     private User user;
+
+    @ManyToMany
+    private List<Label> labels;
+
+
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,

@@ -59,7 +59,7 @@ public class INGTransactionParserImpl {
      * @return a List of Transactions. If the transaction is invalid, the transaction is skipped entirely. A
      * transaction is invalid if it does not have the expected number of columns
      */
-    public TransactionImport parseTransactions(final InputStream source, User user) throws IOException {
+    public TransactionImport parseTransactions(final InputStream source, final User user) throws IOException {
 
         final Reader reader = new InputStreamReader(source);
         final CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());

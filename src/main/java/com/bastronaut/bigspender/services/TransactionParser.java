@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TransactionParser {
 
-    List<Transaction> parseTransactions(InputStream source);
+    List<Transaction> parseTransactions(final InputStream source);
 }

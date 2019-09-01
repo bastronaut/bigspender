@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.integration;
 
 
+import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
@@ -300,11 +301,24 @@ public class TransactionIntegrationTest {
 
     @Test
     public void testGetTransactionNotAuthorized() throws Exception {
-
+        assert(false);
     }
 
     @Test
-    public void testGetTransactiosnNotAuthorized() throws Exception {
+    public void testGetTransactionsNotAuthorized() throws Exception {
+        assert(false);
+    }
+
+    @Test
+    public void testAddLabelsToTransaction() throws Exception {
+        final String testLabelName = "groceries";
+        final String testLabelColor = "#123";
+        final Optional<Transaction> retrievedTwo = transactionRepository.findByIdAndUser(Long.valueOf(firstTransactionIdUserTwo), testUserTwo);
+        final Label testLabel = new Label()
+    }
+
+    @Test
+    public void testAddLabelsToTransactions() throws Exception {
 
     }
 
