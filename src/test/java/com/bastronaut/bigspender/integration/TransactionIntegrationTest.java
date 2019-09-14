@@ -309,18 +309,6 @@ public class TransactionIntegrationTest {
         assert(false);
     }
 
-    @Test
-    public void testAddLabelsToTransaction() throws Exception {
-        final String testLabelName = "groceries";
-        final String testLabelColor = "#123";
-        final Optional<Transaction> retrievedTwo = transactionRepository.findByIdAndUser(Long.valueOf(firstTransactionIdUserTwo), testUserTwo);
-        final Label testLabel = new Label()
-    }
-
-    @Test
-    public void testAddLabelsToTransactions() throws Exception {
-
-    }
 
 
 }
