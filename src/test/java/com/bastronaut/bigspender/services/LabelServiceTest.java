@@ -76,7 +76,7 @@ public class LabelServiceTest {
 
     @Test
     public void testDefaultLabelColor() {
-
+        final String defaultColor = "#000";
         final Label l = new Label("groceries", user);
         final Label lTwo = new Label("shopping", user, "#FFF");
         List<Label> labels = new ArrayList<>();
@@ -84,7 +84,7 @@ public class LabelServiceTest {
         labels.add(lTwo);
         labelService.saveLabels(labels);
         List<Label> getLabels = labelService.getLabels(user);
-        assertEquals(DEFAULT_LABELCOLOR, getLabels.get(0).getColor());
+        assertEquals(defaultColor, getLabels.get(0).getColor());
         assertEquals("#FFF", getLabels.get(1).getColor());
     }
 }

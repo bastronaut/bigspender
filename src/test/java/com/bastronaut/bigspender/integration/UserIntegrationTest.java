@@ -21,10 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Base64;
 import java.util.Optional;
 
-import static com.bastronaut.bigspender.utils.ApplicationConstants.INVALID_UPDATE_INFORMATION;
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
-import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_EMAIL_NULL;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_PW_SIZE;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
@@ -36,7 +34,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.UPDATE_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
-import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.USER_ENDPOINT;
 import static junit.framework.TestCase.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -83,7 +81,7 @@ public class UserIntegrationTest {
     public void testUpdateUser() throws Exception {
 
         // Update user, auth headers are required to inject the User argument into the controller
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE))
                 .andDo(print())
@@ -94,7 +92,7 @@ public class UserIntegrationTest {
     public void testUpdateUserInvalid() throws Exception {
 
         // Invalid email address
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(EMAIL_PARAM, "invalid"))
                 .andExpect(status().isBadRequest())
@@ -104,7 +102,7 @@ public class UserIntegrationTest {
                 .andReturn();
 
         // Invalid password
-        mockMvc.perform(MockMvcRequestBuilders.put(USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(PASSWORD_PARAM, "12345"))
                 .andExpect(status().isBadRequest())

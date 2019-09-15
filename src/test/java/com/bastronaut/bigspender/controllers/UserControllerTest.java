@@ -34,8 +34,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD_UPDATE
 import static com.bastronaut.bigspender.utils.TestConstants.UPDATE_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
-import static com.bastronaut.bigspender.utils.TestConstants.USERS_GET_INFO_ENDPOINT;
-import static com.bastronaut.bigspender.utils.TestConstants.USERS_UPDATE_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.USER_ENDPOINT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,8 +55,8 @@ public class UserControllerTest {
 
     private static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
     // Ordinarily we add the user ID as resource to the path, but can hardcode them in the test context
-    private static final String HARDCODED_USER_UPDATE_ENDPOINT = USERS_UPDATE_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
-    private static final String HARDCODED_USER_GET_INFO_ENDPOINT = USERS_GET_INFO_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
+    private static final String HARDCODED_USER_UPDATE_ENDPOINT = USER_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
+    private static final String HARDCODED_USER_GET_INFO_ENDPOINT = USER_ENDPOINT.replace(USERID_PARAM_REPLACE, "1");
 
 
     @Autowired

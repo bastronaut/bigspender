@@ -8,10 +8,9 @@ public class TestConstants {
     public static final String FAKE_TRANSACTIONS_CSV_PATH = "./src/test/resources/ingtransactions/fake-transactions-test.csv";
 
     /** Constants for User related tests **/
-    public static final String USERS_ENDPOINT = "/users";
-    public static final String USERS_UPDATE_ENDPOINT = "/users/{userid}";
-    public static final String USERS_GET_INFO_ENDPOINT = "/users/{userid}";
     public static final String USERID_PARAM_REPLACE = "{userid}";
+    public static final String USERS_ENDPOINT = "/users";
+    public static final String USER_ENDPOINT = "/users/" + USERID_PARAM_REPLACE;
     public static final String TRANSACTIONID_PARAM_REPLACE = "{transactionid}";
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/transactionimport";
     public static final String TRANSACTIONS_ENDPOINT = "/users/" + USERID_PARAM_REPLACE +  "/transactions";
@@ -37,6 +36,9 @@ public class TestConstants {
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
     public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
 
-
+    /** Label related tests **/
+    public static final String LABELSID_PARAM_REPLACE = "{labelid}";
+    public static final String LABELS_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/labels";
+    public static final String LABEL_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/labels/" + LABELSID_PARAM_REPLACE;
 
 }
