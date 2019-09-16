@@ -1,5 +1,6 @@
 package com.bastronaut.bigspender.models;
 
+import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,5 +63,9 @@ public class Label {
 //    @ManyToOne(targetEntity = User.class, cascade = {CascadeType.MERGE })
     @ManyToOne(optional = false)
     private User user;
+
+    public static Label fromLabelDTO(final LabelDTO labelDTO, final User user) {
+        return new Label(labelDTO.getName(), user, labelDTO.getColor());
+    }
 
 }

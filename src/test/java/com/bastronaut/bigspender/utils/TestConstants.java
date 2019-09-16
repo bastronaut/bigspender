@@ -38,7 +38,9 @@ public class TestConstants {
 
     /** Label related tests **/
     public static final String LABELSID_PARAM_REPLACE = "{labelid}";
-    public static final String LABELS_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/labels";
-    public static final String LABEL_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/labels/" + LABELSID_PARAM_REPLACE;
+    public static final String LABELS_ENDPOINT = "/labels";
+    public static final String LABEL_ENDPOINT = "/labels/" + LABELSID_PARAM_REPLACE;
+    public static final String LABELS_PER_TRANSACTION_ENDPOINT = "/transactions/"+ TRANSACTIONID_PARAM_REPLACE + "/labels/";
+    public static final String LABEL_PER_TRANSACTION_ENDPOINT = "/transactions/" + TRANSACTIONID_PARAM_REPLACE + "/labels/{labelid}";
 
 }

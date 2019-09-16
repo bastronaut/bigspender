@@ -30,9 +30,10 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_E
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * Controller for performing operations onTransaction resources.
+ * Controller for performing operations on Transaction resources.
  *
- * This controller is not used for adding transactions through an import functionality by CSV file. This is done in the import controller
+ * This controller is not used for adding transactions through an import functionality by CSV file.
+ * This is done in the import controller
  */
 @RestController
 public class TransactionController {

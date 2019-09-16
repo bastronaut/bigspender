@@ -4,6 +4,7 @@ import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
+import com.bastronaut.bigspender.utils.MockJsonReader;
 import com.bastronaut.bigspender.utils.SampleData;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -28,6 +29,8 @@ import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @RunWith(SpringRunner.class)
@@ -67,14 +70,24 @@ public class LabelIntegrationTest {
     @Test
     public void testCreateLabels() throws Exception {
         final String endpoint = StringUtils.replace(LABELS_ENDPOINT, USERID_PARAM_REPLACE, userIdTestUserOne);
+        final String defaultColor = "#000";
+
+        final String createLabelsJson = MockJsonReader.readMockJsonAsString("testCreateLabels.json");
 
         mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
-                .param("", "")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("");
-//                .andDo(print())
-//                .andExpect()
+                .content(createLabelsJson))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labels[0].name").value("groceries"))
+                .andExpect(jsonPath("$.labels[0].color").value("#EEE"))
+                .andExpect(jsonPath("$.labels[1].name").value("insurance"))
+                .andExpect(jsonPath("$.labels[1].color").value("#EEE"))
+                .andExpect(jsonPath("$.labels[2].name").value("drinks"))
+                .andExpect(jsonPath("$.labels[2].color").value(defaultColor))
+                .andExpect(jsonPath("$.labels[3].name").value("subscriptions"))
+                .andExpect(jsonPath("$.labels[2].color").value("#123EFA"));
     }
 
     @Test

@@ -2,12 +2,18 @@ package com.bastronaut.bigspender.utils;
 
 public class ApplicationConstants {
 
+    // TODO! remove {userid from endpoints. as users are always encapsulated no point exposing it in the url
+    // and only serves to open attack vector probably
+
     /* API endpoints */
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/{userid}/transactionimport";
     public static final String TRANSACTIONS_ENDPOINT = "/users/{userid}/transactions";
     public static final String TRANSACTION_ENDPOINT = "/users/{userid}/transactions/{transactionid}";
     public static final String USERS_ENDPOINT = "/users";
     public static final String USER_RESOURCE_ENDPOINT = "/users/{userid}";
+    public static final String LABELS_ENDPOINT = "/labels";
+    public static final String LABELS_PER_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/";
+    public static final String LABEL_PER_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/{labelid}";
 
     /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";
@@ -53,6 +59,8 @@ public class ApplicationConstants {
     /* Transaction import error messages */
     public static final String ERRORMSG_NOFILE_IMPORT = "No file was posted with parametername 'file'";
 
+
+    /* Labels */
     public static final String DEFAULT_LABELCOLOR = "#000";
 
 
