@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,14 +81,20 @@ public class LabelIntegrationTest {
                 .content(createLabelsJson))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labels", hasSize(4)))
                 .andExpect(jsonPath("$.labels[0].name").value("groceries"))
                 .andExpect(jsonPath("$.labels[0].color").value("#EEE"))
                 .andExpect(jsonPath("$.labels[1].name").value("insurance"))
-                .andExpect(jsonPath("$.labels[1].color").value("#EEE"))
+                .andExpect(jsonPath("$.labels[1].color").value("#ABC"))
                 .andExpect(jsonPath("$.labels[2].name").value("drinks"))
                 .andExpect(jsonPath("$.labels[2].color").value(defaultColor))
                 .andExpect(jsonPath("$.labels[3].name").value("subscriptions"))
-                .andExpect(jsonPath("$.labels[2].color").value("#123EFA"));
+                .andExpect(jsonPath("$.labels[3].color").value("#123EFA"));
+    }
+
+    @Test
+    public void testCreateLabelsBadRequest() throws Exception {
+        assert(false);
     }
 
     @Test

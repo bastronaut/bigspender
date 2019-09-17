@@ -46,7 +46,9 @@ public class TransactionController {
                                                                final @AuthenticationPrincipal User user) {
 
         final List<Transaction> transactions = transactionService.getTransactionsForUser(user);
-        final List<TransactionDTO> result = transactions.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toList());
+        final List<TransactionDTO> result = transactions.stream()
+                .map(TransactionDTO::fromTransaction)
+                .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
