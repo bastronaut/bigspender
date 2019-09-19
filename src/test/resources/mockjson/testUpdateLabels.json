@@ -1,0 +1,7 @@
+{
+  "labels": [
+    {"name": "groceries-new", "color": "#123", "id": 0},
+    {"name": "insurance-new", "id": 1},
+    {"color": "#123EFA", "id": 2}
+  ]
+}

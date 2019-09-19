@@ -3,6 +3,8 @@ package com.bastronaut.bigspender.controllers;
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
+import com.bastronaut.bigspender.exceptions.LabelException;
+import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
@@ -11,11 +13,14 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -41,8 +46,13 @@ public class LabelController {
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelAddResultDTO> createLabels(final @AuthenticationPrincipal User user,
-                                                          @RequestBody final LabelAddDTO labelAddDTO) {
+                                                          @Valid @RequestBody final LabelAddDTO labelAddDTO,
+                                                          final BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            FieldError error = bindingResult.getFieldErrors().get(0);
+            throw new LabelException(error.getDefaultMessage());
+        }
 
         final List<Label> labels = labelAddDTO.getLabels()
                 .stream()

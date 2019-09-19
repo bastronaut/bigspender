@@ -3,6 +3,7 @@ package com.bastronaut.bigspender.integration;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.repositories.LabelRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.MockJsonReader;
 import com.bastronaut.bigspender.utils.SampleData;
@@ -25,7 +26,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_EMPTY;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_NAME_EMPTY;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
+import static com.bastronaut.bigspender.utils.TestConstants.REGISTRATION_ERROR_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -46,6 +54,9 @@ public class LabelIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LabelRepository  labelRepository;
 
     private MockMvc mockMvc;
 
@@ -94,7 +105,63 @@ public class LabelIntegrationTest {
 
     @Test
     public void testCreateLabelsBadRequest() throws Exception {
-        assert(false);
+        final String endpoint = StringUtils.replace(LABELS_ENDPOINT, USERID_PARAM_REPLACE, userIdTestUserOne);
+
+        final String createLabelsMissingLabelsJson = MockJsonReader
+                .readMockJsonAsString("testCreateLabelsMissingLabelsJson.json");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createLabelsMissingLabelsJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(LABEL_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_LABEL_EMPTY))
+                .andReturn();
+
+
+        final String createLabelsMissingNameJson = MockJsonReader
+                .readMockJsonAsString("testCreateLabelsMissingNameJson.json");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createLabelsMissingNameJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(LABEL_ERROR_MSG))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_LABEL_NAME_EMPTY))
+                .andReturn();
+
+
+    }
+
+    @Test
+    public void testUpdateLabels() throws Exception {
+        final String endpoint = StringUtils.replace(LABELS_ENDPOINT, USERID_PARAM_REPLACE, userIdTestUserOne);
+
+        // Setup labels to update
+        final Label labelOne = new Label("groceries", testUserOne, "#111");
+        final Label labelTwo = new Label("groceries", testUserOne, "#111");
+        final Label labelThree = new Label("groceries", testUserOne, "#111");
+        labelRepository.save(labelOne);
+        labelRepository.save(labelTwo);
+        labelRepository.save(labelThree);
+
+        final String testUpdateLabelsJson = MockJsonReader
+                .readMockJsonAsString("testUpdateLabels.json");
+
+        mockMvc.perform(MockMvcRequestBuilders.put(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testUpdateLabelsJson))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labels", hasSize(4)))
+                .andExpect(jsonPath("$.labels[0].name").value("groceries-new"))
+                .andReturn();
+
     }
 
     @Test
@@ -107,16 +174,6 @@ public class LabelIntegrationTest {
 
     }
 
-    @Test
-    public void testCreateLabel() throws Exception {
-        final User user = SampleData.TESTUSERONE;
-        final String testLabelName = "groceries";
-        final String testLabelColor = "#123";
 
-        final Label testLabelOne = new Label("shopping", user);
-
-
-
-    }
 
 }

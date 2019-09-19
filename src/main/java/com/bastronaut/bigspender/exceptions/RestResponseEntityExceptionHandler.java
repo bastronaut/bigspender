@@ -1,6 +1,5 @@
 package com.bastronaut.bigspender.exceptions;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,9 +15,11 @@ import java.time.LocalDate;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String REGISTRATION_ERROR_MSG = "Registration error";
-    private static final String UPDATE_ERROR_MSG = "User update error";
+    private static final String USER_UPDATE_ERROR_MSG = "User update error";
     private static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction Import error";
     private static final String TRANSACTION_ERROR_MSG = "Transaction error";
+    private static final String LABEL_ERROR_MSG = "Label error";
+
 
     @ExceptionHandler(value = {UserRegistrationException.class})
     public final ResponseEntity<ErrorDetails> handleUserNotFoundException(Exception ex, WebRequest request) {
@@ -28,7 +29,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = {UserUpdateException.class})
     public final ResponseEntity<ErrorDetails> handleUserUpdateException(Exception ex, WebRequest request) {
-        final ErrorDetails errorDetails = new ErrorDetails(UPDATE_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        final ErrorDetails errorDetails = new ErrorDetails(USER_UPDATE_ERROR_MSG, ex.getMessage(), LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
@@ -38,10 +39,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
-
     @ExceptionHandler(value = {TransactionException.class})
     public final ResponseEntity<ErrorDetails> handleInvalidTransaction(Exception ex, WebRequest request) {
         final ErrorDetails errorDetails = new ErrorDetails(TRANSACTION_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
+    @ExceptionHandler(value = {LabelException.class})
+    public final ResponseEntity<ErrorDetails> handleInvalidLabels(Exception ex, WebRequest request) {
+        final ErrorDetails errorDetails = new ErrorDetails(LABEL_ERROR_MSG, ex.getMessage(), LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 }

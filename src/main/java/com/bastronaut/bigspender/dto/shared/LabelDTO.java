@@ -10,14 +10,14 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 
-import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_LABEL_NAME_NULL;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_LABEL_NAME_EMPTY;
 
 @AllArgsConstructor
 @NoArgsConstructor // @RequestBody injection
 @ToString
 @Getter
 public class LabelDTO {
-    @NotEmpty(message = ERRORMSG_LABEL_NAME_NULL)
+    @NotEmpty(message = ERRORMSG_LABEL_NAME_EMPTY)
     private String name;
     private String color;
     private long id;

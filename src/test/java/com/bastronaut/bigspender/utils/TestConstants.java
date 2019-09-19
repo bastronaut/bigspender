@@ -30,11 +30,14 @@ public class TestConstants {
 
     public static final String REGISTRATION_ERROR_PARAM = "Registration error";
     public static final String UPDATE_ERROR_MSG = "User update error";
+    public static final String LABEL_ERROR_MSG = "Label error";
 
     public static final String ERRORMSG_USER_EMAIL_NULL = "Field: email is required";
     public static final String ERRORMSG_USER_PW_NULL = "Field: password is required";
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
     public static final String ERRORMSG_INVALID_EMAIL = "Invalid email address, not well-formed";
+    public static final String ERRORMSG_LABEL_NAME_EMPTY = "Field: name is required for label";
+    public static final String ERRORMSG_LABEL_EMPTY = "Field: label is required";
 
     /** Label related tests **/
     public static final String LABELSID_PARAM_REPLACE = "{labelid}";
