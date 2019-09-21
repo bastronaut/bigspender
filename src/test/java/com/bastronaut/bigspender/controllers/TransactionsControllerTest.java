@@ -78,7 +78,7 @@ public class TransactionsControllerTest {
         given(transactionService.getTransactionForUser(anyLong(), any())).willReturn(optionalTransaction);
         given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
         // Returns different result after the first result with varargs argument
-        given(transactionService.deleteUserTransaction(anyLong(), any())).willReturn(1L, 0L);
+        given(transactionService.deleteTransactionForUser(anyLong(), any())).willReturn(1L, 0L);
     }
 
     @Test

@@ -30,4 +30,13 @@ public class LabelService {
         return labelRepository.save(label);
     }
 
+    public Label deleteLabel(final long id, final User user) {
+        return labelRepository.deleteByIdAndUser(id, user);
+    }
+
+    public List<Label> deleteLabels(final List<Long> labelIds, final User user) {
+        return labelRepository.deleteByIdInAndUser(labelIds, user);
+    }
+
+
 }

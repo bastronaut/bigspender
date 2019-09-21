@@ -38,12 +38,12 @@ public class TransactionService {
     }
 
 
-    public long deleteUserTransaction(final long transactionId, final User user) {
+    public long deleteTransactionForUser(final long transactionId, final User user) {
 
         return transactionRepository.deleteByIdAndUser(transactionId, user);
     }
 
-    public long deleteUserTransactions(final User user) {
+    public long deleteTransactionsForUser(final User user) {
 
         return transactionRepository.deleteByUser(user);
     }
@@ -54,7 +54,7 @@ public class TransactionService {
      * @param user the user to delete transactions for
      * @return the list of deleted Transactions
      */
-    public List<Transaction> deleteUserTransactions(final List<Long> transactionIds, final User user) {
+    public List<Transaction> deleteTransactionsForUser(final List<Long> transactionIds, final User user) {
         final List<Transaction> transactions = transactionRepository.findByIdInAndUser(transactionIds, user);
         transactionRepository.deleteInBatch(transactions);
         return transactions;

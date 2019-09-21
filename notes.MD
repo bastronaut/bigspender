@@ -1,6 +1,8 @@
-#####@ResponseBody:
+Set of personal notes made while learning the stack
+
+###@ResponseBody:
 The @ResponseBody annotation tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object.
-we don’t need to annotate the @RestController-annotated controllers with the @ResponseBody annotation since it’s done by default here?
+we don’t need to annotate the @RestController-annotated controllers with the @ResponseBody annotation since it’s done by default for more simple objects. More complex objects do require it (it seems) 
 
 
 ### layer architecture
@@ -116,9 +118,21 @@ Getting full security context in junit test - can set breakpoint in @Configurati
                 
                 
 
-### features todo
-tijdlijn uitgaven per dag
-hoofdcategorien, inzoomen  per subcategorie
+## Detached entities
+When entites are detached, changes to the entities are not persisted. todo figure out when detachemnt happens.
+For @ManyToX relations with collections, the default fetch strategy is lazy. This means that the relation entity wont be loaded when you load the initial entity. can use fetchtype=eager, but comes with massive side effects related to nr of queries if not used wisely   
+
+### Derived queries JPA
+You can create derived queries for fields on entities (findByXAndY), see docs
+https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.sample-app.finders.strategies
+
+Searcg Query Creation or Query lookup strategies
+
+### Transactional
+No EntityManager with actual transaction available for current thread
+
+https://stackoverflow.com/questions/32269192/spring-no-entitymanager-with-actual-transaction-available-for-current-thread
+"checking the spring documentation it looks like by default the PersistenceContext is of type Transaction, so that's why the method has to be transactional (http://docs.spring.io/spring/docs/current/spring-framework-reference/html/orm.html):"
 
 
 ### Breakpoints for controllers
@@ -128,3 +142,16 @@ For easy debugging, set breakpoint in DispatcherServlet.java line 1055 for metho
 ### Authentication and authorization
 DaoAuthenticationProvider.java, line 90, additionalAuthenticationChecks(..) verifies that the given password in the authorization header matches with the users 
 actual password
+
+
+### Controller serialization
+406 instead of 200 -> probably a problem with the serialization of the object into the ResultEntity body. Probably missing a constructor on the response type, or @getter on the fields
+
+### features todo
+tijdlijn uitgaven per dag
+hoofdcategorien, inzoomen  per subcategorie
+
+### TODO improvements
+- Transactions have a FetchType.EAGER on the List<Labels>. This will for every Transaction probably do another db call to retrieve all labels. More efficient would be if we retrieve all transactions for a user, retrieve all labels for a user, (so 2 queries), and either provide the them separately with foreign keys or link them somehow without doing a query for each single transaction
+- DELETE request is not yet allowed on a single transaction resource. Can only DELETE to /labels, which is used even if you intend to only delete one. Low prio
+- DTOs too complex. i.e.: See if we can get a List<Long> marshalled from the [ labels: {"id": 1},{"id": 2}] type requests for LabelDeleteDTO

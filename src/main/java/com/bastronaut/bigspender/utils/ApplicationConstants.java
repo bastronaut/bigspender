@@ -49,6 +49,8 @@ public class ApplicationConstants {
     public static final String ERRORMSG_USER_PW_SIZE = "Field: password requires a minimum length of 8";
     public static final String ERRORMSG_LABEL_NAME_EMPTY = "Field: name is required for label";
     public static final String ERRORMSG_LABEL_EMPTY = "Field: label is required";
+    public static final String ERRORMSG_LABEL_REMOVE_EMPTY = "Field: labels must not be empty - requires label ids";
+    public static final String ERRORMSG_LABEL_REMOVE_ID_EMPTY = "Field: id must not be empty for label";
     public static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
     /* Transaction error messages */
     public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";

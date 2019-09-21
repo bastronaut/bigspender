@@ -94,7 +94,7 @@ public class TransactionController {
             // We could add a delete all here, but no functionality for it right now
             throw new TransactionException(ERRORMSG_MISSING_TRANSACTION_IDS);
         }
-        final List<Transaction> deletedTransactions = transactionService.deleteUserTransactions(transactionDeleteDTO.getTransactionIds(), user);
+        final List<Transaction> deletedTransactions = transactionService.deleteTransactionsForUser(transactionDeleteDTO.getTransactionIds(), user);
 
         final TransactionDeleteResultDTO deleteDTO = new TransactionDeleteResultDTO(deletedTransactions);
 
@@ -112,7 +112,7 @@ public class TransactionController {
     @DeleteMapping(value = TRANSACTION_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity deleteTransaction(final @AuthenticationPrincipal User user, final @PathVariable long transactionid) {
 
-        final long deleted = transactionService.deleteUserTransaction(transactionid, user);
+        final long deleted = transactionService.deleteTransactionForUser(transactionid, user);
         if (deleted > 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
