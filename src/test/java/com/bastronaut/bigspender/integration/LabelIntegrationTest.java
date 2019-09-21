@@ -192,7 +192,7 @@ public class LabelIntegrationTest {
                 .andExpect(jsonPath("$.labels[0].id").value(labelOne.getId()));
     }
 
-//    @Transactional // TODO No EntityManager with actual transaction available for current thread
+    @Transactional
     @Test
     public void testDeleteLabels() throws Exception {
 
@@ -202,7 +202,10 @@ public class LabelIntegrationTest {
         labelRepository.save(labelOne);
         labelRepository.save(labelTwo);
 
-        final String testDeleteLabelsJson = MockJsonReader.readMockJsonAsString("testDeleteLabels.json");
+        final String testDeleteLabelsJson = MockJsonReader.readMockJsonAsString("testDeleteLabels.json")
+                .replace("\"{REPLACE-1}\"", String.valueOf(labelOne.getId()))
+                .replace("\"{REPLACE-2}\"", String.valueOf(labelTwo.getId()));
+
 
         mockMvc.perform(MockMvcRequestBuilders.delete(LABELS_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)

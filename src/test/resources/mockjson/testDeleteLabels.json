@@ -1,6 +1,6 @@
 {
   "labels": [
-    {"id": 0},
-    {"name": "insurance-new", "id": 1}
+    {"id": "{REPLACE-1}"},
+    {"name": "insurance-new", "id": "{REPLACE-2}"}
   ]
 }
