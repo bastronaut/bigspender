@@ -66,6 +66,7 @@ public class ApplicationConstants {
 
     /* Labels */
     public static final String DEFAULT_LABELCOLOR = "#000";
+    public static final String DEFAULT_LABELNAME = "NEW LABEL, CHANGE NAME";
 
 
 }

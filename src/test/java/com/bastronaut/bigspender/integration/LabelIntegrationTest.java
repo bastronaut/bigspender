@@ -8,7 +8,6 @@ import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.MockJsonReader;
 import com.bastronaut.bigspender.utils.SampleData;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,19 +26,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELCOLOR;
+import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_EMPTY;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_NAME_EMPTY;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
-import static com.bastronaut.bigspender.utils.TestConstants.REGISTRATION_ERROR_PARAM;
-import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -71,8 +68,9 @@ public class LabelIntegrationTest {
 
     final private String headerEncodedUserOne = SampleData.HEADER_ENCODED_USERONE;
 
-    final private User testUserOne = SampleData.TESTUSERONE;
-    private String userIdTestUserOne;
+    private User testUserOne = SampleData.TESTUSERONE;
+
+    
 
     @Before
     public void setUp() throws Exception {
@@ -86,8 +84,7 @@ public class LabelIntegrationTest {
         labelRepository.deleteAllInBatch();
 
         // Setup initial users for various user related tests
-        userRepository.save(testUserOne);
-        userIdTestUserOne = String.valueOf(testUserOne.getId());
+        testUserOne = userRepository.save(testUserOne);
     }
 
 
@@ -95,7 +92,6 @@ public class LabelIntegrationTest {
     @Test
     public void testCreateLabels() throws Exception {
         final String endpoint = LABELS_ENDPOINT;
-        final String defaultColor = "#000";
 
         final String createLabelsJson = MockJsonReader.readMockJsonAsString("testCreateLabels.json");
 
@@ -111,7 +107,7 @@ public class LabelIntegrationTest {
                 .andExpect(jsonPath("$.labels[1].name").value("insurance"))
                 .andExpect(jsonPath("$.labels[1].color").value("#ABC"))
                 .andExpect(jsonPath("$.labels[2].name").value("drinks"))
-                .andExpect(jsonPath("$.labels[2].color").value(defaultColor))
+                .andExpect(jsonPath("$.labels[2].color").value(DEFAULT_LABELCOLOR))
                 .andExpect(jsonPath("$.labels[3].name").value("subscriptions"))
                 .andExpect(jsonPath("$.labels[3].color").value("#123EFA"));
     }
@@ -148,21 +144,32 @@ public class LabelIntegrationTest {
                 .andReturn();
     }
 
-    // TODO implement the putmapping
+    /**
+     * Tests 5 cases for updating a label:
+     * - Updating a name and color for an existing label
+     * - Updating a name for an existing label
+     * - Updating a color for an existing label
+     * - Creating a new label from an update (PUT) request with name and color, for nonexistant id
+     * - Creating a new label from an update (PUT) request with a color, for nonexistant id
+     * @throws Exception
+     */
     @Transactional
     @Test
     public void testUpdateLabels() throws Exception {
 
         // Setup labels to update
-        final Label labelOne = new Label("groceries", testUserOne, "#111");
-        final Label labelTwo = new Label("clothing", testUserOne, "#111");
-        final Label labelThree = new Label("snacks", testUserOne, "#111");
-        labelRepository.save(labelOne);
-        labelRepository.save(labelTwo);
-        labelRepository.save(labelThree);
+        Label labelOne = new Label("groceries", testUserOne, "#111");
+        Label labelTwo = new Label("clothing", testUserOne, "#111");
+        Label labelThree = new Label("snacks", testUserOne, "#111");
+        labelOne = labelRepository.save(labelOne);
+        labelTwo = labelRepository.save(labelTwo);
+        labelThree = labelRepository.save(labelThree);
 
         final String testUpdateLabelsJson = MockJsonReader
-                .readMockJsonAsString("testUpdateLabels.json");
+                .readMockJsonAsString("testUpdateLabels.json")
+                .replace("\"{REPLACE-1}\"", String.valueOf(labelOne.getId()))
+                .replace("\"{REPLACE-2}\"", String.valueOf(labelTwo.getId()))
+                .replace("\"{REPLACE-3}\"", String.valueOf(labelThree.getId()));
 
         mockMvc.perform(MockMvcRequestBuilders.put(LABELS_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
@@ -170,8 +177,17 @@ public class LabelIntegrationTest {
                 .content(testUpdateLabelsJson))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.labels", hasSize(4)))
+                .andExpect(jsonPath("$.labels", hasSize(5)))
                 .andExpect(jsonPath("$.labels[0].name").value("groceries-new"))
+                .andExpect(jsonPath("$.labels[0].color").value("#17A2B8"))
+                .andExpect(jsonPath("$.labels[1].name").value("insurance-new"))
+                .andExpect(jsonPath("$.labels[1].color").value(DEFAULT_LABELCOLOR))
+                .andExpect(jsonPath("$.labels[2].name").value(DEFAULT_LABELNAME))
+                .andExpect(jsonPath("$.labels[2].color").value("#007BFF"))
+                .andExpect(jsonPath("$.labels[3].name").value("non-existing-label"))
+                .andExpect(jsonPath("$.labels[3].color").value("#FFC107"))
+                .andExpect(jsonPath("$.labels[4].name").value(DEFAULT_LABELNAME))
+                .andExpect(jsonPath("$.labels[4].color").value("#343A40"))
                 .andReturn();
 
     }
@@ -281,9 +297,6 @@ public class LabelIntegrationTest {
     @Transactional
     @Test
     public void testDeleteLabelUnassignsFromTransactionLeavesRemainingLabelsIntact() throws Exception {
-        if (true) {
-            assert(false);
-        }
         final Transaction testTransactionOne = SampleData.t1;
         final Transaction testTransactionTwo = SampleData.t2;
 
@@ -293,8 +306,8 @@ public class LabelIntegrationTest {
 
         transactionRepository.saveAll(testTransactions);
 
-        final Label labelOne = new Label("groceries", testUserOne, "#111");
-        final Label labelTwo = new Label("clothing", testUserOne, "#123");
+        Label labelOne = new Label("groceries", testUserOne, "#111");
+        Label labelTwo = new Label("clothing", testUserOne, "#123");
 
         final List<Label> testLabels = new ArrayList<>();
         testLabels.add(labelOne);
@@ -324,7 +337,7 @@ public class LabelIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.labels", hasSize(1)))
-                .andExpect(jsonPath("$.labels[0].id").value(labelTwo.getId()));
+                .andExpect(jsonPath("$.labels[0].id").value(labelOne.getId()));
 
         // Verify the label is removed from the transaction
         final Optional<Transaction> verifyTransactionOne = transactionRepository
@@ -338,7 +351,7 @@ public class LabelIntegrationTest {
                 .findByIdAndUser(testTransactionTwo.getId(), testUserOne);
         final List<Label> verifyLabelsTwo = verifyTransactionTwo.get().getLabels();
         assert(verifyLabelsTwo.size() == 1);
-        assert(verifyLabelsTwo.get(0).getId() == testTransactionTwo.getId());
+        assert(verifyLabelsTwo.get(0).getId() == labelTwo.getId());
 
     }
 

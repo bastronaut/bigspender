@@ -269,7 +269,9 @@ public class TransactionIntegrationTest {
     public void testDeleteTransactionOtherUser() throws Exception {
 
         // Verify the transaction exists for user two
-        Optional<Transaction> retrievedTwo = transactionRepository.findByIdAndUser(Long.valueOf(firstTransactionIdUserTwo), testUserTwo);
+        final Optional<Transaction> retrievedTwo = transactionRepository
+                .findByIdAndUser(Long.valueOf(firstTransactionIdUserTwo), testUserTwo);
+
         assertTrue(retrievedTwo.isPresent());
 
         // Using authorization header for User 1, attempt to delete resource from User 2

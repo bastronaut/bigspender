@@ -9,7 +9,6 @@ import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
-import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
 import com.bastronaut.bigspender.services.TransactionService;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.xml.ws.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,10 +60,7 @@ public class LabelController {
                 .map(label -> Label.fromLabelDTO(label, user)).collect(Collectors.toList());
 
         final List<Label> savedLabels = labelService.saveLabels(labels);
-
-        final List<LabelDTO> returnLabels = savedLabels.stream()
-                .map(label -> LabelDTO.fromLabel(label))
-                .collect(Collectors.toList());
+        final List<LabelDTO> returnLabels = LabelDTO.fromLabels(savedLabels);
 
         return ResponseEntity.status(HttpStatus.OK).body(new LabelAddResultDTO(returnLabels));
     }
@@ -78,35 +73,22 @@ public class LabelController {
         checkBindingErrors(bindingResult);
 
         final List<Long> ids = labelDeleteDTO.getLabelIds();
-        final List<Label> labels = labelService.getLabelsById(ids, user);
-
-        for (Label label: labels) {
-            List<Transaction> transactions = label.getTransactions();
-            for (Transaction transaction: transactions) {
-                transaction.getLabels().remove(label);
-            }// if size >0 save
-            transactionService.saveTransactions(transactions);
-        }
-
         final List<Label> deletedLabels = labelService.deleteLabels(ids, user);
+        final List<LabelDTO> deletedLabelsDTO = LabelDTO.fromLabels(deletedLabels);
 
-
-        final List<LabelDTO> deletedLabelsDTO = deletedLabels.stream()
-                .map(LabelDTO::fromLabel)
-                .collect(Collectors.toList());
-
-        final LabelDeleteResultDTO result = new LabelDeleteResultDTO(deletedLabelsDTO);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-
+        return ResponseEntity.status(HttpStatus.OK).body(new LabelDeleteResultDTO(deletedLabelsDTO));
     }
 
+    // TODO: the LabelUpdateDTO has LabelDTOs, which has a mandatory field label name. decide if to allow or not
     @PutMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelUpdateResultDTO> updateLabels(final @AuthenticationPrincipal User user,
-                                                             @Valid @RequestBody final LabelUpdateDTO labelDeleteDTO,
+                                                             @Valid @RequestBody final LabelUpdateDTO labelUpdateDTO,
                                                              final BindingResult bindingResult) {
+        checkBindingErrors(bindingResult);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new LabelUpdateResultDTO(new ArrayList<>()));
+        final List<Label> updatedLabels = labelService.updateLabels(labelUpdateDTO.getLabels(), user);
+        final List<LabelDTO> updatedLabelsDTO = LabelDTO.fromLabels(updatedLabels);
+        return ResponseEntity.status(HttpStatus.OK).body(new LabelUpdateResultDTO(updatedLabelsDTO));
     }
 
     private void checkBindingErrors(final BindingResult bindingResult) {

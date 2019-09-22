@@ -11,6 +11,8 @@ import java.util.List;
 public interface LabelRepository extends JpaRepository<Label, Long> {
 
     List<Label> findAllByUser(final User user);
+    List<Label> findByIdInAndUser(final List<Long> ids, final User user);
+    Label findByIdAndUser(final long id, final User user);
 
     Label save(final Label label);
 
@@ -18,7 +20,7 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
 
     Label deleteByIdAndUser(final long id, final User user);
 
-    List<Label> findByIdInAndUser(final List<Long> ids, final User user);
+
 
     List<Label> deleteByIdInAndUser(final List<Long> ids, final User user);
 }

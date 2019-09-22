@@ -2,13 +2,14 @@ package com.bastronaut.bigspender.dto.shared;
 
 import com.bastronaut.bigspender.models.Label;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_LABEL_NAME_EMPTY;
 
@@ -32,7 +33,11 @@ public class LabelDTO {
     }
 
 
-    public static LabelDTO fromLabel(final Label label) {
+    public static LabelDTO fromLabels(final Label label) {
         return new LabelDTO(label.getName(), label.getColor(), label.getId());
+    }
+
+    public static List<LabelDTO> fromLabels(final List<Label> labels) {
+        return labels.stream().map(LabelDTO::fromLabels).collect(Collectors.toList());
     }
 }

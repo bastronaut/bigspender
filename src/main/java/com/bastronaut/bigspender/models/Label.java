@@ -63,7 +63,7 @@ public class Label {
     @Column(nullable = false)
     private String color;
 
-    //    @ManyToOne(targetEntity = User.class, cascade = {CascadeType.MERGE })
+
     @ToString.Exclude
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(optional = false)
