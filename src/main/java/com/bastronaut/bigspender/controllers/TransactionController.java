@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -94,7 +95,8 @@ public class TransactionController {
             // We could add a delete all here, but no functionality for it right now
             throw new TransactionException(ERRORMSG_MISSING_TRANSACTION_IDS);
         }
-        final List<Transaction> deletedTransactions = transactionService.deleteTransactionsForUser(transactionDeleteDTO.getTransactionIds(), user);
+        final List<Transaction> deletedTransactions = transactionService
+                .deleteTransactionsForUser(transactionDeleteDTO.getTransactionIds(), user);
 
         final TransactionDeleteResultDTO deleteDTO = new TransactionDeleteResultDTO(deletedTransactions);
 
@@ -119,4 +121,6 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+
 }

@@ -18,6 +18,10 @@ public class LabelService {
         this.labelRepository= labelRepository;
     }
 
+    public List<Label> getLabelsById(final List<Long> labelIds, final User user) {
+        return labelRepository.findByIdInAndUser(labelIds, user);
+    }
+
     public List<Label> getLabels(final User user) {
         return labelRepository.findAllByUser(user);
     }
@@ -35,6 +39,9 @@ public class LabelService {
     }
 
     public List<Label> deleteLabels(final List<Long> labelIds, final User user) {
+
+
+
         return labelRepository.deleteByIdInAndUser(labelIds, user);
     }
 

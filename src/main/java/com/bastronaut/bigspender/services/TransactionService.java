@@ -55,8 +55,7 @@ public class TransactionService {
      * @return the list of deleted Transactions
      */
     public List<Transaction> deleteTransactionsForUser(final List<Long> transactionIds, final User user) {
-        final List<Transaction> transactions = transactionRepository.findByIdInAndUser(transactionIds, user);
-        transactionRepository.deleteInBatch(transactions);
+        final List<Transaction> transactions = transactionRepository.deleteByIdInAndUser(transactionIds, user);
         return transactions;
     }
 
@@ -75,6 +74,13 @@ public class TransactionService {
     }
 
     public List<Transaction> addLabelsToTransactions(final List<Label> labels, final List<Transaction> transactions) {
+
         return null;
+    }
+
+    public List<Transaction> saveTransactions(List<Transaction> transactions) {
+        List<Transaction> savedTransactions = transactionRepository.saveAll(transactions);
+        transactionRepository.flush();
+        return savedTransactions;
     }
 }

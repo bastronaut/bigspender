@@ -21,5 +21,4 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
     List<Label> findByIdInAndUser(final List<Long> ids, final User user);
 
     List<Label> deleteByIdInAndUser(final List<Long> ids, final User user);
-
 }

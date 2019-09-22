@@ -9,8 +9,10 @@ import com.bastronaut.bigspender.enums.TransactionType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -26,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,67 +40,68 @@ import java.util.List;
 @Data
 @Table(name =  "transactions")
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Transaction {
 
-    @Getter
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transaction_id")
     private long id;
 
-    @Getter
     @Column(nullable = true)
     private LocalDate date;
 
-    @Getter
     @Column(nullable = true)
     private LocalTime time;
 
-    @Getter
     @Column(nullable = false)
     private String name;
 
-    @Getter
     @Column(nullable = false, name="account_number")
     private String accountNumber;
 
-    @Getter
     @Column(nullable = true, name = "receiving_account_number")
     private String receivingAccountNumber;
 
-    @Getter
     @Column(nullable = true)
     private TransactionCode code;
 
-    @Getter
     @Column(nullable = false)
     private TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
-    @Getter
+
     @Column(nullable = false)
     private long amount;
 
-    @Getter
     @Column(nullable = true, name = "mutation_type")
     private TransactionMutationType mutationType;
 
-    @Getter
     @Column(nullable = true, length = 512)
     private String statement;
 
-    @Getter
     @Column(nullable = true)
     private DayOfWeek day; // non-normalized, maybe useful for training data
 
-    @Getter
     @JoinColumn(name="user_id", nullable = false)
     @ManyToOne
     private User user;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Label> labels;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "transaction_label")
+    @EqualsAndHashCode.Exclude
+    private List<Label> labels = new ArrayList<>();
 
+
+    public void addLabel(final Label label) {
+        this.labels.add(label);
+        label.getTransactions().add(this);
+    }
+
+    public void removeLabel(final Label label) {
+        this.labels.remove(label);
+        label.getTransactions().remove(this);
+    }
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
                        @NonNull final String accountNumber, final String receivingAccountNumber,
@@ -121,8 +126,6 @@ public class Transaction {
         this.user = user;
     }
 
-    // default constructor for hibernate
-    private Transaction() {}
 
     public static Transaction fromTransactionDTO(final TransactionDTO transactionDTO, final User user) {
             final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());

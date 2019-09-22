@@ -2,13 +2,17 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.in.LabelDeleteDTO;
+import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
+import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
+import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
+import com.bastronaut.bigspender.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +21,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.xml.ws.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +42,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class LabelController {
 
     private final LabelService labelService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @Autowired
     public LabelController(final LabelService labelService) {
@@ -67,9 +77,19 @@ public class LabelController {
                                                              final BindingResult bindingResult) {
         checkBindingErrors(bindingResult);
 
-        List<Long> ids = labelDeleteDTO.getLabelIds();
+        final List<Long> ids = labelDeleteDTO.getLabelIds();
+        final List<Label> labels = labelService.getLabelsById(ids, user);
+
+        for (Label label: labels) {
+            List<Transaction> transactions = label.getTransactions();
+            for (Transaction transaction: transactions) {
+                transaction.getLabels().remove(label);
+            }// if size >0 save
+            transactionService.saveTransactions(transactions);
+        }
 
         final List<Label> deletedLabels = labelService.deleteLabels(ids, user);
+
 
         final List<LabelDTO> deletedLabelsDTO = deletedLabels.stream()
                 .map(LabelDTO::fromLabel)
@@ -79,6 +99,14 @@ public class LabelController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
 
+    }
+
+    @PutMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LabelUpdateResultDTO> updateLabels(final @AuthenticationPrincipal User user,
+                                                             @Valid @RequestBody final LabelUpdateDTO labelDeleteDTO,
+                                                             final BindingResult bindingResult) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new LabelUpdateResultDTO(new ArrayList<>()));
     }
 
     private void checkBindingErrors(final BindingResult bindingResult) {

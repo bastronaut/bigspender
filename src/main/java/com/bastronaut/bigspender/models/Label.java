@@ -4,6 +4,7 @@ import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import sun.swing.StringUIClientPropertyKey;
@@ -18,7 +19,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELCOLOR;
@@ -32,6 +35,7 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABEL
 @Data
 @NoArgsConstructor
 @Table(name = "labels")
+@ToString
 public class Label {
 
 
@@ -59,10 +63,34 @@ public class Label {
     @Column(nullable = false)
     private String color;
 
+    //    @ManyToOne(targetEntity = User.class, cascade = {CascadeType.MERGE })
+    @ToString.Exclude
     @JoinColumn(name = "user_id", nullable = false)
-//    @ManyToOne(targetEntity = User.class, cascade = {CascadeType.MERGE })
     @ManyToOne(optional = false)
     private User user;
+
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "labels", cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE})
+    private List<Transaction> transactions = new ArrayList<>();
+
+
+    public void addTransaction(final Transaction transaction) {
+        this.transactions.add(transaction);
+        transaction.getLabels().add(this);
+    }
+
+    public void removeTransaction(final Transaction transaction) {
+        this.transactions.remove(transaction);
+        transaction.getLabels().remove(this);
+    }
+
+    @PreRemove
+    private void removeTransactionsFromLabels() {
+        transactions.forEach(t -> t.getLabels().remove(this));
+    }
+
 
     public static Label fromLabelDTO(final LabelDTO labelDTO, final User user) {
         return new Label(labelDTO.getName(), user, labelDTO.getColor());

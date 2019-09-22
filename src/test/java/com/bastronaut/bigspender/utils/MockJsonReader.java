@@ -21,6 +21,7 @@ public class MockJsonReader {
         }
         catch (IOException e) {
             e.printStackTrace();
+            return StringUtils.EMPTY;
         }
 
         return sb.toString();

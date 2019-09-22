@@ -4,6 +4,7 @@ package com.bastronaut.bigspender.integration;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.repositories.LabelRepository;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.SampleData;
@@ -54,6 +55,9 @@ public class TransactionIntegrationTest {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     private MockMvc mockMvc;
 
     final private String headerEncodedUserOne = SampleData.HEADER_ENCODED_USERONE;
@@ -64,8 +68,8 @@ public class TransactionIntegrationTest {
     private List<Transaction> transactions;
     private Transaction testUserTwoTransaction;
 
-    final private User testUserOne = SampleData.TESTUSERONE;
-    final private User testUserTwo = SampleData.TESTUSERTWO;
+    private User testUserOne = SampleData.TESTUSERONE;
+    private User testUserTwo = SampleData.TESTUSERTWO;
 
     private String firstTransactionIdUserOne;
     private String firstTransactionIdUserTwo;
@@ -83,9 +87,10 @@ public class TransactionIntegrationTest {
                 .apply(springSecurity())
                 .build();
 
+
         // Setup initial users for various user related tests
-        userRepository.save(testUserOne);
-        userRepository.save(testUserTwo);
+        testUserOne = userRepository.save(testUserOne);
+        testUserTwo = userRepository.saveAndFlush(testUserTwo);
 
         userIdTestUserOne = String.valueOf(testUserOne.getId());
         userIdTestuserTwo = String.valueOf(testUserTwo.getId());
@@ -95,8 +100,9 @@ public class TransactionIntegrationTest {
 
         this.testUserTwoTransaction = SampleData.t1TESTUSERTWO;
 
-        transactionRepository.saveAll(this.transactions);
-        transactionRepository.save(this.testUserTwoTransaction);
+        this.testUserTwoTransaction = transactionRepository.save(this.testUserTwoTransaction);
+        this.transactions = transactionRepository.saveAll(this.transactions);
+        transactionRepository.flush();
 
         final Transaction firstTransaction = transactions.get(0);
         this.firstTransactionIdUserOne = String.valueOf(firstTransaction.getId());

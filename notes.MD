@@ -122,11 +122,24 @@ Getting full security context in junit test - can set breakpoint in @Configurati
 When entites are detached, changes to the entities are not persisted. todo figure out when detachemnt happens.
 For @ManyToX relations with collections, the default fetch strategy is lazy. This means that the relation entity wont be loaded when you load the initial entity. can use fetchtype=eager, but comes with massive side effects related to nr of queries if not used wisely   
 
+
+## JPA
+
 ### Derived queries JPA
 You can create derived queries for fields on entities (findByXAndY), see docs
 https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.sample-app.finders.strategies
 
-Searcg Query Creation or Query lookup strategies
+Search Query Creation or Query lookup strategies
+
+@JoinTable
+The @JoinTable annotation is optional. It allows you to define the name of the join table and foreign key columns that store the many-to-many association.
+
+	@JoinTable(name = "book_author",
+		joinColumns = { @JoinColumn(name = "fk_book") },
+		inverseJoinColumns = { @JoinColumn(name = "fk_author") })
+
+@ManyToMany
+you probably want to navigate in both directions (see transactions by label, see labels by transaction). In that case, we need to set the @ManyToMany on both classes, and define who owns the relationship (one >NOT< having the mappedBy attribute). We need custom logic to ensure both entities are updated when an add/remove is performed
 
 ### Transactional
 No EntityManager with actual transaction available for current thread
