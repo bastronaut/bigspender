@@ -71,8 +71,7 @@ public class Label {
 
     @ToString.Exclude
     @ManyToMany(mappedBy = "labels", cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE})
+            CascadeType.PERSIST})
     private List<Transaction> transactions = new ArrayList<>();
 
 

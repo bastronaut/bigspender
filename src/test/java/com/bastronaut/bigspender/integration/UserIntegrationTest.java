@@ -54,11 +54,13 @@ public class UserIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    private SampleData sampleData = new SampleData();
+
     private MockMvc mockMvc;
 
     final private String userpw = TEST_EMAIL + ":" + TEST_PASSWORD;
     final private String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
-    private String userid;
+    private String userId;
 
 
     @Before
@@ -69,19 +71,19 @@ public class UserIntegrationTest {
                 .build();
 
         // Setup initial user for various user related tests
-        final User testuser = SampleData.TESTUSERONE;
-        userRepository.save(testuser);
+        final User testUser = sampleData.getTestUserOne();
+        userRepository.save(testUser);
 
         // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
         final Optional<User> optionalUser = userRepository.findByEmail(TEST_EMAIL);
-        userid = String.valueOf(optionalUser.get().getId());
+        userId = String.valueOf(optionalUser.get().getId());
     }
 
     @Test
     public void testUpdateUser() throws Exception {
 
         // Update user, auth headers are required to inject the User argument into the controller
-        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userId))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(EMAIL_PARAM, TEST_EMAIL_UPDATE))
                 .andDo(print())
@@ -92,7 +94,7 @@ public class UserIntegrationTest {
     public void testUpdateUserInvalid() throws Exception {
 
         // Invalid email address
-        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userId))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(EMAIL_PARAM, "invalid"))
                 .andExpect(status().isBadRequest())
@@ -102,7 +104,7 @@ public class UserIntegrationTest {
                 .andReturn();
 
         // Invalid password
-        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
+        mockMvc.perform(MockMvcRequestBuilders.put(USER_ENDPOINT.replace(USERID_PARAM_REPLACE, userId))
                 .header(HttpHeaders.AUTHORIZATION, headerEncoded)
                 .param(PASSWORD_PARAM, "12345"))
                 .andExpect(status().isBadRequest())

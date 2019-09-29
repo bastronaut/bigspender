@@ -36,7 +36,7 @@ public class TransactionAddDTO {
     @NotEmpty(message = ERRORMSG_NO_TRANSACTION_TYPE)
     private final String type;
 
-    @NotEmpty(message = ERRORMSG_NO_AMOUNT)
+    @NotNull(message = ERRORMSG_NO_AMOUNT)
     private final long amount;
     private final String statement;
 

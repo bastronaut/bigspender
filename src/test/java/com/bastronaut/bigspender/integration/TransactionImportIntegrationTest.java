@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
@@ -58,6 +59,8 @@ public class TransactionImportIntegrationTest {
     private String userid;
     private List<Transaction> transactions;
 
+    private SampleData sampleData = new SampleData();
+
 
     @Before
     public void setUp() throws Exception {
@@ -67,7 +70,7 @@ public class TransactionImportIntegrationTest {
                 .build();
 
         // Setup initial user for various user related tests
-        final User testuser = SampleData.TESTUSERONE;
+        final User testuser = sampleData.getTestUserOne();
         userRepository.save(testuser);
 
         // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
@@ -76,6 +79,7 @@ public class TransactionImportIntegrationTest {
     }
 
 
+    @Transactional
     @Test
     public void testImportTransactions() throws Exception {
 

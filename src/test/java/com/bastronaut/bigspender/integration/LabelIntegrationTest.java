@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +69,11 @@ public class LabelIntegrationTest {
 
     final private String headerEncodedUserOne = SampleData.HEADER_ENCODED_USERONE;
 
-    private User testUserOne = SampleData.TESTUSERONE;
+    private SampleData sampleData = new SampleData();
+    private User testUserOne = sampleData.getTestUserOne();
 
+    @Autowired
+    EntityManager entityManager;
     
 
     @Before
@@ -82,6 +86,8 @@ public class LabelIntegrationTest {
         userRepository.deleteAllInBatch();
         transactionRepository.deleteAllInBatch();
         labelRepository.deleteAllInBatch();
+        // Clear all entity caches
+        entityManager.getEntityManagerFactory().getCache().evictAll();
 
         // Setup initial users for various user related tests
         testUserOne = userRepository.save(testUserOne);
@@ -252,7 +258,7 @@ public class LabelIntegrationTest {
     @Test
     public void testDeleteLabelUnassignsFromTransaction() throws Exception {
 
-        final Transaction testTransactionOne = SampleData.t1;
+        final Transaction testTransactionOne = sampleData.t1;
         transactionRepository.save(testTransactionOne );
 
         final Label labelOne = new Label("groceries", testUserOne, "#111");
@@ -297,8 +303,8 @@ public class LabelIntegrationTest {
     @Transactional
     @Test
     public void testDeleteLabelUnassignsFromTransactionLeavesRemainingLabelsIntact() throws Exception {
-        final Transaction testTransactionOne = SampleData.t1;
-        final Transaction testTransactionTwo = SampleData.t2;
+        final Transaction testTransactionOne = sampleData.t1;
+        final Transaction testTransactionTwo = sampleData.t2;
 
         final List<Transaction> testTransactions = new ArrayList<>();
         testTransactions.add(testTransactionOne);

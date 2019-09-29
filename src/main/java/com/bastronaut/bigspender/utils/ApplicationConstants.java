@@ -6,9 +6,9 @@ public class ApplicationConstants {
     // and only serves to open attack vector probably
 
     /* API endpoints */
-    public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/{userid}/transactionimport";
-    public static final String TRANSACTIONS_ENDPOINT = "/users/{userid}/transactions";
-    public static final String TRANSACTION_ENDPOINT = "/users/{userid}/transactions/{transactionid}";
+    public static final String TRANSACTION_IMPORT_ENDPOINT = "/transactionimport";
+    public static final String TRANSACTIONS_ENDPOINT = "/transactions";
+    public static final String TRANSACTION_ENDPOINT = "/transactions/{transactionid}";
     public static final String USERS_ENDPOINT = "/users";
     public static final String USER_RESOURCE_ENDPOINT = "/users/{userid}";
     public static final String LABELS_ENDPOINT = "/labels";

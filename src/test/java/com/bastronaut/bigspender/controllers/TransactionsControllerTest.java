@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -41,11 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // required to reset state after test
 public class TransactionsControllerTest {
-
-    private static final String GET_TRANSACTION_ENDPOINT = "/users/1/transactions/2";
-    private static final String DELETE_TRANSACTION_ENDPOINT = "/users/1/transactions/1";
-    private static final String GET_TRANSACTIONS_ENDPOINT = "/users/1/transactions";
 
     @Autowired
     private TransactionController transactionsController;
@@ -56,17 +57,18 @@ public class TransactionsControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-    private List<Transaction> expectedSampleTransactions;
     private FileInputStream input;
     private MockMvc mockMvc;
+
+    private SampleData sampleData = new SampleData();
 
     @Before
     public void setup() throws FileNotFoundException {
         final File sampleFile = new File(FAKE_TRANSACTIONS_CSV_PATH);
-        final Transaction testTransaction = SampleData.t1;
+        final Transaction testTransaction = sampleData.t1;
         final Optional<Transaction> optionalTransaction = Optional.of(testTransaction);
 
-        final List<Transaction> testTransactions = SampleData.getTransactions();
+        final List<Transaction> testTransactions = sampleData.getTransactions();
 
         this.input = new FileInputStream(sampleFile);
 
@@ -81,16 +83,11 @@ public class TransactionsControllerTest {
         given(transactionService.deleteTransactionForUser(anyLong(), any())).willReturn(1L, 0L);
     }
 
-    @Test
-    public void contextLoads() throws Exception {
-        assertNotNull(transactionsController);
-
-    }
-
     @WithMockUser
     @Test
     public void testRetrieveUserTransaction() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTION_ENDPOINT))
+        final String endpoint = TRANSACTION_ENDPOINT.replace(TRANSACTIONID_PARAM_REPLACE, "1");
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("type").value("Af"))
                 .andExpect(jsonPath("code").value("GT"))
@@ -109,7 +106,7 @@ public class TransactionsControllerTest {
     @WithMockUser
     @Test
     public void testRetrieveUserTransactions() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(GET_TRANSACTIONS_ENDPOINT))
+        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].accountNumber").value("NL41INGB0006212385"))
@@ -121,12 +118,13 @@ public class TransactionsControllerTest {
     @WithMockUser
     @Test
     public void testDeleteTransaction() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT))
+        final String endpoint = TRANSACTION_ENDPOINT.replace(TRANSACTIONID_PARAM_REPLACE, "1");
+        mockMvc.perform(MockMvcRequestBuilders.delete(endpoint))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
         // second run should be a 404 for nonexisting resource, so 2nd time deleting the resource
-        mockMvc.perform(MockMvcRequestBuilders.delete(DELETE_TRANSACTION_ENDPOINT))
+        mockMvc.perform(MockMvcRequestBuilders.delete(endpoint))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

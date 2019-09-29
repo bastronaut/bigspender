@@ -33,6 +33,8 @@ public class LabelServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    private SampleData sampleData = new SampleData();
+
     private User user;
 
     @Before

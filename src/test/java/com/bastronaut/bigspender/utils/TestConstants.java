@@ -12,9 +12,9 @@ public class TestConstants {
     public static final String USERS_ENDPOINT = "/users";
     public static final String USER_ENDPOINT = "/users/" + USERID_PARAM_REPLACE;
     public static final String TRANSACTIONID_PARAM_REPLACE = "{transactionid}";
-    public static final String TRANSACTION_IMPORT_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/transactionimport";
-    public static final String TRANSACTIONS_ENDPOINT = "/users/" + USERID_PARAM_REPLACE +  "/transactions";
-    public static final String TRANSACTION_ENDPOINT = "/users/" + USERID_PARAM_REPLACE + "/transactions/" + TRANSACTIONID_PARAM_REPLACE;
+    public static final String TRANSACTION_IMPORT_ENDPOINT = "/transactionimport";
+    public static final String TRANSACTIONS_ENDPOINT = "/transactions";
+    public static final String TRANSACTION_ENDPOINT = "/transactions/" + TRANSACTIONID_PARAM_REPLACE;
     public static final String NAME_PARAM = "name";
     public static final String EMAIL_PARAM = "email";
     public static final String PASSWORD_PARAM = "password";

@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ImportControllerTest {
 
 
@@ -66,19 +68,15 @@ public class ImportControllerTest {
 
     private User user;
 
+    private SampleData sampleData = new SampleData();
 
     @Before
     public void init() throws IOException {
-        this.user = SampleData.TESTUSERONE;
+        this.user = sampleData.getTestUserOne();
         userRepository.save(this.user);
 
-        given(importer.parseTransactions(any(), any())).willReturn(SampleData.TRANSACTION_IMPORT);
-        given(transactionService.saveTransactionImport(any())).willReturn(SampleData.TRANSACTION_IMPORT);
-    }
-
-    @Test
-    public void contextLoads() throws Exception {
-        assertThat(importController).isNotNull();
+        given(importer.parseTransactions(any(), any())).willReturn(sampleData.getSampleTransactionImport());
+        given(transactionService.saveTransactionImport(any())).willReturn(sampleData.getSampleTransactionImport());
     }
 
     @WithMockUser

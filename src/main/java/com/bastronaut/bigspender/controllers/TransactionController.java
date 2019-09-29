@@ -4,6 +4,7 @@ import com.bastronaut.bigspender.dto.in.TransactionAddDTO;
 import com.bastronaut.bigspender.dto.out.TransactionDTO;
 import com.bastronaut.bigspender.dto.in.TransactionDeleteDTO;
 import com.bastronaut.bigspender.dto.out.TransactionDeleteResultDTO;
+import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,8 +47,7 @@ public class TransactionController {
     TransactionService transactionService;
 
     @GetMapping(value = TRANSACTIONS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TransactionDTO>> getTransactions(final @PathVariable String userid,
-                                                               final @AuthenticationPrincipal User user) {
+    public ResponseEntity<List<TransactionDTO>> getTransactions(final @AuthenticationPrincipal User user) {
 
         final List<Transaction> transactions = transactionService.getTransactionsForUser(user);
         final List<TransactionDTO> result = transactions.stream()
@@ -55,7 +58,6 @@ public class TransactionController {
 
     @GetMapping(value = TRANSACTION_ENDPOINT, produces =  APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionDTO> getTransaction( final @AuthenticationPrincipal User user,
-                                                            final @PathVariable String userid,
                                                             final @PathVariable String transactionid) {
         final long parsedTransactionId;
         try {
@@ -77,9 +79,12 @@ public class TransactionController {
 
     @PostMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionDTO> postTransaction(final @AuthenticationPrincipal User user,
-                                                          final TransactionAddDTO transactionAddDTO) {
+                                                          @Valid final TransactionAddDTO transactionAddDTO,
+                                                          BindingResult bindingResult) {
+        checkBindingErrors(bindingResult);
+
         final Transaction transaction = Transaction.fromTransactionAddDTO(transactionAddDTO, user);
-        // TODO validation on transactionDTO, probably on @Valid in method boddy
+
         final Transaction savedTransaction = transactionService.saveTransaction(transaction);
         final TransactionDTO result = TransactionDTO.fromTransaction(savedTransaction);
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -103,9 +108,8 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.OK).body(deleteDTO);
     }
 
-    // TODO add validation to user and request path
     /**
-     * REST Delete method should return a 204 for successfull deletion but no entity in response,
+     * REST Delete method should return a 204 for successful deletion but no entity in response,
      * and a 404 when attempting to delete a nonexisting resource. https://restfulapi.net/http-methods/#delete
      * @param user the user to delete for
      * @param transactionid the transaction id to delete
@@ -119,6 +123,14 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+    private void checkBindingErrors(final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            FieldError error = bindingResult.getFieldErrors().get(0);
+            throw new TransactionException(error.getDefaultMessage());
         }
     }
 

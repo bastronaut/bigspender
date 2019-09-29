@@ -6,7 +6,6 @@ import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
 
 import com.bastronaut.bigspender.utils.SampleData;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,12 +30,14 @@ import static org.junit.Assert.assertEquals;
 public class INGTransactionParserImplTest {
 
     @Autowired
-    INGTransactionParserImpl importer;
+    private INGTransactionParserImpl importer;
 
-    private final List<Transaction> expectedSampleTransactions  = SampleData.getTransactions();
+    private SampleData sampleData = new SampleData();
+
+    private final List<Transaction> expectedSampleTransactions  = sampleData.getTransactions();
 
     private FileInputStream input;
-    private final User testUser = SampleData.TESTUSERONE;
+    private final User testUser = sampleData.getTestUserOne();
 
     @Before
     public void setupSampleResult() throws FileNotFoundException {
