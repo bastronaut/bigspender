@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.SampleData.HEADER_ENCODED_NONEXISTINGUSER;
+import static com.bastronaut.bigspender.utils.SampleData.HEADER_ENCODED_USERTWO;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_ENDPOINT;
@@ -39,14 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // required to reset state after test
-public class TransactionsControllerTest {
+public class TransactionControllerTest {
 
     @Autowired
     private TransactionController transactionsController;
@@ -72,10 +72,7 @@ public class TransactionsControllerTest {
 
         this.input = new FileInputStream(sampleFile);
 
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
         given(transactionService.getTransactionForUser(anyLong(), any())).willReturn(optionalTransaction);
         given(transactionService.getTransactionsForUser(any())).willReturn(testTransactions);
@@ -128,6 +125,108 @@ public class TransactionsControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
+
+
+    /**
+     * Attempts to perform deletion with incorrect auth and missing auth
+     * @throws Exception
+     */
+    @Test
+    public void testGetTransactionNotAuthorized() throws Exception {
+
+        final String endpoint = TRANSACTION_ENDPOINT.replace(TRANSACTIONID_PARAM_REPLACE, "1");
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    /**
+     * Attempts to perform deletion with incorrect auth and missing auth
+     * @throws Exception
+     */
+    @Test
+    public void testGetTransactionsNotAuthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    /**
+     * Attempts to perform deletion with incorrect auth and missing auth
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteTransactionsNotAuthorized() throws Exception {
+        final String deleteEndpoint = TRANSACTIONS_ENDPOINT;
+        final String[] transactionDeleteIds = new String[4];
+        final String txId1 = String.valueOf("1");
+        final String txId2 = String.valueOf("2");
+
+        transactionDeleteIds[0] = txId1;
+        transactionDeleteIds[1] = txId2;
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+                .param("transactionIds", transactionDeleteIds))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(deleteEndpoint)
+                .param("transactionIds", transactionDeleteIds)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    public void testAddTransactionNotAuthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT)
+                .param("date", "2019-04-07")
+                .param("time", "07:25:00")
+                .param("name" , "Test transaction")
+                .param("accountNumber" , "NL20INGB0004567891")
+                .param("receivingAccountNumber" , "NL20INGB0001987654")
+                .param("code" , "BA")
+                .param("type" , "BIJ")
+                .param("amount" , "1980")
+                .param("mutationType" , "Diversen")
+                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
+                .param("day" , "7"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_ENDPOINT)
+                .param("date", "2019-04-07")
+                .param("time", "07:25:00")
+                .param("name" , "Test transaction")
+                .param("accountNumber" , "NL20INGB0004567891")
+                .param("receivingAccountNumber" , "NL20INGB0001987654")
+                .param("code" , "BA")
+                .param("type" , "BIJ")
+                .param("amount" , "1980")
+                .param("mutationType" , "Diversen")
+                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
+                .param("day" , "7")
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
+
+
 
 
 }

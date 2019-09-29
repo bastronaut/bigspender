@@ -1,6 +1,7 @@
 package com.bastronaut.bigspender.utils;
 
 import com.bastronaut.bigspender.config.SecurityUtil;
+import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.TransactionImport;
 import com.bastronaut.bigspender.models.User;
@@ -45,6 +46,7 @@ public class SampleData {
 
     final public static String HEADER_ENCODED_USERONE = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERONE.getBytes()));
     final public static String HEADER_ENCODED_USERTWO = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERTWO.getBytes()));
+    final public static String HEADER_ENCODED_NONEXISTINGUSER = "Basic " + (Base64.getEncoder().encodeToString("nonexisting@email.com:fakepw".getBytes()));
     final public static String HEADER_ENCODED_USERONEWRONGPW = "Basic " + (Base64.getEncoder().encodeToString(USERNAMEPW_USERONE_FAKE.getBytes()));
 
     public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -120,5 +122,11 @@ public class SampleData {
             null, GT, AF, 180, BETAALAUTOMAAT,
             "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", testUserTwo);
 
+    @Getter
+    Label labelOne = new Label("groceries", testUserOne, "#111");
+    @Getter
+    Label labelTwo = new Label("clothing", testUserOne, "#112");
+    @Getter
+    Label labelThree = new Label("snacks", testUserOne, "#113");
 
 }

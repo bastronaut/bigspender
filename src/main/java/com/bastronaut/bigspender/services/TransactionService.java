@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TransactionService {
@@ -78,7 +79,7 @@ public class TransactionService {
         return null;
     }
 
-    public List<Transaction> saveTransactions(List<Transaction> transactions) {
+    public List<Transaction> saveTransactions(Set<Transaction> transactions) {
         List<Transaction> savedTransactions = transactionRepository.saveAll(transactions);
         transactionRepository.flush();
         return savedTransactions;

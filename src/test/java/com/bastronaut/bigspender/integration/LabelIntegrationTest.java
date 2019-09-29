@@ -20,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,6 +30,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELCOLOR;
 import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELNAME;
@@ -120,6 +122,42 @@ public class LabelIntegrationTest {
 
     @Transactional
     @Test
+    public void testGetLabels() throws Exception {
+        // Setup labels to update
+        Label labelOne = sampleData.getLabelOne();
+        Label labelTwo = sampleData.getLabelTwo();
+        Label labelThree = sampleData.getLabelThree();
+        labelOne = labelRepository.save(labelOne);
+        labelTwo = labelRepository.save(labelTwo);
+        labelThree = labelRepository.save(labelThree);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(LABELS_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labels", hasSize(3)))
+                .andExpect(jsonPath("$.labels[0].name").value(labelOne.getName()))
+                .andExpect(jsonPath("$.labels[0].color").value(labelOne.getColor()))
+                .andExpect(jsonPath("$.labels[0].id").value(labelOne.getId()))
+                .andExpect(jsonPath("$.labels[1].name").value(labelTwo.getName()))
+                .andExpect(jsonPath("$.labels[1].color").value(labelTwo.getColor()))
+                .andExpect(jsonPath("$.labels[1].id").value(labelTwo.getId()))
+                .andExpect(jsonPath("$.labels[2].name").value(labelThree.getName()))
+                .andExpect(jsonPath("$.labels[2].color").value(labelThree.getColor()))
+                .andExpect(jsonPath("$.labels[2].id").value(labelThree.getId()))
+                .andReturn();
+    }
+
+    @Transactional
+    @Test
+    public void testGetLabelsForTransaction() throws  Exception {
+
+        assert(false);
+    }
+
+    @Transactional
+    @Test
     public void testCreateLabelsBadRequest() throws Exception {
 
         final String createLabelsMissingLabelsJson = MockJsonReader
@@ -164,9 +202,9 @@ public class LabelIntegrationTest {
     public void testUpdateLabels() throws Exception {
 
         // Setup labels to update
-        Label labelOne = new Label("groceries", testUserOne, "#111");
-        Label labelTwo = new Label("clothing", testUserOne, "#111");
-        Label labelThree = new Label("snacks", testUserOne, "#111");
+        Label labelOne = sampleData.getLabelOne();
+        Label labelTwo = sampleData.getLabelTwo();
+        Label labelThree = sampleData.getLabelThree();
         labelOne = labelRepository.save(labelOne);
         labelTwo = labelRepository.save(labelTwo);
         labelThree = labelRepository.save(labelThree);
@@ -183,17 +221,13 @@ public class LabelIntegrationTest {
                 .content(testUpdateLabelsJson))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.labels", hasSize(5)))
+                .andExpect(jsonPath("$.labels", hasSize(3)))
                 .andExpect(jsonPath("$.labels[0].name").value("groceries-new"))
                 .andExpect(jsonPath("$.labels[0].color").value("#17A2B8"))
                 .andExpect(jsonPath("$.labels[1].name").value("insurance-new"))
-                .andExpect(jsonPath("$.labels[1].color").value(DEFAULT_LABELCOLOR))
-                .andExpect(jsonPath("$.labels[2].name").value(DEFAULT_LABELNAME))
-                .andExpect(jsonPath("$.labels[2].color").value("#007BFF"))
-                .andExpect(jsonPath("$.labels[3].name").value("non-existing-label"))
-                .andExpect(jsonPath("$.labels[3].color").value("#FFC107"))
-                .andExpect(jsonPath("$.labels[4].name").value(DEFAULT_LABELNAME))
-                .andExpect(jsonPath("$.labels[4].color").value("#343A40"))
+                .andExpect(jsonPath("$.labels[1].color").value("#1124AD"))
+                .andExpect(jsonPath("$.labels[2].name").value("non-existing-label"))
+                .andExpect(jsonPath("$.labels[2].color").value("#FFC107"))
                 .andReturn();
 
     }
@@ -203,8 +237,8 @@ public class LabelIntegrationTest {
     public void testDeleteLabel() throws Exception {
 
         // Setup labels to remove
-        final Label labelOne = new Label("groceries", testUserOne, "#111");
-        final Label labelTwo = new Label("clothing", testUserOne, "#123");
+        final Label labelOne = sampleData.getLabelOne();
+        final Label labelTwo = sampleData.getLabelTwo();
 
         labelRepository.save(labelOne);
         labelRepository.save(labelTwo);
@@ -227,8 +261,8 @@ public class LabelIntegrationTest {
     public void testDeleteLabels() throws Exception {
 
         // Setup labels to remove
-        final Label labelOne = new Label("groceries", testUserOne, "#111");
-        final Label labelTwo = new Label("clothing", testUserOne, "#111");
+        final Label labelOne = sampleData.getLabelOne();
+        final Label labelTwo = sampleData.getLabelTwo();
         labelRepository.save(labelOne);
         labelRepository.save(labelTwo);
 
@@ -261,7 +295,7 @@ public class LabelIntegrationTest {
         final Transaction testTransactionOne = sampleData.t1;
         transactionRepository.save(testTransactionOne );
 
-        final Label labelOne = new Label("groceries", testUserOne, "#111");
+        final Label labelOne = sampleData.getLabelOne();
         labelRepository.save(labelOne);
 
 
@@ -272,9 +306,10 @@ public class LabelIntegrationTest {
         final Optional<Transaction> verifyTransactionOne = transactionRepository
                 .findByIdAndUser(testTransactionOne.getId(), testUserOne);
 
-        final List<Label> verifyLabelsOne = verifyTransactionOne.get().getLabels();
+        final Set<Label> verifyLabelsOne = verifyTransactionOne.get().getLabels();
+        final Label firstLabelResult = verifyLabelsOne.iterator().next();
         assert(verifyLabelsOne.size() == 1);
-        assertEquals(verifyLabelsOne.get(0).getId(), labelOne.getId());
+        assertEquals(firstLabelResult.getId(), labelOne.getId());
 
         // We ensure that the ID to remove matches the ID from testTransactionOne
         final String testDeleteLabelsJson = MockJsonReader
@@ -294,7 +329,7 @@ public class LabelIntegrationTest {
         final Optional<Transaction> verifyTransactionOneRemoved = transactionRepository
                 .findByIdAndUser(testTransactionOne.getId(), testUserOne);
 
-        final List<Label> verifyLabelsRemoved = verifyTransactionOneRemoved.get().getLabels();
+        final Set<Label> verifyLabelsRemoved = verifyTransactionOneRemoved.get().getLabels();
         assert(verifyLabelsRemoved.isEmpty());
     }
 
@@ -312,8 +347,8 @@ public class LabelIntegrationTest {
 
         transactionRepository.saveAll(testTransactions);
 
-        Label labelOne = new Label("groceries", testUserOne, "#111");
-        Label labelTwo = new Label("clothing", testUserOne, "#123");
+        final Label labelOne = sampleData.getLabelOne();
+        final Label labelTwo = sampleData.getLabelTwo();
 
         final List<Label> testLabels = new ArrayList<>();
         testLabels.add(labelOne);
@@ -349,15 +384,15 @@ public class LabelIntegrationTest {
         final Optional<Transaction> verifyTransactionOne = transactionRepository
                 .findByIdAndUser(testTransactionOne.getId(), testUserOne);
 
-        final List<Label> verifyLabelsOne = verifyTransactionOne.get().getLabels();
+        final Set<Label> verifyLabelsOne = verifyTransactionOne.get().getLabels();
         assert(verifyLabelsOne.isEmpty());
 
         // Verify the labels is removed, but the other label is still present
         final Optional<Transaction> verifyTransactionTwo = transactionRepository
                 .findByIdAndUser(testTransactionTwo.getId(), testUserOne);
-        final List<Label> verifyLabelsTwo = verifyTransactionTwo.get().getLabels();
+        final Set<Label> verifyLabelsTwo = verifyTransactionTwo.get().getLabels();
         assert(verifyLabelsTwo.size() == 1);
-        assert(verifyLabelsTwo.get(0).getId() == labelTwo.getId());
+        assert(verifyLabelsTwo.iterator().next().getId() == labelTwo.getId());
 
     }
 

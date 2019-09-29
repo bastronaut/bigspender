@@ -141,6 +141,10 @@ The @JoinTable annotation is optional. It allows you to define the name of the j
 @ManyToMany
 you probably want to navigate in both directions (see transactions by label, see labels by transaction). In that case, we need to set the @ManyToMany on both classes, and define who owns the relationship (one >NOT< having the mappedBy attribute). We need custom logic to ensure both entities are updated when an add/remove is performed
 
+### Propery expressions
+JPA can traverse fields in the repository query names. Lets say an entity has a field, and that field has a subfield. You can use findByFieldSubfield to find it. Can also be used to find an item in a list  
+docs:  https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.query-property-expressions
+
 ### Transactional
 No EntityManager with actual transaction available for current thread
 

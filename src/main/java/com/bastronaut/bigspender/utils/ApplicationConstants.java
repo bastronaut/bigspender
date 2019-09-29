@@ -12,8 +12,8 @@ public class ApplicationConstants {
     public static final String USERS_ENDPOINT = "/users";
     public static final String USER_RESOURCE_ENDPOINT = "/users/{userid}";
     public static final String LABELS_ENDPOINT = "/labels";
-    public static final String LABELS_PER_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/";
-    public static final String LABEL_PER_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/{labelid}";
+    public static final String LABELS_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/";
+    public static final String LABEL_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/{labelid}";
 
     /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";

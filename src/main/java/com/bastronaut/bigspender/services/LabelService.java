@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELCOLOR;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELNAME;
@@ -44,6 +45,10 @@ public class LabelService {
         return labelRepository.findByIdInAndUser(labelIds, user);
     }
 
+    public Set<Label> getLabelsByTransactionId(final long transactionId, final User user) {
+        return labelRepository.findByTransactions_idAndUser(transactionId, user);
+    }
+
     public List<Label> getLabels(final User user) {
         return labelRepository.findAllByUser(user);
     }
@@ -64,7 +69,7 @@ public class LabelService {
 
         // We ensure the relationship between Label and Transaction in the join-table is removed
         for (Label label: labels) {
-            List<Transaction> transactions = label.getTransactions();
+            Set<Transaction> transactions = label.getTransactions();
             for (Transaction transaction: transactions) {
                 transaction.getLabels().remove(label);
             }// if size >0 save

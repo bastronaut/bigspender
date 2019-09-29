@@ -22,7 +22,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.PreRemove;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELCOLOR;
 
@@ -72,7 +74,7 @@ public class Label {
     @ToString.Exclude
     @ManyToMany(mappedBy = "labels", cascade = {
             CascadeType.PERSIST})
-    private List<Transaction> transactions = new ArrayList<>();
+    private Set<Transaction> transactions = new HashSet<>();
 
 
     public void addTransaction(final Transaction transaction) {

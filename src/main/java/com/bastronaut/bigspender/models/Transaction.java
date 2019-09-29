@@ -30,7 +30,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Entity class for transactions. Can not auto-generate constructor because of the @GeneratedValue id, and creating
@@ -90,7 +92,7 @@ public class Transaction {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "transaction_label")
     @EqualsAndHashCode.Exclude
-    private List<Label> labels = new ArrayList<>();
+    private Set<Label> labels = new HashSet<>();
 
 
     public void addLabel(final Label label) {

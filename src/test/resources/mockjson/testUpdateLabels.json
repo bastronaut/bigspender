@@ -1,9 +1,7 @@
 {
   "labels": [
     {"name": "groceries-new", "color": "#17A2B8", "id": "{REPLACE-1}"},
-    {"name": "insurance-new", "id": "{REPLACE-2}"},
-    {"color": "#007BFF", "id": "{REPLACE-3}"},
-    {"name": "non-existing-label", "color": "#FFC107", "id": 1009},
-    {"color": "#343A40", "id": 1009}
+    {"name": "insurance-new", "id": "{REPLACE-2}", "color": "#1124AD"},
+    {"name": "non-existing-label", "color": "#FFC107", "id": 1009}
   ]
 }

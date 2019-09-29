@@ -25,10 +25,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_TRANSACTIONIMPORT_FILE_NULL;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DATE_FIELD;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONIMPORT_ERROR_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_IMPORT_ENDPOINT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -44,12 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ImportControllerTest {
-
-
-    private static final String IMPORT_POST_ENDPOINT = "/users/1/transactionimport";
-    private static final String ERROR_MSG = "Transaction Import error";
-    private static final String ERROR_DETAILS = "No file was posted with parametername 'file'";
-
 
     @Autowired
     private ImportController importController;
@@ -88,7 +85,7 @@ public class ImportControllerTest {
         final MockMultipartFile sampleCSV = new MockMultipartFile("file", sampleFile.getName(),
                 "multipart/form-data", input);
 
-        final MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_POST_ENDPOINT)
+        final MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.multipart(TRANSACTION_IMPORT_ENDPOINT)
                 .file(sampleCSV))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.transactions[:1].date").value("2019-04-01"))
@@ -108,10 +105,10 @@ public class ImportControllerTest {
     @WithMockUser
     @Test
     public void testImportTransactionsWithoutFile() throws Exception {
-        mockMvc.perform(post(IMPORT_POST_ENDPOINT))
+        mockMvc.perform(post(TRANSACTION_IMPORT_ENDPOINT))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(ERROR_MSG))
-                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERROR_DETAILS))
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(TRANSACTIONIMPORT_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_TRANSACTIONIMPORT_FILE_NULL))
                 .andExpect(jsonPath(ERROR_DATE_FIELD).value(LocalDate.now().toString()))
                 .andReturn().getResponse();
     }

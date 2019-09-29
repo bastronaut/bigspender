@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.in.LabelDeleteDTO;
+import com.bastronaut.bigspender.dto.in.LabelGetResultDTO;
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
@@ -19,17 +20,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_BY_TRANSACTION_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -48,6 +54,24 @@ public class LabelController {
     public LabelController(final LabelService labelService) {
         this.labelService = labelService;
     }
+
+
+    @GetMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LabelGetResultDTO> getLabels(final @AuthenticationPrincipal User user) {
+        final List<Label> labels = labelService.getLabels(user);
+        List<LabelDTO> returnLabels = LabelDTO.fromLabels(labels);
+        return ResponseEntity.status(HttpStatus.OK).body(new LabelGetResultDTO(returnLabels));
+    }
+
+    @GetMapping(path = LABELS_BY_TRANSACTION_ENDPOINT,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LabelGetResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
+                                                                     final @PathVariable @NotNull long transactionId) {
+            final Set<Label> labelsById = labelService.getLabelsByTransactionId(transactionId, user);
+            final List<Label> labelsReturn = new ArrayList<>(labelsById);
+            final List<LabelDTO> labelsReturnDTO = LabelDTO.fromLabels(labelsReturn);
+            return ResponseEntity.status(HttpStatus.OK).body(new LabelGetResultDTO(labelsReturnDTO));
+        }
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelAddResultDTO> createLabels(final @AuthenticationPrincipal User user,
@@ -79,7 +103,7 @@ public class LabelController {
         return ResponseEntity.status(HttpStatus.OK).body(new LabelDeleteResultDTO(deletedLabelsDTO));
     }
 
-    // TODO: the LabelUpdateDTO has LabelDTOs, which has a mandatory field label name. decide if to allow or not
+
     @PutMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelUpdateResultDTO> updateLabels(final @AuthenticationPrincipal User user,
                                                              @Valid @RequestBody final LabelUpdateDTO labelUpdateDTO,
