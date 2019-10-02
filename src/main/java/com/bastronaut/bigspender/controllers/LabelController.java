@@ -2,10 +2,11 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.in.LabelDeleteDTO;
-import com.bastronaut.bigspender.dto.in.LabelGetResultDTO;
+import com.bastronaut.bigspender.dto.out.LabelGetResultDTO;
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
+import com.bastronaut.bigspender.dto.out.LabelGetForTransactionResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
@@ -65,12 +66,13 @@ public class LabelController {
 
     @GetMapping(path = LABELS_BY_TRANSACTION_ENDPOINT,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LabelGetResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
-                                                                     final @PathVariable @NotNull long transactionId) {
-            final Set<Label> labelsById = labelService.getLabelsByTransactionId(transactionId, user);
+    public ResponseEntity<LabelGetForTransactionResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
+                                                                                   final @PathVariable @NotNull long transactionid) {
+            final Set<Label> labelsById = labelService.getLabelsByTransactionId(transactionid, user);
             final List<Label> labelsReturn = new ArrayList<>(labelsById);
             final List<LabelDTO> labelsReturnDTO = LabelDTO.fromLabels(labelsReturn);
-            return ResponseEntity.status(HttpStatus.OK).body(new LabelGetResultDTO(labelsReturnDTO));
+            final LabelGetForTransactionResultDTO result = new LabelGetForTransactionResultDTO(labelsReturnDTO, transactionid);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

@@ -1,4 +1,4 @@
-package com.bastronaut.bigspender.dto.in;
+package com.bastronaut.bigspender.dto.out;
 
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import lombok.AllArgsConstructor;

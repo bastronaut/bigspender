@@ -28,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +40,10 @@ import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_NAME_
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.LABELS_PER_TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
+import static com.bastronaut.bigspender.utils.TestConstants.LABEL_PER_TRANSACTION_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -71,8 +75,8 @@ public class LabelIntegrationTest {
 
     final private String headerEncodedUserOne = SampleData.HEADER_ENCODED_USERONE;
 
-    private SampleData sampleData = new SampleData();
-    private User testUserOne = sampleData.getTestUserOne();
+    private SampleData sampleData;
+    private User testUserOne;
 
     @Autowired
     EntityManager entityManager;
@@ -91,6 +95,8 @@ public class LabelIntegrationTest {
         // Clear all entity caches
         entityManager.getEntityManagerFactory().getCache().evictAll();
 
+        sampleData = new SampleData();
+        testUserOne =  sampleData.getTestUserOne();
         // Setup initial users for various user related tests
         testUserOne = userRepository.save(testUserOne);
     }
@@ -149,11 +155,64 @@ public class LabelIntegrationTest {
                 .andReturn();
     }
 
+    /**
+     * Creates and saves three labels, but assigns two a transaction. Test retrieving thesee two labels
+     * Example reply:
+     * {
+     *   transactionid: 1,
+     *   labels: [
+     *      {"name": "subscriptions", "color": "#123EFA", id: 1},
+     *      {"name": "groceries", "color": "#EEE", id: 2}
+     *   ]
+     *  }
+     *
+     * @throws Exception
+     */
     @Transactional
     @Test
-    public void testGetLabelsForTransaction() throws  Exception {
+    public void testGetLabelsForTransactionAssignedToLabels() throws  Exception {
+        // Start setting up labels and assigning to transaction
+        Label labelOne = sampleData.getLabelOne();
+        Label labelTwo = sampleData.getLabelTwo(); // purposely
+        Label labelThree = sampleData.getLabelThree();
+        final List<Label> testLabels = new ArrayList<>();
+        testLabels.add(labelOne);
+        testLabels.add(labelTwo);
+        testLabels.add(labelThree);
 
-        assert(false);
+        final List<Label> savedLabels = labelRepository.saveAll(testLabels);
+
+        final Transaction t1 = sampleData.t1;
+        // Purposely only add two out of three labels
+        final Set<Label> labelsToRetrieve = new HashSet<>();
+        labelsToRetrieve.add(labelOne);
+        labelsToRetrieve.add(labelThree);
+        t1.setLabels(labelsToRetrieve);
+
+        final Transaction t1Saved = transactionRepository.save(t1);
+
+        final String endpoint = LABELS_PER_TRANSACTION_ENDPOINT.replace(
+                TRANSACTIONID_PARAM_REPLACE, String.valueOf(t1Saved.getId()));
+        // End setup
+
+
+        // Potential problem: as Labels are stored as a Set, may not be returned in order. May have to return
+        // and do processing that way
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labels", hasSize(2)))
+                .andExpect(jsonPath("$.labels[0].name").value(labelOne.getName()))
+                .andExpect(jsonPath("$.labels[0].id").value(labelOne.getId()))
+                .andExpect(jsonPath("$.labels[0].color").value(labelOne.getColor()))
+                .andExpect(jsonPath("$.labels[1].name").value(labelThree.getName()))
+                .andExpect(jsonPath("$.labels[1].id").value(labelThree.getId()))
+                .andExpect(jsonPath("$.labels[1].color").value(labelThree.getColor()))
+                .andExpect(jsonPath("$.transactionId").value(t1Saved.getId()))
+                .andReturn();
+
     }
 
     @Transactional
