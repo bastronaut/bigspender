@@ -14,6 +14,7 @@ public class ApplicationConstants {
     public static final String LABELS_ENDPOINT = "/labels";
     public static final String LABELS_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/";
     public static final String LABEL_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/{labelid}";
+    public static final String TRANSACTION_LABELS = "/transactions/labels"; // To add labels to transactions
 
     /* Parameters */
     public static final String TRANSACTIONID_PARAM = "transactionIds";

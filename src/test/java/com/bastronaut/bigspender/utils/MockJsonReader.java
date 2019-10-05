@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+/**
+ * Class to read out test json files as string in order to send the JSON in HTTP requests in unit tests.
+ */
 public class MockJsonReader {
 
     public static final String pathPrepend = "src/test/resources/mockjson/";
@@ -17,7 +20,7 @@ public class MockJsonReader {
 
         StringBuilder sb = new StringBuilder();
         try (Stream<String> stream = Files.lines( Paths.get(pathPrepend + fileName), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> sb.append(s));
+            stream.forEach(sb::append);
         }
         catch (IOException e) {
             e.printStackTrace();

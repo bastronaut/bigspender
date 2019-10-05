@@ -2,12 +2,14 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.in.LabelDeleteDTO;
+import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionsDTO;
 import com.bastronaut.bigspender.dto.out.LabelGetResultDTO;
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelGetForTransactionResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
+import com.bastronaut.bigspender.dto.out.TransactionsLabelsLinkResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
@@ -37,10 +39,11 @@ import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_BY_TRANSACTION_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_LABELS;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * Controller for performing label related functionality, such as managing labels adn adding labels to transactions
+ * Controller for performing label related functionality, such as managing labels and adding labels to transactions
  *
  */
 @RestController
@@ -64,6 +67,7 @@ public class LabelController {
         return ResponseEntity.status(HttpStatus.OK).body(new LabelGetResultDTO(returnLabels));
     }
 
+
     @GetMapping(path = LABELS_BY_TRANSACTION_ENDPOINT,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelGetForTransactionResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
@@ -74,6 +78,7 @@ public class LabelController {
             final LabelGetForTransactionResultDTO result = new LabelGetForTransactionResultDTO(labelsReturnDTO, transactionid);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         }
+
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelAddResultDTO> createLabels(final @AuthenticationPrincipal User user,
@@ -92,9 +97,20 @@ public class LabelController {
     }
 
 
+    @PostMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LinkLabelsToTransactionsDTO> linkLabelsToTransaction(final @AuthenticationPrincipal User user,
+                                                                                   final @Valid @RequestBody LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
+                                                                                   final BindingResult bindingResult) {
+        checkBindingErrors(bindingResult);
+
+
+        return null;
+    }
+
+
     @DeleteMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelDeleteResultDTO> deleteLabels(final @AuthenticationPrincipal User user,
-                                                             @Valid @RequestBody final LabelDeleteDTO labelDeleteDTO,
+                                                             final @Valid @RequestBody LabelDeleteDTO labelDeleteDTO,
                                                              final BindingResult bindingResult) {
         checkBindingErrors(bindingResult);
 
@@ -108,7 +124,7 @@ public class LabelController {
 
     @PutMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelUpdateResultDTO> updateLabels(final @AuthenticationPrincipal User user,
-                                                             @Valid @RequestBody final LabelUpdateDTO labelUpdateDTO,
+                                                             final @Valid @RequestBody LabelUpdateDTO labelUpdateDTO,
                                                              final BindingResult bindingResult) {
         checkBindingErrors(bindingResult);
 

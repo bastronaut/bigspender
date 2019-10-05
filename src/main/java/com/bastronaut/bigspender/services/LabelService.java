@@ -2,18 +2,23 @@ package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
+import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionDTO;
+import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionsDTO;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.LabelRepository;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
+import jdk.nashorn.internal.ir.Labels;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELCOLOR;
@@ -63,7 +68,6 @@ public class LabelService {
 
 
     public List<Label> deleteLabels(final List<Long> ids, final User user) {
-
 
         final List<Label> labels = getLabelsById(ids, user);
 
@@ -129,6 +133,41 @@ public class LabelService {
                 .isNotBlank(labelDTO.getColor()) ? labelDTO.getColor() : DEFAULT_LABELCOLOR;
 
         return new Label(name, user, color);
+    }
+
+
+    public void linkLabelsToTransactions(final LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO, final User user) {
+
+        final List<LinkLabelsToTransactionDTO> linksToUpdate = linkLabelsToTransactionsDTO.getLinks();
+        linksToUpdate.stream();
+    }
+
+    /**
+     *
+     * @param transactionId
+     * @param labelIds
+     * @param user
+     */
+    private void addLabelsToTransaction(final long transactionId, final Set<Long> labelIds, final User user) {
+        final List<Long> labelIdsToRetrieve = new ArrayList<>(labelIds);
+        final List<Label> labelsToAdd = getLabelsById(labelIdsToRetrieve, user);
+        if (labelsToAdd.isEmpty()) {
+            return; // todo
+        }
+        // add both ways, make this more readable
+        transactionService.getTransactionForUser(transactionId, user).ifPresent(t -> {
+            final Set<Label> currentLabels = t.getLabels();
+            labelsToAdd.forEach(l -> {
+                final boolean addedLabel = currentLabels.add(l);
+                final boolean addedTransaction = l.getTransactions().add(t);
+            });
+            transactionService.saveTransaction(t, user); //
+        });
+
+
+
+        return; // todo
+
     }
 
 

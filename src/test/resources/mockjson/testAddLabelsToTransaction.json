@@ -1,0 +1,7 @@
+{
+ "links": [
+   {"transactionId": {REPLACE-TXID-1}, "labelIds": [{REPLACE-LABELID-1}, {REPLACE-LABELID-2}, {REPLACE-LABELID-3}]},
+   {"transactionId": {REPLACE-TXID-2}, "labelIds": [{REPLACE-LABELID-2}, {REPLACE-LABELID-3}]},
+   {"transactionId": {REPLACE-TXID-3}, "labelIds": [{REPLACE-LABELID-3}]}
+ ]
+}

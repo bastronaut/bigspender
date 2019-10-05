@@ -48,6 +48,7 @@ public class TestConstants {
     public static final String LABEL_ENDPOINT = "/labels/" + LABELSID_PARAM_REPLACE;
     public static final String LABELS_PER_TRANSACTION_ENDPOINT = "/transactions/"+ TRANSACTIONID_PARAM_REPLACE + "/labels/";
     public static final String LABEL_PER_TRANSACTION_ENDPOINT = "/transactions/" + TRANSACTIONID_PARAM_REPLACE + "/labels/{labelid}";
+    public static final String TRANSACTION_LABELS = "/transactions/labels"; // To add labels to transactions
 
     public static final String DEFAULT_LABELCOLOR = "#000";
     public static final String DEFAULT_LABELNAME = "NEW LABEL, CHANGE NAME";
