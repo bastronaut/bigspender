@@ -2,7 +2,6 @@ package com.bastronaut.bigspender.controllers;
 
 import com.bastronaut.bigspender.dto.in.LabelAddDTO;
 import com.bastronaut.bigspender.dto.in.LabelDeleteDTO;
-import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionsDTO;
 import com.bastronaut.bigspender.dto.out.LabelGetResultDTO;
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
@@ -14,7 +13,6 @@ import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
-import com.bastronaut.bigspender.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_BY_TRANSACTION_ENDPOINT;
-import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_LABELS;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -50,8 +47,6 @@ public class LabelController {
 
     private final LabelService labelService;
 
-    @Autowired
-    private TransactionService transactionService;
 
     @Autowired
     public LabelController(final LabelService labelService) {
@@ -93,17 +88,6 @@ public class LabelController {
         final List<LabelDTO> returnLabels = LabelDTO.fromLabels(savedLabels);
 
         return ResponseEntity.status(HttpStatus.OK).body(new LabelAddResultDTO(returnLabels));
-    }
-
-
-    @PostMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LinkLabelsToTransactionsDTO> linkLabelsToTransaction(final @AuthenticationPrincipal User user,
-                                final @Valid @RequestBody LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
-                                final BindingResult bindingResult) {
-
-        checkBindingErrors(bindingResult);
-        final LinkLabelsToTransactionsDTO result = labelService.linkLabelsToTransactions(linkLabelsToTransactionsDTO, user);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
 

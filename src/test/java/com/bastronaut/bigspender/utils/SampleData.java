@@ -123,10 +123,12 @@ public class SampleData {
             "Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019", testUserTwo);
 
     @Getter
-    Label labelOne = new Label("groceries", testUserOne, "#111");
+    private final Label labelOne = new Label("groceries", testUserOne, "#111");
     @Getter
-    Label labelTwo = new Label("clothing", testUserOne, "#112");
+    private final Label labelTwo = new Label("clothing", testUserOne, "#112");
     @Getter
-    Label labelThree = new Label("snacks", testUserOne, "#113");
+    private final Label labelThree = new Label("snacks", testUserOne, "#113");
+    @Getter
+    private final Label labelFour = new Label("plants", testUserOne, "#28a745");
 
 }

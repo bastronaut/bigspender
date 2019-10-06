@@ -1,19 +1,15 @@
 package com.bastronaut.bigspender.services;
 
-import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
-import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionDTO;
-import com.bastronaut.bigspender.dto.shared.LinkLabelsToTransactionsDTO;
+import com.bastronaut.bigspender.dto.shared.LinkDTO;
+import com.bastronaut.bigspender.dto.shared.LinksDTO;
 import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.LabelRepository;
-import com.bastronaut.bigspender.repositories.TransactionRepository;
-import jdk.nashorn.internal.ir.Labels;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -144,19 +140,19 @@ public class LabelService {
      * Given a linkLabelsToTransactionsDTO, will 'link' (add) the labels corresponding to the label id to the
      * transactionids. Will return a new linkLabelsToTransactionsDTO that only contains the transaction ids and
      * label ids that belong to the user
-     * @param linkLabelsToTransactionsDTO
+     * @param linksToAdd
      * @param user
      * @return
      */
-    public LinkLabelsToTransactionsDTO linkLabelsToTransactions(final LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
-                                                                final User user) {
+    public LinksDTO linkLabelsToTransactions(final LinksDTO linksToAdd,
+                                             final User user) {
 
-        final List<LinkLabelsToTransactionDTO> linksToUpdate = linkLabelsToTransactionsDTO.getLinks();
-        final List<LinkLabelsToTransactionDTO> updated = linksToUpdate.stream()
+        final List<LinkDTO> linksToUpdate = linksToAdd.getLinks();
+        final List<LinkDTO> updated = linksToUpdate.stream()
                 .map(l -> addLabelsToTransaction(l.getTransactionId(), l.getLabelIds(), user))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        return new LinkLabelsToTransactionsDTO(updated);
+        return new LinksDTO(updated);
     }
 
     /**
@@ -166,8 +162,8 @@ public class LabelService {
      * @param user
      */
     @Nullable
-    private LinkLabelsToTransactionDTO addLabelsToTransaction(final long transactionId,
-                                                              final Set<Long> labelIds, final User user) {
+    private LinkDTO addLabelsToTransaction(final long transactionId, final Set<Long> labelIds, final User user) {
+
         final List<Long> labelIdsToRetrieve = new ArrayList<>(labelIds);
         final List<Label> labelsToAdd = getLabelsById(labelIdsToRetrieve, user);
         if (!labelsToAdd.isEmpty()) {
@@ -175,14 +171,45 @@ public class LabelService {
             final Optional<Transaction> maybeTransaction = transactionService.getTransactionForUser(transactionId, user);
             if (maybeTransaction.isPresent()) {
                 final Transaction transaction = maybeTransaction.get();
-                final Set<Long> addedLabels = new HashSet<>();
+                final Set<Long> addedLabelsIds = new HashSet<>();
                 labelsToAdd.forEach(l -> {
                     transaction.addLabel(l);
-                    addedLabels.add(l.getId());
+                    addedLabelsIds.add(l.getId());
                 });
                 labelRepository.saveAll(labelsToAdd);
                 transactionService.saveTransaction(transaction);
-                return new LinkLabelsToTransactionDTO(transaction.getId(), addedLabels);
+                return new LinkDTO(transaction.getId(), addedLabelsIds);
+            }
+        }
+        return null;
+    }
+
+
+    public LinksDTO unlinkLabelsFromTransactions(final LinksDTO linksToRemove, final User user) {
+        final List<LinkDTO> linksToUpdate = linksToRemove.getLinks();
+        final List<LinkDTO> updated = linksToUpdate.stream()
+                .map(l -> removeLabelsFromTransaction(l.getTransactionId(), l.getLabelIds(), user))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return new LinksDTO(updated);
+    }
+
+    @Nullable
+    private LinkDTO removeLabelsFromTransaction(final long transactionId, final Set<Long> labelIds, final User user) {
+        final List<Long> labelIdsToRetrieve = new ArrayList<>(labelIds);
+        final List<Label> labelsToRemove = getLabelsById(labelIdsToRetrieve, user);
+        if (!labelsToRemove.isEmpty()) {
+            final Optional<Transaction> maybeTransaction = transactionService.getTransactionForUser(transactionId, user);
+            if (maybeTransaction.isPresent()) {
+                final Transaction transaction = maybeTransaction.get();
+                final Set<Long> removedLabelsIds = new HashSet<>();
+                labelsToRemove.forEach(l -> {
+                    transaction.removeLabel(l);
+                    removedLabelsIds.add(l.getId());
+                });
+                labelRepository.saveAll(labelsToRemove);
+                transactionService.saveTransaction(transaction);
+                return new LinkDTO(transaction.getId(), removedLabelsIds);
             }
         }
         return null;

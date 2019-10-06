@@ -20,12 +20,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELCOLOR;
-import static com.bastronaut.bigspender.utils.TestConstants.DEFAULT_LABELNAME;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_EMPTY;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_NAME_EMPTY;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
@@ -42,9 +39,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_PER_TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
-import static com.bastronaut.bigspender.utils.TestConstants.LABEL_PER_TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
-import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_LABELS;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -79,22 +74,12 @@ public class LabelIntegrationTest {
     private SampleData sampleData;
     private User testUserOne;
 
-    @Autowired
-    EntityManager entityManager;
-    
-
     @Before
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-
-        userRepository.deleteAllInBatch();
-        transactionRepository.deleteAllInBatch();
-        labelRepository.deleteAllInBatch();
-        // Clear all entity caches
-        entityManager.getEntityManagerFactory().getCache().evictAll();
 
         sampleData = new SampleData();
         testUserOne =  sampleData.getTestUserOne();

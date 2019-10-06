@@ -50,4 +50,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         final ErrorDetails errorDetails = new ErrorDetails(LABEL_ERROR_MSG, ex.getMessage(), LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
+
+    @ExceptionHandler(value = {LinkLabelException.class})
+    public final ResponseEntity<ErrorDetails> handleInvalidLinks(Exception ex, WebRequest request) {
+        final ErrorDetails errorDetails = new ErrorDetails(LABEL_ERROR_MSG, ex.getMessage(), LocalDate.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
 }

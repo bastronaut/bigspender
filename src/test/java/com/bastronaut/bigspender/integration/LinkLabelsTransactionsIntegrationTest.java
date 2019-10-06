@@ -89,7 +89,7 @@ public class LinkLabelsTransactionsIntegrationTest {
      */
     @Transactional
     @Test
-    public void testAddLabelsToTransactions() throws Exception {
+    public void testLinkLabelsToTransactions() throws Exception {
         // Setup test transactions
         final Transaction transactionOne =  transactionRepository.save(sampleData.t1);
         final Transaction transactionTwo =  transactionRepository.save(sampleData.t2);
@@ -106,8 +106,8 @@ public class LinkLabelsTransactionsIntegrationTest {
         final String labelTwoId = String.valueOf(labelTwo.getId());
         final String labelThreeId = String.valueOf(labelThree.getId());
 
-        final String testAddLabelsToTransactionsJson = MockJsonReader
-                .readMockJsonAsString("testAddLabelsToTransaction.json")
+        final String testLinkLabelsToTransactionJson = MockJsonReader
+                .readMockJsonAsString("testLinkLabelsToTransaction.json")
                 .replaceAll("REPLACE-TXID-1", String.valueOf(transactionOne.getId()))
                 .replaceAll("REPLACE-TXID-2", String.valueOf(transactionTwo.getId()))
                 .replaceAll("REPLACE-TXID-3", String.valueOf(transactionThree.getId()))
@@ -118,7 +118,7 @@ public class LinkLabelsTransactionsIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTION_LABELS)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(testAddLabelsToTransactionsJson))
+                .content(testLinkLabelsToTransactionJson))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.links", hasSize(3)))
@@ -153,4 +153,91 @@ public class LinkLabelsTransactionsIntegrationTest {
                 .andExpect(jsonPath("$.labels[2].id", isOneOf((int)labelOne.getId(),
                         (int)labelTwo.getId(), (int)labelThree.getId())));
     }
+
+    @Transactional
+    @Test
+    public void testUnlinkLabelsFromTransactions() throws Exception {
+        // Setup test transactions
+        Transaction transactionOne = sampleData.t1;
+        Transaction transactionTwo = sampleData.t2;
+        Transaction transactionThree = sampleData.t3;
+
+        // Setup test labels
+        final Label labelOne = labelRepository.save(sampleData.getLabelOne());
+        final Label labelTwo = labelRepository.save(sampleData.getLabelTwo());
+        final Label labelThree = labelRepository.save(sampleData.getLabelThree());
+        final Label labelFour = labelRepository.save(sampleData.getLabelFour());
+
+        transactionOne.addLabel(labelOne);
+        transactionOne.addLabel(labelTwo);
+        transactionOne.addLabel(labelThree);
+        transactionOne.addLabel(labelFour); // Added but not part of unlink json
+
+        transactionTwo.addLabel(labelTwo);
+        transactionTwo.addLabel(labelThree);
+
+        transactionThree.addLabel(labelThree);
+
+        transactionOne = transactionRepository.save(transactionOne);
+        transactionTwo = transactionRepository.save(transactionTwo);
+        transactionThree = transactionRepository.save(transactionThree);
+        final String labelOneId = String.valueOf(labelOne.getId());
+        final String labelTwoId = String.valueOf(labelTwo.getId());
+        final String labelThreeId = String.valueOf(labelThree.getId());
+
+        final String transactionOneId = String.valueOf(transactionOne.getId());
+        final String transactionTwoId = String.valueOf(transactionTwo.getId());
+        final String transactionThreeId = String.valueOf(transactionThree.getId());
+
+        final String testUnlinkLabelsToTransactionsJson = MockJsonReader
+                .readMockJsonAsString("testUnlinkLabelsToTransaction.json.json")
+                .replaceAll("REPLACE-TXID-1", String.valueOf(transactionOne.getId()))
+                .replaceAll("REPLACE-TXID-2", String.valueOf(transactionTwo.getId()))
+                .replaceAll("REPLACE-TXID-3", String.valueOf(transactionThree.getId()))
+                .replaceAll("REPLACE-LABELID-1", String.valueOf(labelOne.getId()))
+                .replaceAll("REPLACE-LABELID-2", String.valueOf(labelTwo.getId()))
+                .replaceAll("REPLACE-LABELID-3", String.valueOf(labelThree.getId()));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(TRANSACTION_LABELS)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testUnlinkLabelsToTransactionsJson))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.links", hasSize(3)))
+                .andExpect(jsonPath("$.links[0].transactionId").value(transactionOneId))
+                .andExpect(jsonPath("$.links[0].labelIds", hasSize(3)))
+                .andExpect(jsonPath("$.links[0].labelIds[0]").value(labelOneId))
+                .andExpect(jsonPath("$.links[0].labelIds[1]").value(labelTwoId))
+                .andExpect(jsonPath("$.links[0].labelIds[2]").value(labelThreeId))
+                .andExpect(jsonPath("$.links[1].transactionId").value(transactionTwoId))
+                .andExpect(jsonPath("$.links[1].labelIds", hasSize(2)))
+                .andExpect(jsonPath("$.links[1].labelIds[0]").value(labelTwoId))
+                .andExpect(jsonPath("$.links[1].labelIds[1]").value(labelThreeId))
+                .andExpect(jsonPath("$.links[2].transactionId").value(transactionThreeId))
+                .andExpect(jsonPath("$.links[2].labelIds", hasSize(1)))
+                .andExpect(jsonPath("$.links[2].labelIds[0]").value(String.valueOf(labelThreeId)));
+
+        final String getTransactionEndpoint = TRANSACTION_ENDPOINT
+                .replace(TRANSACTIONID_PARAM_REPLACE, transactionOneId);
+
+        // As labels are stored as a set we can't guarantee the order of the label ids. Have to cast to int because
+        // otherwise it would match against: one of {<5L>, <6L>, <7L>}""
+        mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
+                .andDo(print())
+                .andExpect(jsonPath("$.labels", hasSize(3)))
+                .andExpect(jsonPath("$.labels[0].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())))
+
+                .andExpect(jsonPath("$.labels[1].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())))
+
+                .andExpect(jsonPath("$.labels[2].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())));
+    }
+
+
+
+
 }

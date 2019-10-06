@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_LABE
 public class LabelDTO {
     @NotEmpty(message = ERRORMSG_LABEL_NAME_EMPTY)
     private String name;
+    @Size(max = 7)
     private String color;
     private long id;
 

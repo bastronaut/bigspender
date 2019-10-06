@@ -6,11 +6,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Container class for LinkDTO
+ */
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class LinkLabelsToTransactionsDTO {
+public class LinksDTO {
 
-    List<LinkLabelsToTransactionDTO> links;
+    List<LinkDTO> links;
 
 }

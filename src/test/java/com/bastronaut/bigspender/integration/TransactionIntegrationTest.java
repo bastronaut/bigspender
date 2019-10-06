@@ -147,7 +147,7 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.[6].accountNumber").value("NL20INGB0004567891"));
     }
 
-    // TODO service is wrong
+
     @Test
     public void testGetTransactionForUser() throws Exception {
         final Transaction tx1 = transactions.get(1);
