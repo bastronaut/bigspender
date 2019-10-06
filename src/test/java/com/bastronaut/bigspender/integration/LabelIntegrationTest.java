@@ -44,6 +44,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.LABELS_PER_TRANSACTI
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_PER_TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_LABELS;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -456,16 +457,8 @@ public class LabelIntegrationTest {
     }
 
 
-//    @Test
-//    public void testAddLabelToTransaction() throws Exception {
-//        assert(false);
-//    }
-//
-//    @Test
-//    public void testAddNewLabelToTransaction() throws Exception {
-//        assert(false);
-//    }
-//
+
+    //
 //    @Test
 //    public void testRemoveLabelFromTransaction() throws Exception {
 //        assert(false);

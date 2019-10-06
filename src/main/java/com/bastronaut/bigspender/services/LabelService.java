@@ -12,14 +12,18 @@ import com.bastronaut.bigspender.repositories.TransactionRepository;
 import jdk.nashorn.internal.ir.Labels;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELCOLOR;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABELNAME;
@@ -136,38 +140,52 @@ public class LabelService {
     }
 
 
-    public void linkLabelsToTransactions(final LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO, final User user) {
+    /**
+     * Given a linkLabelsToTransactionsDTO, will 'link' (add) the labels corresponding to the label id to the
+     * transactionids. Will return a new linkLabelsToTransactionsDTO that only contains the transaction ids and
+     * label ids that belong to the user
+     * @param linkLabelsToTransactionsDTO
+     * @param user
+     * @return
+     */
+    public LinkLabelsToTransactionsDTO linkLabelsToTransactions(final LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
+                                                                final User user) {
 
         final List<LinkLabelsToTransactionDTO> linksToUpdate = linkLabelsToTransactionsDTO.getLinks();
-        linksToUpdate.stream();
+        final List<LinkLabelsToTransactionDTO> updated = linksToUpdate.stream()
+                .map(l -> addLabelsToTransaction(l.getTransactionId(), l.getLabelIds(), user))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return new LinkLabelsToTransactionsDTO(updated);
     }
 
     /**
-     *
+     * returns null if the transaction doesn't exist for the user
      * @param transactionId
      * @param labelIds
      * @param user
      */
-    private void addLabelsToTransaction(final long transactionId, final Set<Long> labelIds, final User user) {
+    @Nullable
+    private LinkLabelsToTransactionDTO addLabelsToTransaction(final long transactionId,
+                                                              final Set<Long> labelIds, final User user) {
         final List<Long> labelIdsToRetrieve = new ArrayList<>(labelIds);
         final List<Label> labelsToAdd = getLabelsById(labelIdsToRetrieve, user);
-        if (labelsToAdd.isEmpty()) {
-            return; // todo
+        if (!labelsToAdd.isEmpty()) {
+
+            final Optional<Transaction> maybeTransaction = transactionService.getTransactionForUser(transactionId, user);
+            if (maybeTransaction.isPresent()) {
+                final Transaction transaction = maybeTransaction.get();
+                final Set<Long> addedLabels = new HashSet<>();
+                labelsToAdd.forEach(l -> {
+                    transaction.addLabel(l);
+                    addedLabels.add(l.getId());
+                });
+                labelRepository.saveAll(labelsToAdd);
+                transactionService.saveTransaction(transaction);
+                return new LinkLabelsToTransactionDTO(transaction.getId(), addedLabels);
+            }
         }
-        // add both ways, make this more readable
-        transactionService.getTransactionForUser(transactionId, user).ifPresent(t -> {
-            final Set<Label> currentLabels = t.getLabels();
-            labelsToAdd.forEach(l -> {
-                final boolean addedLabel = currentLabels.add(l);
-                final boolean addedTransaction = l.getTransactions().add(t);
-            });
-            transactionService.saveTransaction(t, user); //
-        });
-
-
-
-        return; // todo
-
+        return null;
     }
 
 

@@ -58,15 +58,9 @@ public class TransactionController {
 
     @GetMapping(value = TRANSACTION_ENDPOINT, produces =  APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionDTO> getTransaction( final @AuthenticationPrincipal User user,
-                                                            final @PathVariable String transactionid) {
-        final long parsedTransactionId;
-        try {
-            parsedTransactionId = Long.parseLong(transactionid);
-        } catch (NumberFormatException e) {
-            throw new TransactionException(String.format(ERRORMSG_INVALID_TXID, transactionid));
-        }
+                                                            final @PathVariable long transactionid) {
 
-        final Optional<Transaction> transaction = transactionService.getTransactionForUser(parsedTransactionId, user);
+        final Optional<Transaction> transaction = transactionService.getTransactionForUser(transactionid, user);
 
         if (transaction.isPresent()) {
             final TransactionDTO transactionDTO = TransactionDTO.fromTransaction(transaction.get());

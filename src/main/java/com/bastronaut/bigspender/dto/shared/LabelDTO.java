@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.constraints.NotEmpty;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_LABEL_NAME_EMPTY;
@@ -39,5 +40,9 @@ public class LabelDTO {
 
     public static List<LabelDTO> fromLabels(final List<Label> labels) {
         return labels.stream().map(LabelDTO::fromLabels).collect(Collectors.toList());
+    }
+
+    public static Set<LabelDTO> fromLabels(final Set<Label> labels) {
+        return labels.stream().map(LabelDTO::fromLabels).collect(Collectors.toSet());
     }
 }

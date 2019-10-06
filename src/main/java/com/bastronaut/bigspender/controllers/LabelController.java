@@ -9,7 +9,6 @@ import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelGetForTransactionResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
-import com.bastronaut.bigspender.dto.out.TransactionsLabelsLinkResultDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
@@ -99,12 +98,12 @@ public class LabelController {
 
     @PostMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LinkLabelsToTransactionsDTO> linkLabelsToTransaction(final @AuthenticationPrincipal User user,
-                                                                                   final @Valid @RequestBody LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
-                                                                                   final BindingResult bindingResult) {
+                                final @Valid @RequestBody LinkLabelsToTransactionsDTO linkLabelsToTransactionsDTO,
+                                final BindingResult bindingResult) {
+
         checkBindingErrors(bindingResult);
-
-
-        return null;
+        final LinkLabelsToTransactionsDTO result = labelService.linkLabelsToTransactions(linkLabelsToTransactionsDTO, user);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
 

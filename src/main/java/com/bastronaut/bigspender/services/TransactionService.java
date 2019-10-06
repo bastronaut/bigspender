@@ -70,15 +70,6 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public Transaction addLabelsToTransaction(final List<Label> labels, final Transaction transaction) {
-        return null;
-    }
-
-    public List<Transaction> addLabelsToTransactions(final List<Label> labels, final List<Transaction> transactions) {
-
-        return null;
-    }
-
     public List<Transaction> saveTransactions(Set<Transaction> transactions) {
         List<Transaction> savedTransactions = transactionRepository.saveAll(transactions);
         transactionRepository.flush();

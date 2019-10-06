@@ -1,9 +1,12 @@
 package com.bastronaut.bigspender.dto.out;
 
+import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.enums.TransactionType;
+import com.bastronaut.bigspender.models.Label;
 import com.bastronaut.bigspender.models.Transaction;
+import jdk.nashorn.internal.ir.Labels;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import java.text.NumberFormat;
@@ -13,6 +16,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 public class TransactionDTO {
@@ -29,10 +34,12 @@ public class TransactionDTO {
     private final String mutationType;
     private final String statement;
     private final int day;
+    private final Set<LabelDTO> labels;
 
     public TransactionDTO(final long id, final String date, final String time, final String name,
                           final String accountNumber, final String receivingAccountNumber, final TransactionCode code,
-                          final String type, final String amount, final TransactionMutationType mutationType, final String statement) {
+                          final String type, final String amount, final TransactionMutationType mutationType,
+                          final String statement, final Set<Label> labels) {
         this.id = id;
         this.date = determineDate(date);
         this.time = determineTime(time);
@@ -45,6 +52,7 @@ public class TransactionDTO {
         this.mutationType = getMutationType(mutationType);
         this.statement = StringUtils.isNotBlank(statement) ? statement : null;
         this.day = this.date != null ? this.date.getDayOfWeek().getValue() : null;
+        this.labels = LabelDTO.fromLabels(labels);
     }
 
     private LocalDate determineDate(final String date) {
@@ -82,7 +90,7 @@ public class TransactionDTO {
                 getTimeString(transaction.getTime()), transaction.getName(), transaction.getAccountNumber(),
                 transaction.getReceivingAccountNumber(), transaction.getCode(),
                 transaction.getType().toString(), Long.toString(transaction.getAmount()),
-                transaction.getMutationType(), transaction.getStatement());
+                transaction.getMutationType(), transaction.getStatement(), transaction.getLabels());
 
         transaction.setId(transaction.getId());
         return transactionDTO;
