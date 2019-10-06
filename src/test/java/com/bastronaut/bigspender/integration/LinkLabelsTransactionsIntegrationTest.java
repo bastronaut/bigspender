@@ -138,18 +138,19 @@ public class LinkLabelsTransactionsIntegrationTest {
         final String getTransactionEndpoint = TRANSACTION_ENDPOINT
                 .replace(TRANSACTIONID_PARAM_REPLACE, transactionOneId);
 
-        // As labels are stored as a set we can't guarantee the order of the label ids
+        // As labels are stored as a set we can't guarantee the order of the label ids. Have to cast to int because
+        // otherwise it would match against: one of {<5L>, <6L>, <7L>}""
         mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
                 .andDo(print())
                 .andExpect(jsonPath("$.labels", hasSize(3)))
-                .andExpect(jsonPath("$.labels[0].id", isOneOf(labelOne.getId(),
-                        labelTwo.getId(), labelThree.getId())))
+                .andExpect(jsonPath("$.labels[0].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())))
 
-                .andExpect(jsonPath("$.labels[1].id", isOneOf(labelOne.getId(),
-                        labelTwo.getId(), labelThree.getId())))
+                .andExpect(jsonPath("$.labels[1].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())))
 
-                .andExpect(jsonPath("$.labels[2].id", isOneOf(labelOne.getId(),
-                        labelTwo.getId(), labelThree.getId())));
+                .andExpect(jsonPath("$.labels[2].id", isOneOf((int)labelOne.getId(),
+                        (int)labelTwo.getId(), (int)labelThree.getId())));
     }
 }
