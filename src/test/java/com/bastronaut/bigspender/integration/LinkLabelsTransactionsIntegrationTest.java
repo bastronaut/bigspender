@@ -28,6 +28,9 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.transaction.Transactional;
 
 import static com.bastronaut.bigspender.utils.SampleData.HEADER_ENCODED_USERONE;
+import static com.bastronaut.bigspender.utils.TestConstants.LABELSID_PARAM_REPLACE;
+import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
+import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_LABELS;
@@ -190,7 +193,7 @@ public class LinkLabelsTransactionsIntegrationTest {
         final String transactionThreeId = String.valueOf(transactionThree.getId());
 
         final String testUnlinkLabelsToTransactionsJson = MockJsonReader
-                .readMockJsonAsString("testUnlinkLabelsToTransaction.json.json")
+                .readMockJsonAsString("testUnlinkLabelsFromTransaction.json")
                 .replaceAll("REPLACE-TXID-1", String.valueOf(transactionOne.getId()))
                 .replaceAll("REPLACE-TXID-2", String.valueOf(transactionTwo.getId()))
                 .replaceAll("REPLACE-TXID-3", String.valueOf(transactionThree.getId()))
@@ -221,20 +224,29 @@ public class LinkLabelsTransactionsIntegrationTest {
         final String getTransactionEndpoint = TRANSACTION_ENDPOINT
                 .replace(TRANSACTIONID_PARAM_REPLACE, transactionOneId);
 
+        mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.labels", hasSize(1)))
+                .andExpect(jsonPath("$.labels[0].id").value(labelFour.getId()));
+
+
+        final String getLabelEndpoint = LABELS_ENDPOINT;
+//                .replace(LABELSID_PARAM_REPLACE, labelOneId);
+
         // As labels are stored as a set we can't guarantee the order of the label ids. Have to cast to int because
         // otherwise it would match against: one of {<5L>, <6L>, <7L>}""
-        mockMvc.perform(MockMvcRequestBuilders.get(getTransactionEndpoint)
-                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
+        mockMvc.perform(MockMvcRequestBuilders.get(getLabelEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.labels", hasSize(3)))
-                .andExpect(jsonPath("$.labels[0].id", isOneOf((int)labelOne.getId(),
-                        (int)labelTwo.getId(), (int)labelThree.getId())))
+                .andExpect(jsonPath("$.id").value(labelFour.getId()))
+                .andExpect(jsonPath("$.transactions", hasSize(0)));
 
-                .andExpect(jsonPath("$.labels[1].id", isOneOf((int)labelOne.getId(),
-                        (int)labelTwo.getId(), (int)labelThree.getId())))
 
-                .andExpect(jsonPath("$.labels[2].id", isOneOf((int)labelOne.getId(),
-                        (int)labelTwo.getId(), (int)labelThree.getId())));
     }
 
 

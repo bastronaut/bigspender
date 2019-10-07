@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -39,59 +41,90 @@ import java.util.Set;
  * a superclass for the single class seems undesirable.
  */
 @Entity
-@Data
+//@Data
 @Table(name =  "transactions")
-@EqualsAndHashCode
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Transaction {
 
+    @Setter @Getter
+    //@EqualsAndHashCode.Include
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transaction_id")
     private long id;
 
+    @Setter @Getter
+    ////@EqualsAndHashCode.Include
     @Column(nullable = true)
     private LocalDate date;
 
+    @Setter @Getter
+    //@EqualsAndHashCode.Include
     @Column(nullable = true)
     private LocalTime time;
 
+    @Setter @Getter
+    //@EqualsAndHashCode.Include
     @Column(nullable = false)
     private String name;
 
+    @Setter @Getter
+    //@EqualsAndHashCode.Include
     @Column(nullable = false, name="account_number")
     private String accountNumber;
 
+    @Setter @Getter
+    //@EqualsAndHashCode.Include
     @Column(nullable = true, name = "receiving_account_number")
     private String receivingAccountNumber;
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = true)
     private TransactionCode code;
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = false)
     private TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
-
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = false)
     private long amount;
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = true, name = "mutation_type")
     private TransactionMutationType mutationType;
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = true, length = 512)
     private String statement;
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @Column(nullable = true)
     private DayOfWeek day; // non-normalized, maybe useful for training data
 
+    //@EqualsAndHashCode.Include
+    @Setter @Getter
     @JoinColumn(name="user_id", nullable = false)
     @ManyToOne
     private User user;
 
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    public void setLabels(Set<Label> labels) {
+        this.labels = new HashSet<>(labels);
+    }
+
+    @Getter
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "transaction_label")
-    @EqualsAndHashCode.Exclude
+    //@EqualsAndHashCode.Exclude
     private Set<Label> labels = new HashSet<>();
 
 
@@ -101,8 +134,22 @@ public class Transaction {
     }
 
     public void removeLabel(final Label label) {
-        this.labels.remove(label);
-        label.getTransactions().remove(this);
+//        Set<Label> allLabels = this.labels;
+//        allLabels.remove(label);
+        Set<Transaction> allTransactions = label.getTransactions();
+//        for (Transaction tx : allTransactions) {
+//            boolean equals = tx.equals(this);
+//            int h1 = tx.hashCode();
+//            int h2 = this.hashCode();
+//            boolean e2 = h1 == h2;
+//            if (tx.equals(this)) {
+//                allTransactions.remove(this);
+//            }
+//        }
+        boolean contains = allTransactions.contains(this);
+        boolean addextra = allTransactions.add(this);
+        boolean removed = allTransactions.remove(this);
+        allTransactions.hashCode();
     }
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
@@ -176,6 +223,19 @@ public class Transaction {
         }
     }
 
+
+    @Override
+    public int hashCode() {
+        long res = id + amount;
+        return (int) res;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Transaction)) return false;
+        return id != 0 && id == ((Transaction) o).getId();
+    }
 
 
 

@@ -3,7 +3,10 @@ package com.bastronaut.bigspender.models;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
@@ -34,7 +37,8 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABEL
  * have a color for frontend display purposes
  */
 @Entity
-@Data
+
+@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "labels")
 @ToString
@@ -55,43 +59,39 @@ public class Label {
         }
     }
 
+    @Getter @Setter
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "label_id")
     private long id;
 
+    @Getter @Setter
     @Column(nullable = false)
     private String name;
 
+    @Getter @Setter
     @Column(nullable = false)
     private String color;
 
-
+    @Getter @Setter
     @ToString.Exclude
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(optional = false)
     private User user;
 
+    @Getter
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "labels", cascade = {
-            CascadeType.PERSIST})
+            CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Transaction> transactions = new HashSet<>();
 
-
-    public void addTransaction(final Transaction transaction) {
-        this.transactions.add(transaction);
-        transaction.getLabels().add(this);
+    public void setTransactions(final Set<Transaction> transactions) {
+        this.transactions = new HashSet<>(transactions);
     }
 
-    public void removeTransaction(final Transaction transaction) {
+    public void remove(Transaction transaction) {
         this.transactions.remove(transaction);
-        transaction.getLabels().remove(this);
     }
-
-    @PreRemove
-    private void removeTransactionsFromLabels() {
-        transactions.forEach(t -> t.getLabels().remove(this));
-    }
-
 
     public static Label fromLabelDTO(final LabelDTO labelDTO, final User user) {
         return new Label(labelDTO.getName(), user, labelDTO.getColor());

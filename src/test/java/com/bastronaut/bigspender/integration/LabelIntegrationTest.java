@@ -142,7 +142,8 @@ public class LabelIntegrationTest {
     }
 
     /**
-     * Creates and saves three labels, but assigns two a transaction. Test retrieving thesee two labels
+     * Creates and saves three labels, but assigns two to a transaction. Test retrieving these two labels and
+     * verifies the third is not retrieved
      * Example reply:
      * {
      *   transactionid: 1,

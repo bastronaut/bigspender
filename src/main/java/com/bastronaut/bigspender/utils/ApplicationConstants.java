@@ -53,6 +53,9 @@ public class ApplicationConstants {
     public static final String ERRORMSG_LABEL_REMOVE_EMPTY = "Field: labels must not be empty - requires label ids";
     public static final String ERRORMSG_LABEL_REMOVE_ID_EMPTY = "Field: id must not be empty for label";
     public static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
+    public static final String ERRORMSG_LINKS_EMPTY = "Field: links is required";
+    public static final String ERRORMSG_TRANSACTIONID_EMPTY = "Field: transactionId is required";
+
     /* Transaction error messages */
     public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";
     public static final String ERRORMSG_NONEXISTINGTX_FOR_USER = "Transaction with id %s for user %s does not exist";

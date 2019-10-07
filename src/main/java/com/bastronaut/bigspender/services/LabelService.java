@@ -45,7 +45,6 @@ public class LabelService {
         this.transactionService = transactionService;
     }
 
-
     public List<Label> getLabelsById(final List<Long> labelIds, final User user) {
         return labelRepository.findByIdInAndUser(labelIds, user);
     }
@@ -62,21 +61,17 @@ public class LabelService {
         return labelRepository.saveAll(labels);
     }
 
-    public Label saveLabel(final Label label) {
-        return labelRepository.save(label);
-    }
-
-
     public List<Label> deleteLabels(final List<Long> ids, final User user) {
 
         final List<Label> labels = getLabelsById(ids, user);
 
         // We ensure the relationship between Label and Transaction in the join-table is removed
-        for (Label label: labels) {
-            Set<Transaction> transactions = label.getTransactions();
+        for (final Label label: labels) {
+            final Set<Transaction> transactions = label.getTransactions();
             for (Transaction transaction: transactions) {
+                // have to manually delete here to avoid concurrency problems with emanaged List<Label> labels iterator
                 transaction.getLabels().remove(label);
-            }// if size >0 save
+            }
             transactionService.saveTransactions(transactions);
         }
         return labelRepository.deleteByIdInAndUser(ids, user);
@@ -137,7 +132,7 @@ public class LabelService {
 
 
     /**
-     * Given a linkLabelsToTransactionsDTO, will 'link' (add) the labels corresponding to the label id to the
+     * Given a LinksDTO, will 'link' (add) the labels corresponding to the label id to the
      * transactionids. Will return a new linkLabelsToTransactionsDTO that only contains the transaction ids and
      * label ids that belong to the user
      * @param linksToAdd
@@ -156,9 +151,9 @@ public class LabelService {
     }
 
     /**
-     * returns null if the transaction doesn't exist for the user
-     * @param transactionId
-     * @param labelIds
+     * Returns null if the transaction doesn't exist for the user
+     * @param transactionId corresponding to the transaction for which to link labels
+     * @param labelIds corresponding to the labels to link to the transaction
      * @param user
      */
     @Nullable
@@ -176,7 +171,7 @@ public class LabelService {
                     transaction.addLabel(l);
                     addedLabelsIds.add(l.getId());
                 });
-                labelRepository.saveAll(labelsToAdd);
+                this.saveLabels(labelsToAdd);
                 transactionService.saveTransaction(transaction);
                 return new LinkDTO(transaction.getId(), addedLabelsIds);
             }
@@ -184,7 +179,14 @@ public class LabelService {
         return null;
     }
 
-
+    /**
+     * Given a LinksDTO, will 'unlink' (remove) the labels corresponding to the label id to the
+     * transactionids. Will return a new LinkDTO that only contains the transaction ids and
+     * label ids that belong to the user
+     * @param linksToRemove
+     * @param user
+     * @return
+     */
     public LinksDTO unlinkLabelsFromTransactions(final LinksDTO linksToRemove, final User user) {
         final List<LinkDTO> linksToUpdate = linksToRemove.getLinks();
         final List<LinkDTO> updated = linksToUpdate.stream()
@@ -194,6 +196,13 @@ public class LabelService {
         return new LinksDTO(updated);
     }
 
+    /**
+     * Returns null if the transaction doesn't exist for the user
+     * @param transactionId corresponding to the transaction for which to unlink labels
+     * @param labelIds corresponding to the labels to unlink from the transaction
+     * @param user
+     * @return
+     */
     @Nullable
     private LinkDTO removeLabelsFromTransaction(final long transactionId, final Set<Long> labelIds, final User user) {
         final List<Long> labelIdsToRetrieve = new ArrayList<>(labelIds);
@@ -204,10 +213,14 @@ public class LabelService {
                 final Transaction transaction = maybeTransaction.get();
                 final Set<Long> removedLabelsIds = new HashSet<>();
                 labelsToRemove.forEach(l -> {
-                    transaction.removeLabel(l);
+
+                    transaction.getLabels().remove(l);
+//
+//                    transaction.removeLabel(l);
+
                     removedLabelsIds.add(l.getId());
                 });
-                labelRepository.saveAll(labelsToRemove);
+                this.saveLabels(labelsToRemove);
                 transactionService.saveTransaction(transaction);
                 return new LinkDTO(transaction.getId(), removedLabelsIds);
             }

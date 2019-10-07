@@ -37,21 +37,19 @@ public class LinkController {
                                                             final BindingResult bindingResult) {
         checkBindingErrors(bindingResult);
 
-        final LinksDTO result = labelService.
-                linkLabelsToTransactions(linksDTO, user);
+        final LinksDTO result = labelService.linkLabelsToTransactions(linksDTO, user);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @DeleteMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LinksDTO> unlinkLabelsToTransaction(final @AuthenticationPrincipal User user,
+    public ResponseEntity<LinksDTO> unlinkLabelsFromTransaction(final @AuthenticationPrincipal User user,
                                                               final @Valid @RequestBody LinksDTO linksDTO,
                                                               final BindingResult bindingResult) {
 
         checkBindingErrors(bindingResult);
 
-        final LinksDTO result = labelService
-                .unlinkLabelsFromTransactions(linksDTO, user);
+        final LinksDTO result = labelService.unlinkLabelsFromTransactions(linksDTO, user);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
