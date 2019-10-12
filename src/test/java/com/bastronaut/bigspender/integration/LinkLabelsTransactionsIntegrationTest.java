@@ -138,6 +138,8 @@ public class LinkLabelsTransactionsIntegrationTest {
                 .andExpect(jsonPath("$.links[2].labelIds", hasSize(1)))
                 .andExpect(jsonPath("$.links[2].labelIds[0]").value(String.valueOf(labelThreeId)));
 
+
+        // Verify that the transaction has labels attached to it
         final String getTransactionEndpoint = TRANSACTION_ENDPOINT
                 .replace(TRANSACTIONID_PARAM_REPLACE, transactionOneId);
 
@@ -221,6 +223,7 @@ public class LinkLabelsTransactionsIntegrationTest {
                 .andExpect(jsonPath("$.links[2].labelIds", hasSize(1)))
                 .andExpect(jsonPath("$.links[2].labelIds[0]").value(String.valueOf(labelThreeId)));
 
+        // Verify that the transaction does not the removed labels attached to it, only the one kept intact
         final String getTransactionEndpoint = TRANSACTION_ENDPOINT
                 .replace(TRANSACTIONID_PARAM_REPLACE, transactionOneId);
 
@@ -231,21 +234,6 @@ public class LinkLabelsTransactionsIntegrationTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.labels", hasSize(1)))
                 .andExpect(jsonPath("$.labels[0].id").value(labelFour.getId()));
-
-
-        final String getLabelEndpoint = LABELS_ENDPOINT;
-//                .replace(LABELSID_PARAM_REPLACE, labelOneId);
-
-        // As labels are stored as a set we can't guarantee the order of the label ids. Have to cast to int because
-        // otherwise it would match against: one of {<5L>, <6L>, <7L>}""
-        mockMvc.perform(MockMvcRequestBuilders.get(getLabelEndpoint)
-                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$.id").value(labelFour.getId()))
-                .andExpect(jsonPath("$.transactions", hasSize(0)));
-
 
     }
 

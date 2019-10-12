@@ -213,11 +213,7 @@ public class LabelService {
                 final Transaction transaction = maybeTransaction.get();
                 final Set<Long> removedLabelsIds = new HashSet<>();
                 labelsToRemove.forEach(l -> {
-
-                    transaction.getLabels().remove(l);
-//
-//                    transaction.removeLabel(l);
-
+                    transaction.removeLabel(l);
                     removedLabelsIds.add(l.getId());
                 });
                 this.saveLabels(labelsToRemove);

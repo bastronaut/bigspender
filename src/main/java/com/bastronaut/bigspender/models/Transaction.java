@@ -34,6 +34,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -42,79 +43,92 @@ import java.util.Set;
  */
 @Entity
 //@Data
-@Table(name =  "transactions")
-//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "transactions")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Transaction {
 
-    @Setter @Getter
-    //@EqualsAndHashCode.Include
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter
+    @Getter
+    @EqualsAndHashCode.Include
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transaction_id")
     private long id;
 
-    @Setter @Getter
-    ////@EqualsAndHashCode.Include
+    @Setter
+    @Getter
+    //@EqualsAndHashCode.Include
     @Column(nullable = true)
     private LocalDate date;
 
-    @Setter @Getter
-    //@EqualsAndHashCode.Include
+    @Setter
+    @Getter
+    @EqualsAndHashCode.Include
     @Column(nullable = true)
     private LocalTime time;
 
-    @Setter @Getter
-    //@EqualsAndHashCode.Include
+    @Setter
+    @Getter
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private String name;
 
-    @Setter @Getter
-    //@EqualsAndHashCode.Include
-    @Column(nullable = false, name="account_number")
+    @Setter
+    @Getter
+    @EqualsAndHashCode.Include
+    @Column(nullable = false, name = "account_number")
     private String accountNumber;
 
-    @Setter @Getter
-    //@EqualsAndHashCode.Include
+    @Setter
+    @Getter
+    @EqualsAndHashCode.Include
     @Column(nullable = true, name = "receiving_account_number")
     private String receivingAccountNumber;
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = true)
     private TransactionCode code;
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = false)
     private TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = false)
     private long amount;
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = true, name = "mutation_type")
     private TransactionMutationType mutationType;
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = true, length = 512)
     private String statement;
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
     @Column(nullable = true)
     private DayOfWeek day; // non-normalized, maybe useful for training data
 
-    //@EqualsAndHashCode.Include
-    @Setter @Getter
-    @JoinColumn(name="user_id", nullable = false)
+    @EqualsAndHashCode.Include
+    @Setter
+    @Getter
+    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne
     private User user;
-
 
 
     public void setLabels(Set<Label> labels) {
@@ -134,22 +148,8 @@ public class Transaction {
     }
 
     public void removeLabel(final Label label) {
-//        Set<Label> allLabels = this.labels;
-//        allLabels.remove(label);
-        Set<Transaction> allTransactions = label.getTransactions();
-//        for (Transaction tx : allTransactions) {
-//            boolean equals = tx.equals(this);
-//            int h1 = tx.hashCode();
-//            int h2 = this.hashCode();
-//            boolean e2 = h1 == h2;
-//            if (tx.equals(this)) {
-//                allTransactions.remove(this);
-//            }
-//        }
-        boolean contains = allTransactions.contains(this);
-        boolean addextra = allTransactions.add(this);
-        boolean removed = allTransactions.remove(this);
-        allTransactions.hashCode();
+        this.labels.remove(label);
+        label.getTransactions().remove(this);
     }
 
     public Transaction(final LocalDate date, final LocalTime time, @NonNull final String name,
@@ -177,15 +177,15 @@ public class Transaction {
 
 
     public static Transaction fromTransactionDTO(final TransactionDTO transactionDTO, final User user) {
-            final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());
-            final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionDTO.getType());
-            final TransactionType txType = TransactionType.getByType(transactionDTO.getType());
+        final TransactionCode txCode = TransactionCode.getByValue(transactionDTO.getCode());
+        final TransactionMutationType txMutationType = TransactionMutationType.getByValue(transactionDTO.getType());
+        final TransactionType txType = TransactionType.getByType(transactionDTO.getType());
 
-            return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
-                    transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), txCode,
-                    txType, transactionDTO.getAmount(), txMutationType,
-                    transactionDTO.getStatement(), user);
-        }
+        return new Transaction(transactionDTO.getDate(), transactionDTO.getTime(), transactionDTO.getName(),
+                transactionDTO.getAccountNumber(), transactionDTO.getReceivingAccountNumber(), txCode,
+                txType, transactionDTO.getAmount(), txMutationType,
+                transactionDTO.getStatement(), user);
+    }
 
     public static Transaction fromTransactionAddDTO(final TransactionAddDTO transactionAddDTO, final User user) {
 
@@ -218,7 +218,7 @@ public class Transaction {
 
         try {
             return LocalTime.parse(time);
-        } catch(DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             return null;
         }
     }
@@ -226,19 +226,9 @@ public class Transaction {
 
     @Override
     public int hashCode() {
-        long res = id + amount;
-        return (int) res;
+        long res = id + amount + (long) mutationType.hashCode();
+        return Objects.hash(res);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Transaction)) return false;
-        return id != 0 && id == ((Transaction) o).getId();
-    }
-
-
-
 
 
 }

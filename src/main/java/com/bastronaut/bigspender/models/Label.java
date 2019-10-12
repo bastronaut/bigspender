@@ -34,10 +34,11 @@ import static com.bastronaut.bigspender.utils.ApplicationConstants.DEFAULT_LABEL
 /**
  * Transactions and Labels have a many to many relationship. Idea is to allow user to create as many custom
  * labels as they like and assign them to transactions, which we will learn for predictive model. A label can
- * have a color for frontend display purposes
+ * have a color for frontend display purposes.
+ *
+ * Has a custom equals and hashcode to allow comparing labels without its relation to transactions
  */
 @Entity
-
 @EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "labels")
@@ -89,9 +90,6 @@ public class Label {
         this.transactions = new HashSet<>(transactions);
     }
 
-    public void remove(Transaction transaction) {
-        this.transactions.remove(transaction);
-    }
 
     public static Label fromLabelDTO(final LabelDTO labelDTO, final User user) {
         return new Label(labelDTO.getName(), user, labelDTO.getColor());
