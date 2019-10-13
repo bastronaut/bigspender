@@ -44,13 +44,11 @@ import java.util.Set;
 @Entity
 //@Data
 @Table(name = "transactions")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Transaction {
 
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transaction_id")
@@ -58,72 +56,61 @@ public class Transaction {
 
     @Setter
     @Getter
-    //@EqualsAndHashCode.Include
-    @Column(nullable = true)
+    @Column
     private LocalDate date;
 
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
-    @Column(nullable = true)
+    @Column
     private LocalTime time;
 
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private String name;
 
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
     @Column(nullable = false, name = "account_number")
     private String accountNumber;
 
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
-    @Column(nullable = true, name = "receiving_account_number")
+    @Column(name = "receiving_account_number")
     private String receivingAccountNumber;
 
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
-    @Column(nullable = true)
+    @Column
     private TransactionCode code;
 
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
     @Column(nullable = false)
     private TransactionType type;
 
     // Should consider using BigDecimal but poc is small transactions
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
     @Column(nullable = false)
     private long amount;
 
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
-    @Column(nullable = true, name = "mutation_type")
+    @Column(name = "mutation_type")
     private TransactionMutationType mutationType;
 
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
-    @Column(nullable = true, length = 512)
+    @Column(length = 512)
     private String statement;
 
-    @EqualsAndHashCode.Include
+
     @Setter
     @Getter
     @Column(nullable = true)
     private DayOfWeek day; // non-normalized, maybe useful for training data
 
-    @EqualsAndHashCode.Include
     @Setter
     @Getter
     @JoinColumn(name = "user_id", nullable = false)
@@ -138,7 +125,6 @@ public class Transaction {
     @Getter
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "transaction_label")
-    //@EqualsAndHashCode.Exclude
     private Set<Label> labels = new HashSet<>();
 
 
@@ -228,6 +214,30 @@ public class Transaction {
     public int hashCode() {
         long res = id + amount + (long) mutationType.hashCode();
         return Objects.hash(res);
+    }
+
+    /**
+     * Separate equals() to avoid comparing the labels that are attached and going in recursive loop that tests
+     * if Transaction is attached to label
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Transaction)) return false;
+        final Transaction t = (Transaction) o;
+        return  Objects.equals(t.getId(), this.getId()) &&
+                Objects.equals(t.getDate(), this.getDate()) &&
+                Objects.equals(t.getTime(), this.getTime()) &&
+                Objects.equals(t.getName(), this.getName()) &&
+                Objects.equals(t.getAccountNumber(), this.getAccountNumber()) &&
+                Objects.equals(t.getReceivingAccountNumber(), this.getReceivingAccountNumber()) &&
+                Objects.equals(t.getReceivingAccountNumber(), this.getReceivingAccountNumber()) &&
+                Objects.equals(t.getAmount(), this.getAmount()) &&
+                Objects.equals(t.getMutationType(), this.getMutationType()) &&
+                Objects.equals(t.getStatement(), this.getStatement()) &&
+                Objects.equals(t.getStatement(), this.getStatement()) &&
+                Objects.equals(t.getUser(), this.getUser());
+
     }
 
 
