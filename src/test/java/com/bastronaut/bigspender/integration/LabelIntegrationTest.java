@@ -36,11 +36,15 @@ import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_EMPTY
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_LABEL_NAME_EMPTY;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
+import static com.bastronaut.bigspender.utils.TestConstants.LABELSID_PARAM_REPLACE;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABELS_PER_TRANSACTION_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.LABEL_ERROR_MSG;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONID_PARAM_REPLACE;
+import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTIONS_BY_LABELS;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isOneOf;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -443,22 +447,43 @@ public class LabelIntegrationTest {
     }
 
 
+    @Transactional
+    @Test
+    public void testGetTransactionsByLabel() throws Exception {
 
-    //
-//    @Test
-//    public void testRemoveLabelFromTransaction() throws Exception {
-//        assert(false);
-//    }
-//
-//    @Test
-//    public void testAddLabelToTransactions() throws Exception {
-//        assert(false);
-//    }
-//
-//    @Test
-//    public void testRemoveAllLabelsFromTransaction() throws Exception {
-//        assert(false);
-//    }
+        // Setup assigning transactions to a label
+        final Label label = sampleData.getLabelOne();
+        final Transaction t1 = sampleData.t1;
+        final Transaction t2 = sampleData.t2;
+
+        final Label savedLabel = labelRepository.save(label);
+        final Transaction t1Saved = transactionRepository.save(t1);
+        final Transaction t2Saved = transactionRepository.save(t2);
+        t1Saved.addLabel(savedLabel);
+        t2Saved.addLabel(savedLabel);
+
+        labelRepository.save(savedLabel);
+        transactionRepository.save(t1Saved);
+        transactionRepository.save(t2Saved);
+
+
+        final String endpoint = TRANSACTIONS_BY_LABELS.replace(LABELSID_PARAM_REPLACE,
+                String.valueOf(savedLabel.getId()));
+
+
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
+                .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.labelId").value(savedLabel.getId()))
+                .andExpect(jsonPath("$.transactions", hasSize(2)))
+                // Using isOneOf as transactions are not stored in order of setting them
+                .andExpect(jsonPath("$.transactions[0].id", isOneOf((int)t1Saved.getId(), (int)t2Saved.getId())))
+                .andExpect(jsonPath("$.transactions[1].id", isOneOf((int)t1Saved.getId(), (int)t2Saved.getId())));
+
+
+    }
 
 
 

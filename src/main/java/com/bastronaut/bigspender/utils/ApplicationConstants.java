@@ -2,9 +2,6 @@ package com.bastronaut.bigspender.utils;
 
 public class ApplicationConstants {
 
-    // TODO! remove {userid from endpoints. as users are always encapsulated no point exposing it in the url
-    // and only serves to open attack vector probably
-
     /* API endpoints */
     public static final String TRANSACTION_IMPORT_ENDPOINT = "/transactionimport";
     public static final String TRANSACTIONS_ENDPOINT = "/transactions";
@@ -13,11 +10,9 @@ public class ApplicationConstants {
     public static final String USER_RESOURCE_ENDPOINT = "/users/{userid}";
     public static final String LABELS_ENDPOINT = "/labels";
     public static final String LABELS_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/";
-    public static final String LABEL_BY_TRANSACTION_ENDPOINT = "/transactions/{transactionid}/labels/{labelid}";
-    public static final String TRANSACTION_LABELS = "/transactions/labels"; // To add labels to transactions
-
-    /* Parameters */
-    public static final String TRANSACTIONID_PARAM = "transactionIds";
+    /* Weakness in API design, have to find a better way to allow operating on label <> transaction links */
+    public static final String TRANSACTION_LABELS_ENDPOINT = "/transactions/labels"; // Add/Remove labels to transactions
+    public static final String TRANSACTIONS_BY_LABEL_ENDPOINT = "/transactions/labels/{labelid}"; // Get transactions by label
 
     /* User constants */
     public static final int PASSWORDMINSIZE = 8;

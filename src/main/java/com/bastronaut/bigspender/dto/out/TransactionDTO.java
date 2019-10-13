@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 public class TransactionDTO {
@@ -95,6 +96,15 @@ public class TransactionDTO {
         transaction.setId(transaction.getId());
         return transactionDTO;
     }
+
+    public static List<TransactionDTO> fromTransactions(final List<Transaction> transactions) {
+        return transactions.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toList());
+    }
+
+    public static Set<TransactionDTO> fromTransactions(final Set<Transaction> transactions) {
+        return transactions.stream().map(TransactionDTO::fromTransaction).collect(Collectors.toSet());
+    }
+
 
     private static String getDateString(LocalDate date) {
         if (date == null) return null;

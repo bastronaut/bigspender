@@ -4,6 +4,7 @@ import com.bastronaut.bigspender.dto.in.TransactionAddDTO;
 import com.bastronaut.bigspender.dto.out.TransactionDTO;
 import com.bastronaut.bigspender.dto.in.TransactionDeleteDTO;
 import com.bastronaut.bigspender.dto.out.TransactionDeleteResultDTO;
+import com.bastronaut.bigspender.dto.out.TransactionsGetByLabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.exceptions.TransactionException;
 import com.bastronaut.bigspender.models.Transaction;
@@ -23,13 +24,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_INVALID_TXID;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_MISSING_TRANSACTION_IDS;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_NONEXISTINGTX_FOR_USER;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_BY_LABEL_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -69,6 +73,16 @@ public class TransactionController {
             throw new TransactionException(String.format(ERRORMSG_NONEXISTINGTX_FOR_USER,
                     transactionid, String.valueOf(user.getId())));
         }
+    }
+
+    @GetMapping(path = TRANSACTIONS_BY_LABEL_ENDPOINT,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionsGetByLabelDTO> getTransactionsByLabel(final @AuthenticationPrincipal User user,
+                                                                            final @PathVariable @NotNull long labelid) {
+
+        Set<Transaction> transactionsById = transactionService.getTransactionsByLabelId(labelid, user);
+        Set<TransactionDTO> transactionsDTO = TransactionDTO.fromTransactions(transactionsById);
+        return ResponseEntity.status(HttpStatus.OK).body(new TransactionsGetByLabelDTO(labelid, transactionsDTO));
     }
 
     @PostMapping(value = TRANSACTIONS_ENDPOINT, produces = APPLICATION_JSON_VALUE)

@@ -8,9 +8,11 @@ import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelGetForTransactionResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
+import com.bastronaut.bigspender.dto.out.TransactionsGetByLabelDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
+import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_BY_TRANSACTION_ENDPOINT;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_BY_LABEL_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -71,8 +74,8 @@ public class LabelController {
             final List<LabelDTO> labelsReturnDTO = LabelDTO.fromLabels(labelsReturn);
             final LabelGetForTransactionResultDTO result = new LabelGetForTransactionResultDTO(labelsReturnDTO, transactionid);
             return ResponseEntity.status(HttpStatus.OK).body(result);
-        }
-
+    }
+    
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelAddResultDTO> createLabels(final @AuthenticationPrincipal User user,

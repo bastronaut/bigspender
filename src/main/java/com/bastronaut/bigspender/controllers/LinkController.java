@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_LABELS;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTION_LABELS_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -31,7 +31,7 @@ public class LinkController {
     }
 
 
-    @PostMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(path = TRANSACTION_LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LinksDTO> linkLabelsToTransaction(final @AuthenticationPrincipal User user,
                                                             final @Valid @RequestBody LinksDTO linksDTO,
                                                             final BindingResult bindingResult) {
@@ -42,7 +42,7 @@ public class LinkController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @DeleteMapping(path = TRANSACTION_LABELS, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = TRANSACTION_LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LinksDTO> unlinkLabelsFromTransaction(final @AuthenticationPrincipal User user,
                                                               final @Valid @RequestBody LinksDTO linksDTO,
                                                               final BindingResult bindingResult) {

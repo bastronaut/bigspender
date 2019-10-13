@@ -75,4 +75,8 @@ public class TransactionService {
         transactionRepository.flush();
         return savedTransactions;
     }
+
+    public Set<Transaction> getTransactionsByLabelId(final long labelId, final User user) {
+        return transactionRepository.findByLabels_idAndUser(labelId, user);
+    }
 }
