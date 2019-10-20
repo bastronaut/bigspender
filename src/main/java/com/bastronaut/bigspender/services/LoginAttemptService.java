@@ -35,7 +35,7 @@ public class LoginAttemptService {
             // TODO add timestamp
         } else {
             final LoginAttempt attempt = new LoginAttempt(username, 1);
-            loginAttemptRepository.save(attempt);z
+            loginAttemptRepository.save(attempt);
         }
     }
 

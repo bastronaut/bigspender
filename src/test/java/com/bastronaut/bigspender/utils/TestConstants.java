@@ -52,4 +52,8 @@ public class TestConstants {
 
     public static final String DEFAULT_LABELCOLOR = "#000";
     public static final String DEFAULT_LABELNAME = "NEW LABEL, CHANGE NAME";
+
+    public static final String ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts. Login disabled for 24 hours";
+    public static final int MAX_LOGIN_ATTEMPTS = 3;
+
 }

@@ -16,6 +16,7 @@ public class ApplicationConstants {
 
     /* User constants */
     public static final int PASSWORDMINSIZE = 8;
+    public static final int MAX_LOGIN_ATTEMPTS = 3;
 
     /* ING */
     public static final String CSV_HEADER_DATE = "Datum";
@@ -50,6 +51,8 @@ public class ApplicationConstants {
     public static final String INVALID_UPDATE_INFORMATION = "No updateable information provided";
     public static final String ERRORMSG_LINKS_EMPTY = "Field: links is required";
     public static final String ERRORMSG_TRANSACTIONID_EMPTY = "Field: transactionId is required";
+    public static final String ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts. Login disabled for 24 hours";
+
 
     /* Transaction error messages */
     public static final String ERRORMSG_INVALID_TXID = "Invalid transaction id: %s";

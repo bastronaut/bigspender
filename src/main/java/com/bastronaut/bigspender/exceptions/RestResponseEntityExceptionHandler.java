@@ -19,6 +19,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     private static final String TRANSACTION_IMPORT_ERROR_MSG = "Transaction Import error";
     private static final String TRANSACTION_ERROR_MSG = "Transaction error";
     private static final String LABEL_ERROR_MSG = "Label error";
+    private static final String LOGIN_ERROR_MSG = "Login error";
 
 
     @ExceptionHandler(value = {UserRegistrationException.class})
@@ -55,5 +56,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     public final ResponseEntity<ErrorDetails> handleInvalidLinks(Exception ex, WebRequest request) {
         final ErrorDetails errorDetails = new ErrorDetails(LABEL_ERROR_MSG, ex.getMessage(), LocalDate.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
+    @ExceptionHandler(value = {LoginAttemptException.class})
+    public final ResponseEntity<ErrorDetails> handleTooManyLogins(Exception ex, WebRequest request) {
+        final ErrorDetails errorDetails = new ErrorDetails(LOGIN_ERROR_MSG , ex.getMessage(), LocalDate.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
     }
 }

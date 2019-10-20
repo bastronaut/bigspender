@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.services;
 
 import com.bastronaut.bigspender.config.SecurityUtil;
 import com.bastronaut.bigspender.dto.in.UserUpdateDTO;
+import com.bastronaut.bigspender.exceptions.LoginAttemptException;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
 import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import com.bastronaut.bigspender.models.User;
@@ -16,18 +17,26 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_EXISTS;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_USER_NOTFOUND;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.MAX_LOGIN_ATTEMPTS;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Override
-    public User loadUserByUsername(final String username) throws UsernameNotFoundException {
+    public User loadUserByUsername(final String username) throws UsernameNotFoundException, LoginAttemptException {
+
+        int attempts = loginAttemptService.getLoginAttempts(username);
+        if (attempts > MAX_LOGIN_ATTEMPTS) {
+            throw new LoginAttemptException(ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS);
+        }
 
         final Optional<User> user = userRepository.findByEmail(username);
         if (user.isPresent()) {
