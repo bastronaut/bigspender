@@ -164,6 +164,22 @@ actual password
 ### Controller serialization
 406 instead of 200 -> probably a problem with the serialization of the object into the ResultEntity body. Probably missing a constructor on the response type, or @getter on the fields
 
+
+### Event listeners
+Listening to an event:
+- implement the ApplicationListener<EVENTNAME> class
+- implement the method onApplicationEvent
+
+Publishing an event:
+- Autowire the ApplicationEventPublisher (controller injection)
+- Invoke the publishEvent with your own event
+
+private final ApplicationEventPublisher publisher;
+...
+this.publisher.publishEvent(new OrderCreatedEvent(order))
+
+docs: https://spring.io/blog/2015/02/11/better-application-events-in-spring-framework-4-2#annotation-driven-event-listener
+
 ### features todo
 tijdlijn uitgaven per dag
 hoofdcategorien, inzoomen  per subcategorie

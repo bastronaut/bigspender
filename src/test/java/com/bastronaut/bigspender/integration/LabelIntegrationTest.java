@@ -187,20 +187,19 @@ public class LabelIntegrationTest {
         // End setup
 
 
-        // Potential problem: as Labels are stored as a Set, may not be returned in order. May have to return
-        // and do processing that way
+        // Labels are not returned in order so have to verify with isOneOf. Potential for bug
         mockMvc.perform(MockMvcRequestBuilders.get(endpoint)
                 .header(HttpHeaders.AUTHORIZATION, headerEncodedUserOne)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.labels", hasSize(2)))
-                .andExpect(jsonPath("$.labels[0].name").value(labelOne.getName()))
-                .andExpect(jsonPath("$.labels[0].id").value(labelOne.getId()))
-                .andExpect(jsonPath("$.labels[0].color").value(labelOne.getColor()))
-                .andExpect(jsonPath("$.labels[1].name").value(labelThree.getName()))
-                .andExpect(jsonPath("$.labels[1].id").value(labelThree.getId()))
-                .andExpect(jsonPath("$.labels[1].color").value(labelThree.getColor()))
+                .andExpect(jsonPath("$.labels[0].name", isOneOf(labelOne.getName(), labelThree.getName())))
+                .andExpect(jsonPath("$.labels[0].id", isOneOf((int)labelOne.getId(), (int)labelThree.getId())))
+                .andExpect(jsonPath("$.labels[0].color", isOneOf(labelOne.getColor(), labelThree.getColor())))
+                .andExpect(jsonPath("$.labels[1].name", isOneOf(labelOne.getName(), labelThree.getName())))
+                .andExpect(jsonPath("$.labels[1].id", isOneOf((int)labelOne.getId(), (int)labelThree.getId())))
+                .andExpect(jsonPath("$.labels[1].color", isOneOf(labelOne.getColor(), labelThree.getColor())))
                 .andExpect(jsonPath("$.transactionId").value(t1Saved.getId()))
                 .andReturn();
 

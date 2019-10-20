@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Getter
 @AllArgsConstructor
-public class TransactionsGetByLabelDTO {
+public class TransactionsByLabelIdDTO {
 
     private long labelId;
     private Set<TransactionDTO> transactions;

@@ -2,16 +2,14 @@ package com.bastronaut.bigspender.dto.out;
 
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 
 @AllArgsConstructor
 @Getter
-public class LabelGetForTransactionResultDTO {
-    final List<LabelDTO> labels;
+public class LabelsByTransactionIdResultDTO {
+    final Set<LabelDTO> labels;
     final long transactionId;
 }

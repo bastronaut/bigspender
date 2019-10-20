@@ -6,13 +6,11 @@ import com.bastronaut.bigspender.dto.out.LabelGetResultDTO;
 import com.bastronaut.bigspender.dto.in.LabelUpdateDTO;
 import com.bastronaut.bigspender.dto.out.LabelAddResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelDeleteResultDTO;
-import com.bastronaut.bigspender.dto.out.LabelGetForTransactionResultDTO;
+import com.bastronaut.bigspender.dto.out.LabelsByTransactionIdResultDTO;
 import com.bastronaut.bigspender.dto.out.LabelUpdateResultDTO;
-import com.bastronaut.bigspender.dto.out.TransactionsGetByLabelDTO;
 import com.bastronaut.bigspender.dto.shared.LabelDTO;
 import com.bastronaut.bigspender.exceptions.LabelException;
 import com.bastronaut.bigspender.models.Label;
-import com.bastronaut.bigspender.models.Transaction;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.services.LabelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LABELS_BY_TRANSACTION_ENDPOINT;
-import static com.bastronaut.bigspender.utils.ApplicationConstants.TRANSACTIONS_BY_LABEL_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -67,15 +63,14 @@ public class LabelController {
 
     @GetMapping(path = LABELS_BY_TRANSACTION_ENDPOINT,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LabelGetForTransactionResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
-                                                                                   final @PathVariable @NotNull long transactionid) {
-            final Set<Label> labelsById = labelService.getLabelsByTransactionId(transactionid, user);
-            final List<Label> labelsReturn = new ArrayList<>(labelsById);
-            final List<LabelDTO> labelsReturnDTO = LabelDTO.fromLabels(labelsReturn);
-            final LabelGetForTransactionResultDTO result = new LabelGetForTransactionResultDTO(labelsReturnDTO, transactionid);
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+    public ResponseEntity<LabelsByTransactionIdResultDTO> getLabelsForTransaction(final @AuthenticationPrincipal User user,
+                                                                                  final @PathVariable @NotNull long transactionid) {
+        final Set<Label> labelsById = labelService.getLabelsByTransactionId(transactionid, user);
+        final Set<LabelDTO> labelsReturnDTO = LabelDTO.fromLabels(labelsById);
+        final LabelsByTransactionIdResultDTO result = new LabelsByTransactionIdResultDTO(labelsReturnDTO, transactionid);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-    
+
 
     @PostMapping(path = LABELS_ENDPOINT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LabelAddResultDTO> createLabels(final @AuthenticationPrincipal User user,
