@@ -2,6 +2,7 @@ package com.bastronaut.bigspender.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,5 +63,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     public final ResponseEntity<ErrorDetails> handleTooManyLogins(Exception ex, WebRequest request) {
         final ErrorDetails errorDetails = new ErrorDetails(LOGIN_ERROR_MSG , ex.getMessage(), LocalDate.now());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
+    }
+
+    @ExceptionHandler(value =  InternalAuthenticationServiceException.class)
+    public ResponseEntity<String> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e) {
+        ResponseEntity<String> response = new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return response;
     }
 }

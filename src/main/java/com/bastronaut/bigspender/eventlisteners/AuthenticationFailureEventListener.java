@@ -1,8 +1,11 @@
 package com.bastronaut.bigspender.eventlisteners;
 
+import com.bastronaut.bigspender.services.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
  * Event listener to avoid brute force attacks on logins
@@ -26,12 +29,19 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
  * - Update the most recent failed login attempt
  *
  */
+@Component
 public class AuthenticationFailureEventListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
-
+        final Authentication authentication = event.getAuthentication();
+        if (authentication != null) {
+            final Object principal = authentication.getPrincipal();
+            final String username = principal.toString();
+            loginAttemptService.unsuccessfulLogin(username);
+        }
     }
 }

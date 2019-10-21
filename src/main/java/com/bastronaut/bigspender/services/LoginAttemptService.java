@@ -22,6 +22,7 @@ public class LoginAttemptService {
         this.loginAttemptRepository = loginAttemptRepository;
     }
 
+    // TODO prevent deletion if unsuccesfullogin attempt does not exist yet for user
     public void successfulLogin(final String username) {
         loginAttemptRepository.deleteById(username);
     }

@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.INVALID_UPDATE_INFORMATION;
+import static com.bastronaut.bigspender.utils.ApplicationConstants.LOGIN_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USER_RESOURCE_ENDPOINT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -86,6 +87,11 @@ public class UserController {
     public ResponseEntity<UserDTO> getUser(final @AuthenticationPrincipal User activeUser) {
         User user = userDetailsService.loadUserByUsername(activeUser.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(UserDTO.fromUser(user));
+    }
+
+    @GetMapping(path = LOGIN_ENDPOINT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity login(final @AuthenticationPrincipal User user) {
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

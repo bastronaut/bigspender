@@ -1,5 +1,9 @@
 package com.bastronaut.bigspender.utils;
 
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Base64;
+
 public class TestConstants {
 
     /** Sample files for transactions **/
@@ -22,6 +26,9 @@ public class TestConstants {
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_EMAIL_UPDATE = "update@email.com";
     public static final String TEST_PASSWORD_UPDATE = "12345678";
+    public static final String USERPW = TEST_EMAIL + ":" + TEST_PASSWORD;
+    public static final String LOGINHEADER_ENCODED = "Basic " + (Base64.getEncoder().encodeToString(USERPW.getBytes()));
+
 
     /** Exception text constants **/
     public static final String ERROR_MESSAGE_PARAM = "message";
@@ -55,5 +62,6 @@ public class TestConstants {
 
     public static final String ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts. Login disabled for 24 hours";
     public static final int MAX_LOGIN_ATTEMPTS = 3;
+
 
 }

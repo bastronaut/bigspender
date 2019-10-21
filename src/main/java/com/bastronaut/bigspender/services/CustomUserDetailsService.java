@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public User loadUserByUsername(final String username) throws UsernameNotFoundException, LoginAttemptException {
 
         int attempts = loginAttemptService.getLoginAttempts(username);
-        if (attempts > MAX_LOGIN_ATTEMPTS) {
+        if (attempts >= MAX_LOGIN_ATTEMPTS) {
             throw new LoginAttemptException(ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS);
         }
 

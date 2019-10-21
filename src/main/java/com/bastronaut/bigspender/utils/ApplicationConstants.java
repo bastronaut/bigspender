@@ -14,6 +14,10 @@ public class ApplicationConstants {
     public static final String TRANSACTION_LABELS_ENDPOINT = "/transactions/labels"; // Add/Remove labels to transactions
     public static final String TRANSACTIONS_BY_LABEL_ENDPOINT = "/transactions/labels/{labelid}"; // Get transactions by label
 
+    public static final String LOGIN_ENDPOINT = "/login";
+    public static final String LOGOUT_ENDPOINT = "/logout";
+
+
     /* User constants */
     public static final int PASSWORDMINSIZE = 8;
     public static final int MAX_LOGIN_ATTEMPTS = 3;

@@ -6,6 +6,7 @@ import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.TransactionRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import com.bastronaut.bigspender.utils.SampleData;
+import com.bastronaut.bigspender.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.TestConstants.FAKE_TRANSACTIONS_CSV_PATH;
+import static com.bastronaut.bigspender.utils.TestConstants.LOGINHEADER_ENCODED;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_EMAIL;
 import static com.bastronaut.bigspender.utils.TestConstants.TEST_PASSWORD;
 import static com.bastronaut.bigspender.utils.TestConstants.TRANSACTION_IMPORT_ENDPOINT;
@@ -54,8 +56,6 @@ public class TransactionImportIntegrationTest {
 
     private MockMvc mockMvc;
 
-    final private String userpw = TEST_EMAIL + ":" + TEST_PASSWORD;
-    final private String headerEncoded = "Basic " + (Base64.getEncoder().encodeToString(userpw.getBytes()));
     private String userid;
     private List<Transaction> transactions;
 
@@ -64,16 +64,14 @@ public class TransactionImportIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+        mockMvc = TestUtils.setupMockMvc(context);
 
         // Setup initial user for various user related tests
         final User testuser = sampleData.getTestUserOne();
         userRepository.save(testuser);
 
-        // Resources are often queried by the user id (in endpoints), we must find the exact user id to set correct resource paths
+        // Resources are often queried by the user id (in endpoints), we must find the exact user id to set
+        // correct resource paths
         final Optional<User> optionalUser = userRepository.findByEmail(TEST_EMAIL);
         userid = String.valueOf(optionalUser.get().getId());
     }
@@ -91,7 +89,7 @@ public class TransactionImportIntegrationTest {
 
         mockMvc.perform(MockMvcRequestBuilders.multipart(TRANSACTION_IMPORT_ENDPOINT.replace(USERID_PARAM_REPLACE, userid))
                 .file(sampleCSV)
-                .header(HttpHeaders.AUTHORIZATION, headerEncoded)
+                .header(HttpHeaders.AUTHORIZATION, LOGINHEADER_ENCODED)
                 .param("bankName", "ing"))
                 .andDo(print())
                 .andExpect(status().isOk())
