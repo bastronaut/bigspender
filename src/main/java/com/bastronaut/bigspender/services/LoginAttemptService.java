@@ -6,6 +6,7 @@ import com.bastronaut.bigspender.repositories.LoginAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
@@ -22,9 +23,10 @@ public class LoginAttemptService {
         this.loginAttemptRepository = loginAttemptRepository;
     }
 
+    @Transactional
     // TODO prevent deletion if unsuccesfullogin attempt does not exist yet for user
     public void successfulLogin(final String username) {
-        loginAttemptRepository.deleteById(username);
+        loginAttemptRepository.deleteByUsername(username);
     }
 
     public void unsuccessfulLogin(final String username) {

@@ -155,6 +155,7 @@ public class TransactionControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
+        // todo verify why going into 403 instead of 401
         mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
                 .andDo(print())

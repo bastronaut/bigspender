@@ -180,6 +180,12 @@ this.publisher.publishEvent(new OrderCreatedEvent(order))
 
 docs: https://spring.io/blog/2015/02/11/better-application-events-in-spring-framework-4-2#annotation-driven-event-listener
 
+
+### JPQL queries
+- JPQL query wants you to use the Entity name rather than the table name
+- For non-select queries, requires a @Modifying annotation
+
+
 ### features todo
 tijdlijn uitgaven per dag
 hoofdcategorien, inzoomen  per subcategorie

@@ -3,6 +3,7 @@ package com.bastronaut.bigspender.config;
 import com.bastronaut.bigspender.exceptions.LoginAttemptException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +27,11 @@ public class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
         if (authEx.getCause() instanceof LoginAttemptException) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.sendError(HttpStatus.FORBIDDEN.value(), authEx.getMessage());
+        } else {
+            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }
-        response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }
 
     @Override
