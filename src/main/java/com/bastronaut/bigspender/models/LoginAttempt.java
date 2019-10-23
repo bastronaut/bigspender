@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,4 +20,5 @@ public class LoginAttempt {
     @Id
     String username;
     int attempts;
+    LocalDateTime mostRecentAttempt;
 }

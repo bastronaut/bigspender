@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -128,9 +129,11 @@ public class TransactionControllerTest {
 
 
     /**
-     * Attempts to perform deletion with incorrect auth and missing auth
+     * Attempts to perform deletion with incorrect auth and missing auth. @Transactional to avoid adding too many
+     * login attempts and triggering a refused login because of account locked
      * @throws Exception
      */
+    @Transactional
     @Test
     public void testGetTransactionNotAuthorized() throws Exception {
 
@@ -146,9 +149,11 @@ public class TransactionControllerTest {
     }
 
     /**
-     * Attempts to perform deletion with incorrect auth and missing auth
+     * Attempts to perform deletion with incorrect auth and missing auth. @Transactional to avoid adding too many
+     *      * login attempts and triggering a refused login because of account locked
      * @throws Exception
      */
+    @Transactional
     @Test
     public void testGetTransactionsNotAuthorized() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(TRANSACTIONS_ENDPOINT))
@@ -167,6 +172,7 @@ public class TransactionControllerTest {
      * Attempts to perform deletion with incorrect auth and missing auth
      * @throws Exception
      */
+    @Transactional
     @Test
     public void testDeleteTransactionsNotAuthorized() throws Exception {
         final String deleteEndpoint = TRANSACTIONS_ENDPOINT;

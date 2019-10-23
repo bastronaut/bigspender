@@ -1,7 +1,10 @@
 package com.bastronaut.bigspender.integration;
 
+import com.bastronaut.bigspender.models.LoginAttempt;
 import com.bastronaut.bigspender.models.User;
+import com.bastronaut.bigspender.repositories.LoginAttemptRepository;
 import com.bastronaut.bigspender.repositories.UserRepository;
+import com.bastronaut.bigspender.services.LoginAttemptService;
 import com.bastronaut.bigspender.utils.SampleData;
 import com.bastronaut.bigspender.utils.TestUtils;
 import org.junit.Before;
@@ -21,7 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LOGIN_ENDPOINT;
 import static com.bastronaut.bigspender.utils.SampleData.HEADER_ENCODED_USERONE;
@@ -45,6 +50,9 @@ public class LoginAttemptIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LoginAttemptRepository loginAttemptRepository;
 
     private MockMvc mockMvc;
 
@@ -106,19 +114,55 @@ public class LoginAttemptIntegrationTest {
                 .andExpect(status().isUnauthorized());
 
 
-        // 4th attempt with bad credentials, last possible attempt before the login is blocked
+        // 4th attempt with bad credentials, login blocked
         mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, incorrectLoginHeader))
                 .andDo(print())
                 .andExpect(status().isForbidden());
 
         // 5th attempt with correct credentials, verify account is locked
-        usernamePassword = testuser.getEmail() + ":" + testuser.getPassword();
+        mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    /**
+     * The account should automatically unlock after MINUTES_ACCOUNT_LOCKED time. Verifies that, when the
+     * time since the last login attempt was a long time ago, that the account is unlocked
+     */
+    @Test
+    @Transactional
+    public void testTooManyLoginAttemptsBlockRemovedAfterTimeout() throws Exception {
+
+        usernamePassword = testuser.getEmail() + ":" + "incorrectpassword";
         incorrectLoginHeader = "Basic " + (Base64.getEncoder().encodeToString(usernamePassword.getBytes()));
 
         mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
                 .header(HttpHeaders.AUTHORIZATION, incorrectLoginHeader))
-                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, incorrectLoginHeader))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, incorrectLoginHeader))
+                .andExpect(status().isUnauthorized());
+
+        // 4th attempt, with good credentials, login blocked
+        mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
                 .andExpect(status().isForbidden());
+
+        final LocalDateTime longTimeAgo = LocalDateTime.of(1989, 01, 01, 1, 1);
+        final LoginAttempt attempts = loginAttemptRepository.findById(testuser.getEmail()).get();
+        attempts.setMostRecentAttempt(longTimeAgo);
+
+        // 1st attempt since a longTimeAgo, should allow login again
+        mockMvc.perform(MockMvcRequestBuilders.get(LOGIN_ENDPOINT)
+                .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_USERONE))
+                .andExpect(status().isOk());
+
     }
 }

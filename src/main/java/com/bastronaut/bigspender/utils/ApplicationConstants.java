@@ -21,6 +21,8 @@ public class ApplicationConstants {
     /* User constants */
     public static final int PASSWORDMINSIZE = 8;
     public static final int MAX_LOGIN_ATTEMPTS = 3;
+    public static final int HOURS_ACCOUNT_LOCKED = 24;
+    public static final int MINUTES_ACCOUNT_LOCKED = 60 * HOURS_ACCOUNT_LOCKED;
 
     /* ING */
     public static final String CSV_HEADER_DATE = "Datum";

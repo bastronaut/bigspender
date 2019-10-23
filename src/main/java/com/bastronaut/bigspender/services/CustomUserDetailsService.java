@@ -4,7 +4,6 @@ import com.bastronaut.bigspender.config.SecurityUtil;
 import com.bastronaut.bigspender.dto.in.UserUpdateDTO;
 import com.bastronaut.bigspender.exceptions.LoginAttemptException;
 import com.bastronaut.bigspender.exceptions.UserRegistrationException;
-import com.bastronaut.bigspender.exceptions.UserUpdateException;
 import com.bastronaut.bigspender.models.User;
 import com.bastronaut.bigspender.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public User loadUserByUsername(final String username) throws UsernameNotFoundException, LoginAttemptException {
 
-        int attempts = loginAttemptService.getLoginAttempts(username);
+        int attempts = loginAttemptService.getLoginAttemptsSinceTimeout(username);
         if (attempts >= MAX_LOGIN_ATTEMPTS) {
             throw new LoginAttemptException(ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS);
         }

@@ -184,6 +184,7 @@ docs: https://spring.io/blog/2015/02/11/better-application-events-in-spring-fram
 ### JPQL queries
 - JPQL query wants you to use the Entity name rather than the table name
 - For non-select queries, requires a @Modifying annotation
+- Requires a @Transactional on the service method, not sure why it fails with TransactionRequiredException
 
 
 ### features todo
