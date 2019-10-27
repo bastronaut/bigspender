@@ -48,6 +48,7 @@ public class TestConstants {
     public static final String ERRORMSG_LABEL_NAME_EMPTY = "Field: name is required for label";
     public static final String ERRORMSG_LABEL_EMPTY = "Field: label is required";
     public static final String ERRORMSG_TRANSACTIONIMPORT_FILE_NULL = "No file was posted with parametername 'file'";
+    public static final String ERRORMSG_REGISTRATION_NOT_ALLOWED = "Registration not allowed while logged in";
 
     /** Label related tests **/
     public static final String LABELSID_PARAM_REPLACE = "{labelid}";

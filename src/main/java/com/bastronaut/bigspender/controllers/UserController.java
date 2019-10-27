@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import java.util.Optional;
 
+import static com.bastronaut.bigspender.utils.ApplicationConstants.ERRORMSG_REGISTRATION_NOT_ALLOWED;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.INVALID_UPDATE_INFORMATION;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.LOGIN_ENDPOINT;
 import static com.bastronaut.bigspender.utils.ApplicationConstants.USERS_ENDPOINT;
@@ -40,10 +41,13 @@ public class UserController {
 
     @PostMapping(path = USERS_ENDPOINT,  produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@Valid final UserRegistrationDTO userRegistrationDTO,
+                                              final @AuthenticationPrincipal User activeUser,
                                               final BindingResult bindingResult,
                                               final HttpServletRequest request) throws ServletException {
-        // TODO:
-        //  Ensure no existing session exists. Alternatively, we could reject login if session exists
+        // Don't allow registration while user is logged in
+        if (activeUser != null) {
+            throw new UserRegistrationException(ERRORMSG_REGISTRATION_NOT_ALLOWED);
+        }
 
         if (bindingResult.hasErrors()) {
             FieldError error = bindingResult.getFieldErrors().get(0); // For now handle errors individually

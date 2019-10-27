@@ -58,6 +58,7 @@ public class ApplicationConstants {
     public static final String ERRORMSG_LINKS_EMPTY = "Field: links is required";
     public static final String ERRORMSG_TRANSACTIONID_EMPTY = "Field: transactionId is required";
     public static final String ERRORMSG_TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts. Login disabled for 24 hours";
+    public static final String ERRORMSG_REGISTRATION_NOT_ALLOWED = "Registration not allowed while logged in";
 
 
     /* Transaction error messages */

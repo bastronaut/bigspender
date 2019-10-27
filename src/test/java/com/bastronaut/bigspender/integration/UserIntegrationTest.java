@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,6 +25,7 @@ import java.util.Optional;
 
 import static com.bastronaut.bigspender.utils.TestConstants.EMAIL_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_INVALID_EMAIL;
+import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_REGISTRATION_NOT_ALLOWED;
 import static com.bastronaut.bigspender.utils.TestConstants.ERRORMSG_USER_PW_SIZE;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_DETAILS_PARAM;
 import static com.bastronaut.bigspender.utils.TestConstants.ERROR_MESSAGE_PARAM;
@@ -36,6 +39,7 @@ import static com.bastronaut.bigspender.utils.TestConstants.USERID_PARAM_REPLACE
 import static com.bastronaut.bigspender.utils.TestConstants.USERS_ENDPOINT;
 import static com.bastronaut.bigspender.utils.TestConstants.USER_ENDPOINT;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -139,6 +143,20 @@ public class UserIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andReturn();
+    }
+
+    @Test
+    public void createUserAlreadyLoggedInShouldFail() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post(USERS_ENDPOINT)
+//                .header(HttpHeaders.AUTHORIZATION, headerEncoded)
+                .param(EMAIL_PARAM, "test2@email.com")
+                .param(PASSWORD_PARAM, "testpw123"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ERROR_MESSAGE_PARAM).value(REGISTRATION_ERROR_PARAM))
+                .andExpect(jsonPath(ERROR_DETAILS_PARAM).value(ERRORMSG_REGISTRATION_NOT_ALLOWED));
+
     }
 
 }

@@ -49,8 +49,9 @@ public class LoginAttemptService {
      * Gets the login attempts for a username.
      *
      * @param username
-     * @return Returns the Login Attempts if the most recent login attempt was less than the time allowed in which you can
-     * perform the login attempts, stored in MINUTES_ACCOUNT_LOCKED.
+     * @return Returns the Login Attempts if the most recent login attempt was less than the time allowed in which
+     * you can perform the login attempts, stored in MINUTES_ACCOUNT_LOCKED. Returns 0 if no recent logins were
+     * performed
      *
      */
     public int getLoginAttemptsSinceTimeout(final String username) {
