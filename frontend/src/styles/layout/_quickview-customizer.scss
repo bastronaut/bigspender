@@ -1,0 +1,58 @@
+// Demo Only
+$customizer_bg:      #fafafa;
+
+.customizer {
+  padding: 0;
+  background-color: $customizer_bg;
+
+  .quickview-inner {
+    padding: 15px 45px;
+  }
+
+  .customizer-header {
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  h4.section-header {
+    margin: 12px 0 0;
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: normal;
+  }
+
+  a{
+    position: relative;
+    display: block;
+    width: 100%;
+    color: $body-color;
+  }
+
+  .customizer-close {
+    width: auto;
+  }
+
+  a.customizer-toggle,
+  a.customizer-close {
+    color: $body-color;
+    &:hover,
+    &:focus {
+      color: $body-color;
+    }
+  }
+
+  .customizer-toggle {
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+  }
+  &:before{
+    background-color: $customizer_bg;
+    box-shadow: 0 0 9px rgba(0,0,0,.1);
+    border-left: 1px solid #e5e5e5;
+    border-radius: 0 4px 4px 0;
+  }
+  &:after{
+    background-color: $customizer_bg;
+  }
+}

@@ -1,0 +1,44 @@
+.app-header {
+  padding: 0;
+  border: 0; // no border, otherwise other elements' height can only be ($l_header_height -1)
+
+  &.ant-layout-header {
+    height: $l_header_height;
+    line-height: $l_header_height;
+  }
+
+  .app-header-inner {
+    height: $l_header_height;
+  }
+}
+
+.app-header-inner {
+  display: flex;
+  justify-content: space-between;
+  transition: $l_transition_antd;
+
+  .header-right {
+    padding-right: 5px;
+  }
+
+  .header-icon {
+    display: inline-block;
+    height: $l_header_height;
+    line-height: $l_header_height;
+    padding: 0 14px;
+    @media only screen and (min-width: $l_screen_md_min) {
+      padding: 0 18px;
+    }
+  }
+
+  .app-sidebar-toggler {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .ant-menu-horizontal {
+    line-height: ($l_header_height - 2); // 2px border
+    border-color: transparent;
+  }
+}

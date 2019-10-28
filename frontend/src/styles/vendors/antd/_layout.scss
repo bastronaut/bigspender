@@ -1,0 +1,58 @@
+// 
+.fixed-header {
+  .ant-layout { // apply to all .ant-layout Class
+    overflow: auto;
+  }
+}
+
+
+// Sidebar
+.ant-layout-sider-collapsed .nav-text {
+  display: none;
+}
+
+.ant-menu > .ant-menu-item-divider {
+  background-color: rgba(0,0,0,.15); // so it works in both light and dark theme
+}
+
+
+.ant-menu {
+  .ant-menu-item {
+    a {
+      position: relative;
+    }
+    .badge {
+      position: absolute;
+      right: 2em;
+      top: 14.25px; // (42 - 13.5)/2
+    }
+  }
+}
+
+.sidebar-content {
+  .ant-menu-inline, .ant-menu-vertical {
+    border-right: 0;
+  }
+}
+
+
+// Customizer
+.layout-option-item {
+  display: flex;
+  margin-bottom: 15px;
+  justify-content: space-between;
+  line-height: 22px;
+
+  .ant-switch {
+    text-align: center;
+  }
+}
+
+.layout-option-item-slider {
+  margin-top: -5px;
+  line-height: 32px;
+
+  .ant-slider {
+    margin-right: 0;
+  }
+}

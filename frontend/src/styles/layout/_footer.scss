@@ -1,0 +1,20 @@
+.app-footer {
+  // make footer same height with sidebar footer
+  padding: 13px $grid-gutter-width-base;
+  font-size: 11px;
+  border-top: 1px solid rgba(0,0,0,.05);
+}
+
+.app-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  line-height: 17px;
+  color: $text-muted;
+
+  .brand {
+    color: $body-color;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+}

@@ -1,0 +1,40 @@
+.card-box {
+  min-height: 120px;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: $border-radius-lg;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+
+  .box-icon {
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    vertical-align: middle;
+
+    &.rounded {
+      border-radius: 50%;
+    }
+  }
+
+  .btn-icon,
+  .btn-icon-lined {
+    margin: 0 15px 0 0;
+    font-size: 1.75rem;        
+  }
+
+  .box-info {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .box-num {
+    font-size: 24px;
+    line-height: 1;
+    margin: 10px 0 5px;
+  }
+}

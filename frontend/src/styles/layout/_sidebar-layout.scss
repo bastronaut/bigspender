@@ -1,0 +1,62 @@
+$breakpoint_md_max:  (map-get($grid-breakpoints, md) - 1);
+
+.app-sidebar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .sidebar-header {
+    flex: 0 0 auto;
+    height: $l_header_height;
+  }
+
+  .sidebar-content {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+
+  .sidebar-footer {
+    flex: 0 0 auto;
+    height: $sidebar_footer_height;
+  }
+}
+
+// collapsed
+.app-sidebar {
+  // collapsed only, not off-canvas
+  &.ant-layout-sider-collapsed:not(.ant-layout-sider-zero-width) {
+    // if no plugin is used
+    .sidebar-content {
+      overflow: initial;
+    }
+
+    // Using slimScroll plugin
+    .slimScrollDiv {
+      overflow: initial !important;
+      .slimScrollBar,
+      .slimScrollRail {
+        display: none !important;
+      }
+
+      > .sidebar-content {
+        overflow: initial !important;
+      }
+    }
+  }
+}
+
+// Mobile
+@media only screen and (max-width: $breakpoint_md_max) { // 767
+  .app-sidebar:not(.ant-layout-sider-zero-width) + .ant-layout {
+    .app-content {
+      * {
+        display: none;
+      }
+    }
+    .app-footer {
+      display: none;
+    }
+  }
+}

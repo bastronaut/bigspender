@@ -1,0 +1,38 @@
+.page-err {
+  background-color: $dark;
+  height: 100%;
+  position: relative;
+
+  .err-container {
+    background-color: $dark; // fix unexpected background color when page content is longer than full width height (when chrome dev tool is open )
+    padding: 45px 10px 0;
+    @media (min-width: map-get($grid-breakpoints, md)) {
+      padding: 130px 0 0;
+    }  
+  }
+
+  .err {
+    color: $bright;
+
+    h1 {
+      margin-bottom: 30px;
+      color: $bright;
+      color: rgba(255,255,255,.8);
+      font-size: 150px;
+      font-weight: 300;
+      text-shadow: 2px 2px 5px rgba(0,0,0,.2);
+    }
+
+    h2 {
+      color: $bright;
+      color: rgba(255,255,255,.6);
+      margin: 0;
+      font-weight: 300;
+      font-size: 28px;
+    }
+  }
+
+  .err-body {
+    padding: 20px 10px;
+  }
+}
