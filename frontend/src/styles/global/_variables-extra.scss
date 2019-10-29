@@ -1,7 +1,6 @@
 // rgba(#000, .035) // #eee
 
-$image_path:            "../assets/images/" !default;
-$image_pathdemo:        "../assets/images-demo/" !default;
+$image_path:            "../../assets/images/" !default;
 
 
 $skin:                  $brand-primary;
@@ -21,7 +20,7 @@ $state-default-border-light:    #f3f3f3 !default;
 
 //== Typography
 $font-weight-thin:      300 !default;
-$font-family-condensed: "Roboto Condensed", "Roboto", "Helvetica Neue", Arial, sans-serif !default
+$font-family-condensed: "Roboto Condensed", "Roboto", "Helvetica Neue", Arial, sans-serif !default;
 
 
 // UI
