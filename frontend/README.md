@@ -1,3 +1,16 @@
+
+## Run:
+
+- npm start
+
+adminator:
+- cd C:\Users\bassi\Documents\projects\adminator
+- npm run dev
+
+
+
+## Create React App instructions below
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

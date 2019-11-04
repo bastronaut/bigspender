@@ -2,7 +2,7 @@ import React from 'react';
 
 
 
-class Menu extends React.Component {
+class MenuItem extends React.Component {
 
   render() {
 
@@ -10,4 +10,4 @@ class Menu extends React.Component {
   }
 }
 
-export default Menu;
+export default MenuItem;
