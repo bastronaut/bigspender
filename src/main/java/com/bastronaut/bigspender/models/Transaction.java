@@ -6,34 +6,17 @@ import com.bastronaut.bigspender.dto.out.TransactionDTO;
 import com.bastronaut.bigspender.enums.TransactionCode;
 import com.bastronaut.bigspender.enums.TransactionMutationType;
 import com.bastronaut.bigspender.enums.TransactionType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.time.DayOfWeek;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -108,11 +91,6 @@ public class Transaction {
 
     @Setter
     @Getter
-    @Column(nullable = true)
-    private DayOfWeek day; // non-normalized, maybe useful for training data
-
-    @Setter
-    @Getter
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne
     private User user;
@@ -144,11 +122,6 @@ public class Transaction {
                        @NonNull final TransactionMutationType mutationType, @NonNull final String statement,
                        final User user) {
         this.date = date;
-        if (date != null) {
-            this.day = date.getDayOfWeek();
-        } else {
-            this.day = null;
-        }
         this.time = time;
         this.name = name;
         this.accountNumber = accountNumber;

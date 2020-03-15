@@ -192,6 +192,7 @@ tijdlijn uitgaven per dag
 hoofdcategorien, inzoomen  per subcategorie
 
 ### TODO improvements
+- Remove crazy link controller and logic, create labels resource logic with POST/PATCH transaction/id/labels and label/id/transactions
 - Transactions have a FetchType.EAGER on the List<Labels>. This will for every Transaction probably do another db call to retrieve all labels. More efficient would be if we retrieve all transactions for a user, retrieve all labels for a user, (so 2 queries), and either provide the them separately with foreign keys or link them somehow without doing a query for each single transaction
 - DELETE request is not yet allowed on a single transaction resource. Can only DELETE to /labels, which is used even if you intend to only delete one. Low prio
 - DTOs too complex. i.e.: See if we can get a List<Long> marshalled from the [ labels: {"id": 1},{"id": 2}] type requests for LabelDeleteDTO

@@ -118,8 +118,7 @@ public class TransactionIntegrationTest {
                 .param("type" , "BIJ")
                 .param("amount" , "1980")
                 .param("mutationType" , "Diversen")
-                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
-                .param("day" , "7"))
+                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.date").value("2019-04-07"))
@@ -128,8 +127,7 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.accountNumber").value("NL20INGB0004567891"))
                 .andExpect(jsonPath("$.receivingAccountNumber").value("NL20INGB0001987654"))
                 .andExpect(jsonPath("$.type").value("Bij"))
-                .andExpect(jsonPath("$.amount").value("1980"))
-                .andExpect(jsonPath("$.day").value(7));
+                .andExpect(jsonPath("$.amount").value("1980"));
     }
 
     @Test
@@ -162,7 +160,6 @@ public class TransactionIntegrationTest {
                 .andExpect(jsonPath("$.accountNumber").value(tx1.getAccountNumber()))
                 .andExpect(jsonPath("$.receivingAccountNumber").value(tx1.getReceivingAccountNumber()))
                 .andExpect(jsonPath("$.statement").value(tx1.getStatement()))
-                .andExpect(jsonPath("$.day").value(tx1.getDay().getValue()))
                 .andExpect(jsonPath("$.amount").value(String.valueOf(tx1.getAmount())))
                 .andExpect(jsonPath("$.mutationType").value(tx1.getMutationType().getType()))
                 .andExpect(jsonPath("$.code").value(tx1.getCode().getType()))

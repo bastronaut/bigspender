@@ -7,7 +7,6 @@ import Sidebar from 'components/layout/Sidebar'
 function App() {
   return (
     <div id="app-inner" className="full-height">
-
     </div>
   );
 }

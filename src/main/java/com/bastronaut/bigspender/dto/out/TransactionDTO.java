@@ -34,7 +34,6 @@ public class TransactionDTO {
     private final long amount;
     private final String mutationType;
     private final String statement;
-    private final int day;
     private final Set<LabelDTO> labels;
 
     public TransactionDTO(final long id, final String date, final String time, final String name,
@@ -52,7 +51,6 @@ public class TransactionDTO {
         this.amount = determineAmount(amount);
         this.mutationType = getMutationType(mutationType);
         this.statement = StringUtils.isNotBlank(statement) ? statement : null;
-        this.day = this.date != null ? this.date.getDayOfWeek().getValue() : null;
         this.labels = LabelDTO.fromLabels(labels);
     }
 

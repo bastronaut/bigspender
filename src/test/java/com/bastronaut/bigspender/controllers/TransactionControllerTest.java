@@ -87,6 +87,7 @@ public class TransactionControllerTest {
         final String endpoint = TRANSACTION_ENDPOINT.replace(TRANSACTIONID_PARAM_REPLACE, "1");
         mockMvc.perform(MockMvcRequestBuilders.get(endpoint))
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
                 .andExpect(jsonPath("type").value("Af"))
                 .andExpect(jsonPath("code").value("GT"))
                 .andExpect(jsonPath("accountNumber").value("NL41INGB0006212385"))
@@ -94,7 +95,6 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("amount").value(180))
                 .andExpect(jsonPath("mutationType").value("Betaalautomaat"))
                 .andExpect(jsonPath("statement").value("Pasvolgnr: 008 01-04-2019 22:39 Valutadatum: 02-04-2019"))
-                .andExpect(jsonPath("day").value(1))
                 .andExpect(jsonPath("time").value("22:39:00"))
                 .andExpect(jsonPath("date").value("2019-04-01"))
                 .andExpect(jsonPath("id").isNotEmpty()) // ordinarily ID is set by hibernate, because of mocking this never happens so remains at 0
@@ -209,8 +209,7 @@ public class TransactionControllerTest {
                 .param("type" , "BIJ")
                 .param("amount" , "1980")
                 .param("mutationType" , "Diversen")
-                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
-                .param("day" , "7"))
+                .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
@@ -225,7 +224,6 @@ public class TransactionControllerTest {
                 .param("amount" , "1980")
                 .param("mutationType" , "Diversen")
                 .param("statement" , "Pasvolgnr: 008 01-04-2019 07:25 Valutadatum: 02-04-2019")
-                .param("day" , "7")
                 .header(HttpHeaders.AUTHORIZATION, HEADER_ENCODED_NONEXISTINGUSER))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
